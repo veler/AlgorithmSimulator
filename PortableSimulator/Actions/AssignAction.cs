@@ -45,7 +45,7 @@
         public override IEnumerable<AlgorithmStatement> GetCode()
         {
             yield return new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression(((VariableParameter)this.Parameters["Variable"]).Name),
-                                                 new AlgorithmPrimitiveExpression(((PrimitiveParameter)this.Parameters["Value"]).Value));
+                                                      new AlgorithmPrimitiveExpression(((PrimitiveParameter)this.Parameters["Value"]).Value));
         }
 
         public override SimulatorError DescribeSimulationError(SimulatorError error)

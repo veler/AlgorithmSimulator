@@ -45,12 +45,13 @@
 
         public override IEnumerable<AlgorithmStatement> GetCode()
         {
+            var pathToTheFileReference = new AlgorithmVariableReferenceExpression(((VariableParameter) this.Parameters["PathToTheFile"]).Name);
             yield return new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression(((VariableParameter)this.Parameters["ResultVariable"]).Name),
-                                                 new AlgorithmInvokeCoreMethodExpression(
-                                                     new AlgorithmClassReferenceExpression("System.IO", "File"),
-                                                     "ReadAllText",
-                                                     new[] { typeof(string) },
-                                                     new AlgorithmVariableReferenceExpression(((VariableParameter)this.Parameters["PathToTheFile"]).Name)));
+                                                      new AlgorithmInvokeCoreMethodExpression(
+                                                          new AlgorithmClassReferenceExpression("System.IO", "File"),
+                                                          "ReadAllText",
+                                                          new[] { typeof(string) },
+                                                          pathToTheFileReference));
         }
 
         public override SimulatorError DescribeSimulationError(SimulatorError error)
