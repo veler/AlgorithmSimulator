@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{731D588C-0AD7-4E2B-B6F0-7CB5CD778ED6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Algo.Runtime</RootNamespace>
+    <AssemblyName>Algo.Runtime</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="Build\AlgorithmDOM\DOM\Architecture.dgml" />
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmAssignStatement.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmBinaryOperatorExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmBinaryOperatorType.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassDeclarationCollection.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassPropertyDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassMember.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassMemberCollection.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassMethodDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassReferenceExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmConditionStatement.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassConstructorDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmEntryPointMethod.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmExpressionCollection.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmExpressionStatement.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmIdentifier.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmInstanciateExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmInvokeCoreMethodExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmInvokeMethodExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmIterationStatement.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmObject.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmParameterDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmSnippetExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmSnippetStatement.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmThisReferenceExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmReferenceExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmVariableDeclarationCollection.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmParameterDeclarationCollection.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmPrimitiveExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmProgram.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmReturnStatement.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmStatement.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmStatementCollection.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmVariableDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmPropertyReferenceExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmVariableReferenceExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\IAlgorithmAssignable.cs" />
+    <Compile Include="Build\AlgorithmDOM\IAlgorithmVariable.cs" />
+    <Compile Include="Build\AlgorithmDOM\Utils.cs" />
+    <Compile Include="Build\Runtime\Debugger\CallStack\Call.cs" />
+    <Compile Include="Build\Runtime\Debugger\DebugInfo.cs" />
+    <Compile Include="Build\Runtime\Debugger\Error.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\BadArgumentException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\IdenticalConstructorsException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\ClassNotFoundException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\MethodNotAwaitableException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\NotAssignableException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\OperatorNotFoundException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\VariableAlreadyExistsException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\PropertyNotFoundException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\VariableNotFoundException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\MethodNotFoundException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\NoInstanceReferenceException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\MissingEntryPointMethodException.cs" />
+    <Compile Include="Build\Runtime\Debugger\MemoryTraceObject.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\BinaryOperator.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\InvokeCoreMethod.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\InvokeMethod.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\Instanciate.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\ThisReference.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\PrimitiveValue.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\ClassReference.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\PropertyReference.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\VariableReference.cs" />
+    <Compile Include="Build\Runtime\Interpreter\IAssignable.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Interpreter\BlockInterpreter.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Interpreter\ClassInterpreter.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Interpret.cs" />
+    <Compile Include="Build\Runtime\Interpreter\InterpretExpression.cs" />
+    <Compile Include="Build\Runtime\Interpreter\InterpretStatement.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Interpreter\MethodInterpreter.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Interpreter\ProgramInterpreter.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Statements\Iteration.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Statements\ExpressionStatement.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Statements\Return.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Statements\Condition.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Statements\VariableDeclaration.cs" />
+    <Compile Include="Build\Runtime\Memory\MemoryObject.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Statements\Assign.cs" />
+    <Compile Include="Build\Runtime\Simulator.cs" />
+    <Compile Include="Build\Runtime\SimulatorState.cs" />
+    <Compile Include="Build\Runtime\Memory\Variable.cs" />
+    <Compile Include="Build\Runtime\Debugger\CallStack\CallStack.cs" />
+    <Compile Include="Build\Runtime\SimulatorStateEventArgs.cs" />
+    <Compile Include="ComponentModel\EnumExtension.cs" />
+    <Compile Include="ComponentModel\ObjectExtension.cs" />
+    <Compile Include="ComponentModel\Types\CaseInfo.cs" />
+    <Compile Include="ComponentModel\Types\TypeSwitch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Properties\Algo.Runtime.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BareMetal">
+      <HintPath>..\..\ExternalLibraries\BareMetal.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>Powershell "echo(\"Lines count in $(ProjectName) :\") (dir $(ProjectDir) -include *.cs,*.xaml,*.cpp,*.h,*.c -recurse | select-string .).Count"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

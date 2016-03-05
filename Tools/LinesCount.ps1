@@ -1,0 +1,1 @@
+Powershell "echo(\"Lines count in $(ProjectName) :\") (dir $(ProjectDir) -include *.cs,*.xaml,*.cpp,*.h,*.c -recurse | select-string .).Count"
