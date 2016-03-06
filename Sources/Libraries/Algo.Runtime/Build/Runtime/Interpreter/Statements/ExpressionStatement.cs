@@ -3,11 +3,11 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
-    sealed internal class ExpressionStatement : InterpretStatement<AlgorithmExpressionStatement>
+    internal sealed class ExpressionStatement : InterpretStatement
     {
         #region Constructors
 
-        public ExpressionStatement(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpressionStatement statement)
+        public ExpressionStatement(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
             : base(memTrace, parentInterpreter, statement)
         {
         }
@@ -18,7 +18,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
         internal override void Execute()
         {
-            ParentInterpreter.RunExpression(Statement.Expression);
+            ParentInterpreter.RunExpression(Statement._expression);
         }
 
         #endregion

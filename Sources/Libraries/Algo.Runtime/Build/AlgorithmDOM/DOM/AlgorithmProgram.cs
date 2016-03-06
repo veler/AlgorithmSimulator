@@ -9,11 +9,13 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     {
         #region Fields
 
-        private string _name;
+        private new string _name;
 
         #endregion
 
         #region Properties
+
+        internal override AlgorithmDomType DomType => AlgorithmDomType.Program;
 
         /// <summary>
         /// Gets or sets global variables accessibles anywhere in the program's classes and methods

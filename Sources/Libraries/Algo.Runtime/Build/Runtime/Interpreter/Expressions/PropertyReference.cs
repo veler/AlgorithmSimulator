@@ -8,7 +8,7 @@ using Algo.Runtime.Build.Runtime.Memory;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class PropertyReference : InterpretExpression<AlgorithmPropertyReferenceExpression>, IAssignable
+    internal sealed class PropertyReference : InterpretExpression, IAssignable
     {
         #region Properties
 
@@ -18,7 +18,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         #region Constructors
 
-        internal PropertyReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmPropertyReferenceExpression expression)
+        internal PropertyReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
         }
@@ -56,7 +56,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         public object GetAssignableObject()
         {
-            if (Expression.TargetObect == null)
+            if (Expression._targetObject == null)
             {
                 ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to access to a property when the TargetObject of an AlgorithmPropertyReferenceExpression is null."), ParentInterpreter.GetDebugInfo())));
                 return null;
@@ -70,7 +70,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             ParentInterpreter.Log(this, $"Getting the property '{Expression}'");
 
-            TargetObject = ParentInterpreter.RunExpression(Expression.TargetObect);
+            TargetObject = ParentInterpreter.RunExpression(Expression._targetObject);
 
             if (ParentInterpreter.Failed)
             {
@@ -86,11 +86,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             classTargetObject = TargetObject as ClassInterpreter;
             if (classTargetObject != null)
             {
-                propertyVariable = classTargetObject.FindVariableInTheCurrentInterpreter(Expression.PropertyName.ToString());
+                propertyVariable = classTargetObject.FindVariableInTheCurrentInterpreter(Expression._propertyName.ToString());
 
                 if (propertyVariable == null)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression.PropertyName.ToString()), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString()), ParentInterpreter.GetDebugInfo())));
                     return null;
                 }
 
@@ -99,11 +99,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             }
             else
             {
-                propertyInfo = TargetObject.GetType().GetProperty(Expression.PropertyName.ToString());
+                propertyInfo = TargetObject.GetType().GetProperty(Expression._propertyName.ToString());
 
                 if (propertyInfo == null)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression.PropertyName.ToString()), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString()), ParentInterpreter.GetDebugInfo())));
                     return null;
                 }
 
@@ -111,7 +111,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 value = propertyInfo.GetValue(TargetObject);
             }
 
-            ParentInterpreter.Log(this, "Value of the property '{0}' is {1}", Expression.PropertyName.ToString(), value == null ? "{null}" : $"'{value}' (type:{value.GetType().FullName})");
+            ParentInterpreter.Log(this, "Value of the property '{0}' is {1}", Expression._propertyName.ToString(), value == null ? "{null}" : $"'{value}' (type:{value.GetType().FullName})");
 
             return property;
         }

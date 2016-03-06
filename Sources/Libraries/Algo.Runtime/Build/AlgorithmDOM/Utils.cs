@@ -3,7 +3,7 @@
     /// <summary>
     /// Provide a sets of methods used to check if some rules are respected in an algorithm made with AlgorithmDOM
     /// </summary>
-    sealed internal class Utils
+    internal sealed class Utils
     {
         #region Methods
 

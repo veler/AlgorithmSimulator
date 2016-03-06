@@ -7,15 +7,17 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.AssignStatement;
+
         /// <summary>
         /// The expression on the left of the assign symbol in the algorithm
         /// </summary>
-        public AlgorithmExpression LeftExpression { get; set; }
+        public AlgorithmExpression LeftExpression { get { return _leftExpression; } set { _leftExpression = value; } }
 
         /// <summary>
         /// The expression on the right of the assign symbol in the algorithm
         /// </summary>
-        public AlgorithmExpression RightExpression { get; set; }
+        public AlgorithmExpression RightExpression { get { return _rightExpression; } set { _rightExpression = value; } }
 
         #endregion
 

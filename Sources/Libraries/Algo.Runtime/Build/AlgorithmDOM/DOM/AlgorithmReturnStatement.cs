@@ -5,6 +5,12 @@
     /// </summary>
     public class AlgorithmReturnStatement : AlgorithmExpressionStatement
     {
+        #region Properties
+        
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ReturnStatement;
+
+        #endregion
+
         #region Consturctors
 
         /// <summary>

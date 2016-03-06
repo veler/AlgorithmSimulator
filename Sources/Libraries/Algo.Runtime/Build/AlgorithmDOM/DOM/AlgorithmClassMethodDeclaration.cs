@@ -7,20 +7,22 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ClassMethodDeclaration;
+
         /// <summary>
         /// Gets of sets the statements in the method's body
         /// </summary>
-        public AlgorithmStatementCollection Statements { get; set; }
+        public AlgorithmStatementCollection Statements { get { return _statements; } set { _statements = value; } }
 
         /// <summary>
         /// Gets or sets a collection of arguments declaration
         /// </summary>
-        public AlgorithmParameterDeclarationCollection Arguments { get; set; }
+        public AlgorithmParameterDeclarationCollection Arguments { get { return _arguments; } set { _arguments = value; } }
 
         /// <summary>
         /// Gets or sets whether the method can be call asynchronously
         /// </summary>
-        public bool IsAsync { get; set; }
+        public bool IsAsync { get { return _isAsync; } set { _isAsync = value; } }
 
         #endregion
 

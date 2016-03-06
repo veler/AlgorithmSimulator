@@ -5,11 +5,11 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class ThisReference : InterpretExpression<AlgorithmThisReferenceExpression>
+    internal sealed class ThisReference : InterpretExpression
     {
         #region Constructors
 
-        internal ThisReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmThisReferenceExpression expression)
+        internal ThisReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
         }

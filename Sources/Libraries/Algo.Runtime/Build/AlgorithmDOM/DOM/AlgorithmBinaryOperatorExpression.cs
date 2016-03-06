@@ -9,20 +9,22 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.BinaryOperatorExpression;
+
         /// <summary>
         /// Gets or sets the left expression
         /// </summary>
-        public AlgorithmExpression LeftExpression { get; set; } 
+        public AlgorithmExpression LeftExpression { get { return _leftExpression; } set { _leftExpression = value; } }
 
         /// <summary>
         /// Gets or sets the binary operator
         /// </summary>
-        public AlgorithmBinaryOperatorType Operator { get; set; }
+        public AlgorithmBinaryOperatorType Operator { get { return _operator; } set { _operator = value; } }
 
         /// <summary>
         /// Gets or sets the right expression
         /// </summary>
-        public AlgorithmExpression RightExpression { get; set; }
+        public AlgorithmExpression RightExpression { get { return _rightExpression; } set { _rightExpression = value; } }
 
         #endregion
 

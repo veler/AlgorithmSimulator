@@ -6,11 +6,13 @@
     public class AlgorithmSnippetExpression : AlgorithmExpression
     {
         #region Properties
-        
+
+        internal override AlgorithmDomType DomType => AlgorithmDomType.SnippetExpression;
+
         /// <summary>
         /// Gets or sets the snippet code
         /// </summary>
-        public string Code { get; set; }
+        public string Code { get { return _code; } set { _code = value; } }
 
         #endregion
 

@@ -7,7 +7,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
     [TestClass]
     public class Simulator_Test
     {
-        public static void RunProgramWithoutDebug(AlgorithmProgram program)
+        public static void RunProgramWithoutDebug(AlgorithmProgram program, bool mustCrash = false)
         {
             var simulator = new Simulator(program);
 
@@ -63,7 +63,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
 
             Assert.AreEqual(simulator.StateChangeHistory[8].State, SimulatorState.Stopped);
             Assert.AreEqual(simulator.State, SimulatorState.Stopped);
-            
+
             Simulator_Test.RunProgramWithoutDebug(program);
         }
 

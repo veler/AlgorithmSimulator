@@ -7,15 +7,17 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.PropertyReferenceExpression;
+
         /// <summary>
         /// Gets or sets the class reference or variable that contains the property
         /// </summary>
-        public AlgorithmReferenceExpression TargetObect { get; set; }
+        public AlgorithmReferenceExpression TargetObect { get { return _targetObject; } set { _targetObject = value; } }
 
         /// <summary>
         /// Gets or sets the name of the variable
         /// </summary>
-        public AlgorithmIdentifier PropertyName { get; set; }
+        public AlgorithmIdentifier PropertyName { get { return _propertyName; } set { _propertyName = value; } }
 
         #endregion
 

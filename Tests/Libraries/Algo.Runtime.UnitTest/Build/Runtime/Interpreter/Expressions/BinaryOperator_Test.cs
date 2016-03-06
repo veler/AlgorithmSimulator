@@ -25,7 +25,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("var1"), new AlgorithmPrimitiveExpression(1)));
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("var2"), new AlgorithmPrimitiveExpression(2)));
 
-            entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("result"), new AlgorithmBinaryOperatorExpression(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("var1"), AlgorithmBinaryOperatorType.ValueEquality, new AlgorithmVariableReferenceExpression("var2")), AlgorithmBinaryOperatorType.Or, new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("var1"), AlgorithmBinaryOperatorType.LessThan, new AlgorithmVariableReferenceExpression("var2")))));
+            entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("result"), new AlgorithmBinaryOperatorExpression(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("var1"), AlgorithmBinaryOperatorType.Equals, new AlgorithmVariableReferenceExpression("var2")), AlgorithmBinaryOperatorType.LogicalOr, new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("var1"), AlgorithmBinaryOperatorType.LessThan, new AlgorithmVariableReferenceExpression("var2")))));
 
             firstClass.Members.Add(entryPoint);
 
@@ -60,7 +60,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             entryPoint.Statements.Add(new AlgorithmVariableDeclaration("result"));
 
-            entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("result"), new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(123), AlgorithmBinaryOperatorType.Divide, new AlgorithmPrimitiveExpression(0))));
+            entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("result"), new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(123), AlgorithmBinaryOperatorType.Division, new AlgorithmPrimitiveExpression(0))));
 
             firstClass.Members.Add(entryPoint);
 
@@ -96,7 +96,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             entryPoint.Statements.Add(new AlgorithmVariableDeclaration("result"));
 
-            entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("result"), new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(null), AlgorithmBinaryOperatorType.ValueEquality, new AlgorithmPrimitiveExpression(2))));
+            entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("result"), new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(null), AlgorithmBinaryOperatorType.Equals, new AlgorithmPrimitiveExpression(2))));
 
             firstClass.Members.Add(entryPoint);
 
@@ -152,7 +152,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             Assert.AreEqual(simulator.StateChangeHistory[9].State, SimulatorState.StoppedWithError);
             Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.Error.Exception.Message, "Operator '>' cannot be applied to operands of type 'Newtonsoft.Json.Linq.JObject' and 'System.DateTime'");
+            Assert.AreEqual(simulator.Error.Exception.Message, "Operator 'GreaterThan' cannot be applied to operands of type 'Newtonsoft.Json.Linq.JObject' and 'System.DateTime'");
 
             Simulator_Test.RunProgramWithoutDebug(program);
         }
@@ -164,7 +164,6 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
         [TestMethod]
         public void BinaryOperator()
         {
-
             var time = new Stopwatch();
             time.Start();
 
@@ -181,18 +180,18 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("var1"), new AlgorithmPrimitiveExpression(3.14)));
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("var2"), new AlgorithmPrimitiveExpression(5)));
 
-            PlayOperator(AlgorithmBinaryOperatorType.Add, ref entryPoint);
-            PlayOperator(AlgorithmBinaryOperatorType.Subtract, ref entryPoint);
-            PlayOperator(AlgorithmBinaryOperatorType.Divide, ref entryPoint);
+            PlayOperator(AlgorithmBinaryOperatorType.Addition, ref entryPoint);
+            PlayOperator(AlgorithmBinaryOperatorType.Subtraction, ref entryPoint);
+            PlayOperator(AlgorithmBinaryOperatorType.Division, ref entryPoint);
             PlayOperator(AlgorithmBinaryOperatorType.Multiply, ref entryPoint);
             PlayOperator(AlgorithmBinaryOperatorType.Modulus, ref entryPoint);
             PlayOperator(AlgorithmBinaryOperatorType.GreaterThan, ref entryPoint);
             PlayOperator(AlgorithmBinaryOperatorType.GreaterThanOrEqual, ref entryPoint);
             PlayOperator(AlgorithmBinaryOperatorType.LessThan, ref entryPoint);
             PlayOperator(AlgorithmBinaryOperatorType.LessThanOrEqual, ref entryPoint);
-            PlayOperator(AlgorithmBinaryOperatorType.ValueEquality, ref entryPoint);
-            PlayOperator(AlgorithmBinaryOperatorType.IdentityEquality, ref entryPoint);
-            PlayOperator(AlgorithmBinaryOperatorType.IdentityInequality, ref entryPoint);
+            PlayOperator(AlgorithmBinaryOperatorType.Equals, ref entryPoint);
+            PlayOperator(AlgorithmBinaryOperatorType.Equality, ref entryPoint);
+            PlayOperator(AlgorithmBinaryOperatorType.Inequality, ref entryPoint);
 
             firstClass.Members.Add(entryPoint);
 

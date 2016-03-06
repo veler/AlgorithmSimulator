@@ -3,11 +3,11 @@ using Algo.Runtime.Build.Runtime.Debugger;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Memory;
 using Algo.Runtime.ComponentModel;
-using Algo.Runtime.ComponentModel.Types;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Algo.Runtime.Build.AlgorithmDOM;
 using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
@@ -15,7 +15,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
     /// <summary>
     /// Represents the instance of a class in a algorithm at runtime
     /// </summary>
-    sealed internal class ClassInterpreter : Interpret
+    internal sealed class ClassInterpreter : Interpret
     {
         #region Properties
 
@@ -67,31 +67,33 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             while (i < ClassDeclaration.Members.Count && !Failed)
             {
                 member = ClassDeclaration.Members[i];
-                TypeSwitch.Switch(
-                    member,
-                    TypeSwitch.Case<AlgorithmClassPropertyDeclaration>(property =>
-                    {
-                        AddVariable(property);
-                    }),
-                    TypeSwitch.Case<AlgorithmClassConstructorDeclaration>(ctor =>
-                    {
-                        if (Constructors.Any(c => c.MethodDeclaration.Arguments.Count == ctor.Arguments.Count))
+
+                switch (member.DomType)
+                {
+                    case AlgorithmDomType.ClassPropertyDeclaration:
+                        AddVariable((IAlgorithmVariable)member);
+                        break;
+
+                    case AlgorithmDomType.ClassConstructorDeclaration:
+                        if (Constructors.Any(c => c.MethodDeclaration._arguments.Count == member._arguments.Count))
                         {
                             ChangeState(this, new SimulatorStateEventArgs(new Error(new IdenticalConstructorsException(ClassDeclaration.Name.ToString(), "A class should not have multiple constructors with the same number of arguments."), GetDebugInfo())));
                         }
                         else
                         {
-                            Constructors.Add(new MethodInterpreter(ctor, MemTrace));
+                            Constructors.Add(new MethodInterpreter(member, MemTrace));
                         }
-                    }),
-                    TypeSwitch.Case<AlgorithmEntryPointMethod>(entryPoint =>
-                    {
-                        EntryPoint = new MethodInterpreter(entryPoint, MemTrace);
-                    }),
-                    TypeSwitch.Case<AlgorithmClassMethodDeclaration>(method =>
-                    {
-                        Methods.Add(new MethodInterpreter(method, MemTrace));
-                    }));
+                        break;
+
+                    case AlgorithmDomType.EntryPointMethod:
+                        EntryPoint = new MethodInterpreter(member, MemTrace);
+                        break;
+
+                    case AlgorithmDomType.ClassMethodDeclaration:
+                        Methods.Add(new MethodInterpreter(member, MemTrace));
+                        break;
+                }
+                
                 i++;
             }
         }
@@ -142,7 +144,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
             while (i < Constructors.Count && constructor == null)
             {
-                if (Constructors[i].MethodDeclaration.Arguments.Count == argumentCount)
+                if (Constructors[i].MethodDeclaration._arguments.Count == argumentCount)
                 {
                     constructor = Constructors[i];
                 }
@@ -162,11 +164,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             return this.DeepClone();
         }
 
-        internal object CallMethod(Interpret callerInterpreter, AlgorithmInvokeMethodExpression invokeExpression, Collection<object> argumentValues)
+        internal object CallMethod(Interpret callerInterpreter, AlgorithmExpression invokeExpression, Collection<object> argumentValues)
         {
-            var methodName = invokeExpression.MethodName.ToString();
+            var methodName = invokeExpression._methodName.ToString();
             var method = Methods.FirstOrDefault(
-                m => m.MethodDeclaration.Name.ToString() == methodName);
+                m => m.MethodDeclaration._name.ToString() == methodName);
 
             if (method == null)
             {
@@ -174,13 +176,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 return null;
             }
 
-            if (!method.MethodDeclaration.IsAsync && invokeExpression.Await)
+            if (!method.MethodDeclaration._isAsync && invokeExpression._await)
             {
                 callerInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException(methodName), callerInterpreter.GetDebugInfo())));
                 return null;
             }
 
-            var isAsync = method.MethodDeclaration.IsAsync;
+            var isAsync = method.MethodDeclaration._isAsync;
             method = new MethodInterpreter(method.MethodDeclaration, MemTrace);
             method.StateChanged += ChangeState;
             method.OnGetParentInterpreter += new Func<ClassInterpreter>(() => this);
@@ -191,9 +193,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
              });
             method.Initialize();
             method.UpdateCallStack();
-            method.Run(invokeExpression.Await, argumentValues);
+            method.Run(invokeExpression._await, argumentValues);
 
-            if (isAsync && !invokeExpression.Await)
+            if (isAsync && !invokeExpression._await)
             {
                 return null;
             }

@@ -9,11 +9,11 @@ using System.Reflection;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class Instanciate : InterpretExpression<AlgorithmInstanciateExpression>
+    internal sealed class Instanciate : InterpretExpression
     {
         #region Constructors
 
-        internal Instanciate(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmInstanciateExpression expression)
+        internal Instanciate(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
         }
@@ -25,7 +25,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         internal override object Execute()
         {
             Collection<object> argumentValues;
-            var createType = Expression.CreateType;
+            var createType = Expression._createType;
             var reference = ParentInterpreter.RunExpression(createType);
 
             if (ParentInterpreter.Failed)
@@ -83,7 +83,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                     }
                     else if (ex is TargetParameterCountException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {argumentValues.Count} argument(s) in the class '{Expression.CreateType}'."), ParentInterpreter.GetDebugInfo())));
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {argumentValues.Count} argument(s) in the class '{Expression._createType}'."), ParentInterpreter.GetDebugInfo())));
                     }
                     else
                     {
@@ -100,7 +100,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         {
             var argumentValues = new Collection<object>();
 
-            foreach (var arg in Expression.Arguments)
+            foreach (var arg in Expression._argumentsExpression)
             {
                 if (!ParentInterpreter.Failed)
                 {

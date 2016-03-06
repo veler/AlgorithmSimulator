@@ -5,8 +5,14 @@
     /// </summary>
     public class AlgorithmThisReferenceExpression : AlgorithmReferenceExpression
     {
-        #region Methods
+        #region Properties
         
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ThisReferenceExpression;
+
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Gets a string representation of the reference
         /// </summary>

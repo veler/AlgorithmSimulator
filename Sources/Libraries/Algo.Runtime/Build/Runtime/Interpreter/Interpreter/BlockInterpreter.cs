@@ -2,7 +2,6 @@
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime.Interpreter.Statements;
 using Algo.Runtime.Build.Runtime.Memory;
-using Algo.Runtime.ComponentModel.Types;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Algo.Runtime.Build.Runtime.Debugger;
@@ -11,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 {
-    sealed internal class BlockInterpreter : Interpret
+    internal sealed class BlockInterpreter : Interpret
     {
         #region Properties
 
@@ -67,41 +66,41 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         {
             var returnStmt = false;
 
-            TypeSwitch.Switch(
-                statement,
-                TypeSwitch.Case<AlgorithmConditionStatement>(stmt =>
-                {
-                    var condition = new Condition(MemTrace, this, stmt);
+            switch (statement.DomType)
+            {
+                case AlgorithmDomType.ConditionStatement:
+                    var condition = new Condition(MemTrace, this, statement);
                     condition.Execute();
                     returnStmt = condition.ReturnOccured;
-                }),
-                TypeSwitch.Case<AlgorithmIterationStatement>(stmt =>
-                {
-                    var iteration = new Iteration(MemTrace, this, stmt);
+                    break;
+
+                case AlgorithmDomType.IterationStatement:
+                    var iteration = new Iteration(MemTrace, this, statement);
                     iteration.Execute();
                     returnStmt = iteration.ReturnOccured;
-                }),
-                TypeSwitch.Case<AlgorithmReturnStatement>(stmt =>
-                {
-                    new Return(MemTrace, this, stmt).Execute();
+                    break;
+
+                case AlgorithmDomType.ReturnStatement:
+                    new Return(MemTrace, this, statement).Execute();
                     returnStmt = true;
-                }),
-                TypeSwitch.Case<AlgorithmAssignStatement>(stmt =>
-                {
-                    new Assign(MemTrace, this, stmt).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmVariableDeclaration>(stmt =>
-                {
-                    new VariableDeclaration(MemTrace, this, stmt).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmExpressionStatement>(stmt =>
-                {
-                    new ExpressionStatement(MemTrace, this, stmt).Execute();
-                }),
-                TypeSwitch.Default(() =>
-                {
+                    break;
+
+                case AlgorithmDomType.AssignStatement:
+                    new Assign(MemTrace, this, statement).Execute();
+                    break;
+
+                case AlgorithmDomType.VariableDeclaration:
+                    new VariableDeclaration(MemTrace, this, statement).Execute();
+                    break;
+
+                case AlgorithmDomType.ExpressionStatement:
+                    new ExpressionStatement(MemTrace, this, statement).Execute();
+                    break;
+
+                default:
                     ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this statement : '{statement.GetType().FullName}'"), GetDebugInfo())));
-                }));
+                    break;
+            }
 
             return returnStmt;
         }
@@ -110,49 +109,48 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         {
             object result = null;
 
-            TypeSwitch.Switch(
-                expression,
-                TypeSwitch.Case<AlgorithmPrimitiveExpression>(expr =>
-                {
-                    result = new PrimitiveValue(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmPropertyReferenceExpression>(expr =>
-                {
-                    result = new PropertyReference(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmVariableReferenceExpression>(expr =>
-                {
-                    result = new VariableReference(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmClassReferenceExpression>(expr =>
-                {
-                    result = new ClassReference(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmThisReferenceExpression>(expr =>
-                {
-                    result = new ThisReference(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmInstanciateExpression>(expr =>
-                {
-                    result = new Instanciate(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmInvokeCoreMethodExpression>(expr =>
-                {
-                    result = new InvokeCoreMethod(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmInvokeMethodExpression>(expr =>
-                {
-                    result = new InvokeMethod(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Case<AlgorithmBinaryOperatorExpression>(expr =>
-                {
-                    result = new BinaryOperator(MemTrace, this, expr).Execute();
-                }),
-                TypeSwitch.Default(() =>
-                {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this expression : '{expression.GetType().FullName}'"), GetDebugInfo())));
-                }));
+            switch (expression.DomType)
+            {
+                case AlgorithmDomType.PrimitiveExpression:
+                    result = new PrimitiveValue(MemTrace, this, expression).Execute();
+                    break;
 
+                case AlgorithmDomType.PropertyReferenceExpression:
+                    result = new PropertyReference(MemTrace, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.VariableReferenceExpression:
+                    result = new VariableReference(MemTrace, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.ClassReferenceExpression:
+                    result = new ClassReference(MemTrace, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.ThisReferenceExpression:
+                    result = new ThisReference(MemTrace, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.InstanciateExpression:
+                    result = new Instanciate(MemTrace, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.InvokeCoreMethodExpression:
+                    result = new InvokeCoreMethod(MemTrace, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.InvokeMethodExpression:
+                    result = new InvokeMethod(MemTrace, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.BinaryOperatorExpression:
+                    result = new BinaryOperator(MemTrace, this, expression).Execute();
+                    break;
+
+                default:
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this expression : '{expression.GetType().FullName}'"), GetDebugInfo())));
+                    break;
+            }
 
             return Failed ? null : result;
         }

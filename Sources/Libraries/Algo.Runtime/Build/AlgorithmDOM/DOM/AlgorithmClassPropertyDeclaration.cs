@@ -9,15 +9,17 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ClassPropertyDeclaration;
+
         /// <summary>
         /// Gets or sets whether the property is of type <see cref="object"/> or <see cref="Collection{T}"/> of <see cref="object"/>
         /// </summary>
-        public bool IsArray { get; set; }
+        public bool IsArray { get { return _isArray; } set { _isArray = value; } }
 
         /// <summary>
         /// Gets of sets the default value of the property
         /// </summary>
-        public AlgorithmPrimitiveExpression DefaultValue { get; set; }
+        public AlgorithmPrimitiveExpression DefaultValue { get { return _defaultValue; } set { _defaultValue = value; } }
 
         #endregion
 

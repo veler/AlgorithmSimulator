@@ -7,16 +7,25 @@ using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 using System.Reflection;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class InvokeCoreMethod : InterpretExpression<AlgorithmInvokeCoreMethodExpression>
+    internal sealed class InvokeCoreMethod : InterpretExpression
     {
+        #region Fields
+
+        private readonly CoreDispatcher _dispatcher;
+
+        #endregion
+
         #region Constructors
 
-        internal InvokeCoreMethod(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmInvokeCoreMethodExpression expression)
+        internal InvokeCoreMethod(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
+            _dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
         }
 
         #endregion
@@ -25,7 +34,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         internal override object Execute()
         {
-            if (Expression.TargetObect == null)
+            if (Expression._targetObject == null)
             {
                 ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to invoke a core method when the TargetObject of an AlgorithmInvokeCoreMethodExpression is null."), ParentInterpreter.GetDebugInfo())));
                 return null;
@@ -37,9 +46,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             Task<object> taskResult;
             Task task;
 
-            ParentInterpreter.Log(this, $"Calling core method '{Expression.TargetObect}.{Expression.MethodName}'");
+            ParentInterpreter.Log(this, $"Calling core method '{Expression._targetObject}.{Expression._methodName}'");
 
-            referenceClass = ParentInterpreter.RunExpression(Expression.TargetObect);
+            referenceClass = ParentInterpreter.RunExpression(Expression._targetObject);
 
             if (ParentInterpreter.Failed)
             {
@@ -73,7 +82,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            if (Expression.Await)
+            if (Expression._await)
             {
                 task = returnedValue as Task;
                 if (task != null)
@@ -86,7 +95,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                     }
                     return null;
                 }
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException($"{Expression.TargetObect}.{Expression.MethodName}"), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException($"{Expression._targetObject}.{Expression._methodName}"), ParentInterpreter.GetDebugInfo())));
                 return null;
             }
 
@@ -95,18 +104,18 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         private object InvokeMethod(Type type, object obj)
         {
-            if (Expression.ArgumentsTypes == null)
+            if (Expression._argumentsTypes == null)
             {
-                Expression.ArgumentsTypes = new Type[0];
+                Expression._argumentsTypes = new Type[0];
             }
 
             object result;
             Collection<object> arguments;
-            var method = type.GetRuntimeMethod(Expression.MethodName.ToString(), Expression.ArgumentsTypes);
+            var method = type.GetRuntimeMethod(Expression._methodName.ToString(), Expression._argumentsTypes);
 
             if (method == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression.MethodName.ToString(), $"The method '{Expression.MethodName}' does not exists in the current class or is not accessible."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"The method '{Expression._methodName}' does not exists in the current class or is not accessible."), ParentInterpreter.GetDebugInfo())));
                 return null;
             }
 
@@ -123,26 +132,29 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            try
+            result = null;
+            _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                result = method.Invoke(obj, arguments.ToArray());
-            }
-            catch (Exception ex)
-            {
-                if (ex is ArgumentException)
+                try
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message), ParentInterpreter.GetDebugInfo())));
+                    result = method.Invoke(obj, arguments.ToArray());
                 }
-                else if (ex is TargetParameterCountException)
+                catch (Exception ex)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression.MethodName.ToString(), $"There is a method '{Expression.MethodName}' in the class '{Expression.TargetObect}', but it does not have {arguments.Count} argument(s)."), ParentInterpreter.GetDebugInfo())));
+                    if (ex is ArgumentException)
+                    {
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message), ParentInterpreter.GetDebugInfo())));
+                    }
+                    else if (ex is TargetParameterCountException)
+                    {
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"There is a method '{Expression._methodName}' in the class '{Expression._targetObject}', but it does not have {arguments.Count} argument(s)."), ParentInterpreter.GetDebugInfo())));
+                    }
+                    else
+                    {
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex, ParentInterpreter.GetDebugInfo())));
+                    }
                 }
-                else
-                {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex, ParentInterpreter.GetDebugInfo())));
-                }
-                return null;
-            }
+            }).AsTask().Wait();
 
             return result;
         }
@@ -151,7 +163,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         {
             var argumentValues = new Collection<object>();
 
-            foreach (var arg in Expression.Arguments)
+            foreach (var arg in Expression._argumentsExpression)
             {
                 if (!ParentInterpreter.Failed)
                 {

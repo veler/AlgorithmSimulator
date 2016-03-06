@@ -4,7 +4,7 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
-    sealed internal class Iteration : InterpretStatement<AlgorithmIterationStatement>
+    internal sealed class Iteration : InterpretStatement
     {
         #region Properties
 
@@ -14,7 +14,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
         #region Constructors
 
-        public Iteration(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmIterationStatement statement)
+        public Iteration(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
             : base(memTrace, parentInterpreter, statement)
         {
         }
@@ -27,9 +27,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
         {
             var conditionResult = false;
 
-            if (Statement.InitializationStatement != null)
+            if (Statement._initializationStatement != null)
             {
-                ParentInterpreter.RunStatement(Statement.InitializationStatement);
+                ParentInterpreter.RunStatement(Statement._initializationStatement);
                 if (ParentInterpreter.Failed)
                 {
                     return;
@@ -38,7 +38,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
             _IterationLoop:
 
-            if (!Statement.ConditionAfterBody)
+            if (!Statement._conditionAfterBody)
             {
                 conditionResult = RunCondition();
                 if (!conditionResult)
@@ -47,7 +47,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                 }
             }
 
-            var block = new BlockInterpreter(Statement.Statements, MemTrace);
+            var block = new BlockInterpreter(Statement._statements, MemTrace);
             block.OnGetParentInterpreter += new Func<BlockInterpreter>(() => ParentInterpreter);
             block.StateChanged += ParentInterpreter.ChangeState;
             block.Initialize();
@@ -61,13 +61,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                 return;
             }
             
-            ParentInterpreter.RunStatement(Statement.IncrementStatement);
+            ParentInterpreter.RunStatement(Statement._incrementStatement);
             if (ParentInterpreter.Failed)
             {
                 return;
             }
 
-            if (Statement.ConditionAfterBody)
+            if (Statement._conditionAfterBody)
             {
                 conditionResult = RunCondition();
             }
@@ -80,7 +80,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
         private bool RunCondition()
         {
-            var conditionResult = Condition.RunCondition(ParentInterpreter, Statement.Condition);
+            var conditionResult = Condition.RunCondition(ParentInterpreter, Statement._condition);
 
             if (ParentInterpreter.Failed || conditionResult == null)
             {

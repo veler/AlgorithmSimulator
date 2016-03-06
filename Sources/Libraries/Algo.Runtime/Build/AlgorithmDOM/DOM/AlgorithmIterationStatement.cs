@@ -7,30 +7,32 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.IterationStatement;
+
         /// <summary>
         /// Gets or sets the statements in the iteration's body
         /// </summary>
-        public AlgorithmStatementCollection Statements { get; set; }
+        public AlgorithmStatementCollection Statements { get { return _statements; } set { _statements = value; } }
 
         /// <summary>
         /// Gets or sets the statement that initialize the iteration
         /// </summary>
-        public AlgorithmStatement InitializationStatement { get; set; }
+        public AlgorithmStatement InitializationStatement { get { return _initializationStatement; } set { _initializationStatement = value; } }
 
         /// <summary>
         /// Gets or sets the statement that define the incrementation
         /// </summary>
-        public AlgorithmStatement IncrementStatement { get; set; }
+        public AlgorithmStatement IncrementStatement { get { return _incrementStatement; } set { _incrementStatement = value; } }
 
         /// <summary>
         /// Gets or sets the test expression of the iteration
         /// </summary>
-        public AlgorithmExpression Condition { get; set; }
+        public AlgorithmExpression Condition { get { return _condition; } set { _condition = value; } }
 
         /// <summary>
         /// Gets or sets a value that define whether the test expression will be run before of after the execution of the iteration's body
         /// </summary>
-        public bool ConditionAfterBody { get; set; }
+        public bool ConditionAfterBody { get { return _conditionAfterBody; } set { _conditionAfterBody = value; } }
 
         #endregion
 

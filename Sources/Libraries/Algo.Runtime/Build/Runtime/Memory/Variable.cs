@@ -6,7 +6,7 @@ namespace Algo.Runtime.Build.Runtime.Memory
     /// <summary>
     /// Represents a variable at runtime
     /// </summary>
-    sealed public class Variable : MemoryObject
+    public sealed class Variable : MemoryObject
     {
         #region Properties
 

@@ -149,7 +149,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
 
         internal void AddVariable(IAlgorithmVariable variable, object defaultValue = null, bool isArg = false)
         {
-            if (FindVariable(variable.Name.ToString()) != null)
+            if (MemTrace && FindVariable(variable.Name.ToString()) != null)
             {
                 ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableAlreadyExistsException(variable.Name.ToString()), GetDebugInfo())));
                 return;

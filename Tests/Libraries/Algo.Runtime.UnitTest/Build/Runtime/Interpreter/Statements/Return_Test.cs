@@ -95,7 +95,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             {
                 DefaultValue = new AlgorithmPrimitiveExpression(0)
             };
-            var incrementation = new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("i"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.Add, new AlgorithmPrimitiveExpression(1)));
+            var incrementation = new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("i"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.Addition, new AlgorithmPrimitiveExpression(1)));
             var condition = new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.LessThan, new AlgorithmPrimitiveExpression(10));
             
             var stmts = new AlgorithmStatementCollection();

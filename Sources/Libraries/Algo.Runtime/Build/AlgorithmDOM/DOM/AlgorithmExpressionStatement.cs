@@ -7,10 +7,12 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ExpressionStatement;
+
         /// <summary>
         /// The single expression of the statement
         /// </summary>
-        public AlgorithmExpression Expression { get; set; }
+        public AlgorithmExpression Expression { get { return _expression; } set { _expression = value; } }
 
         #endregion
 

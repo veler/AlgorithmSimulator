@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter
 {
-    internal abstract class InterpretStatement<T> : MemoryTraceObject where T : AlgorithmStatement
+    internal abstract class InterpretStatement : MemoryTraceObject
     {
         #region Properties
 
         [JsonProperty]
-        protected T Statement { get; private set; }
+        protected AlgorithmStatement Statement { get; private set; }
 
         [JsonProperty]
         protected BlockInterpreter ParentInterpreter { get; private set; }
@@ -19,7 +19,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
 
         #region Constructors
 
-        internal InterpretStatement(bool memTrace, BlockInterpreter parentInterpreter, T statement)
+        internal InterpretStatement(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
             : base(memTrace)
         {
             ParentInterpreter = parentInterpreter;

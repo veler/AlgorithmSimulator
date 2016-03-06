@@ -51,7 +51,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             var firstClass = new AlgorithmClassDeclaration("FirstClass");
             var entryPoint = new AlgorithmEntryPointMethod();
 
-            entryPoint.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(1), AlgorithmBinaryOperatorType.Add, new AlgorithmPrimitiveExpression(0)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(true)) }, new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(false)) }));
+            entryPoint.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(1), AlgorithmBinaryOperatorType.Addition, new AlgorithmPrimitiveExpression(0)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(true)) }, new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(false)) }));
 
             firstClass.Members.Add(entryPoint);
             program.Classes.Add(firstClass);
@@ -71,7 +71,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
 
             Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Primitive value : '1' (type:System.Int32)");
             Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Primitive value : '0' (type:System.Int32)");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Doing an operation 'Add'");
+            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Doing an operation 'Addition'");
             Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "Primitive value : 'True' (type:System.Boolean)");
             Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "(Main) Return : 'True' (type:System.Boolean)");
 
@@ -88,7 +88,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             var firstClass = new AlgorithmClassDeclaration("FirstClass");
             var entryPoint = new AlgorithmEntryPointMethod();
 
-            entryPoint.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(1), AlgorithmBinaryOperatorType.Add, new AlgorithmPrimitiveExpression(2)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(true)) }, new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(false)) }));
+            entryPoint.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmPrimitiveExpression(1), AlgorithmBinaryOperatorType.Addition, new AlgorithmPrimitiveExpression(2)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(true)) }, new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(false)) }));
 
             firstClass.Members.Add(entryPoint);
             program.Classes.Add(firstClass);
@@ -108,7 +108,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
 
             Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Primitive value : '1' (type:System.Int32)");
             Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Primitive value : '2' (type:System.Int32)");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Doing an operation 'Add'");
+            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Doing an operation 'Addition'");
 
             Assert.AreEqual(simulator.StateChangeHistory[6].State, SimulatorState.StoppedWithError);
             Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);

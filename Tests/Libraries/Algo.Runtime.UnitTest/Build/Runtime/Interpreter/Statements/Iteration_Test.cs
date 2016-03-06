@@ -23,11 +23,11 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             {
                 DefaultValue = new AlgorithmPrimitiveExpression(0)
             };
-            var incrementation = new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("i"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.Add, new AlgorithmPrimitiveExpression(1)));
+            var incrementation = new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("i"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.Addition, new AlgorithmPrimitiveExpression(1)));
             var condition = new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.LessThan, new AlgorithmPrimitiveExpression(10));
 
             var stmts = new AlgorithmStatementCollection();
-            stmts.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("y"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("y"), AlgorithmBinaryOperatorType.Add, new AlgorithmPrimitiveExpression(10))));
+            stmts.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("y"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("y"), AlgorithmBinaryOperatorType.Addition, new AlgorithmPrimitiveExpression(10))));
 
             entryPoint.Statements.Add(new AlgorithmIterationStatement(initialization, incrementation, condition, false, stmts));
             entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("y")));
@@ -72,11 +72,11 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             {
                 DefaultValue = new AlgorithmPrimitiveExpression(0)
             };
-            var incrementation = new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("i"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.Add, new AlgorithmPrimitiveExpression(1)));
+            var incrementation = new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("i"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.Addition, new AlgorithmPrimitiveExpression(1)));
             var condition = new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("i"), AlgorithmBinaryOperatorType.LessThan, new AlgorithmPrimitiveExpression(10));
 
             var stmts = new AlgorithmStatementCollection();
-            stmts.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("y"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("y"), AlgorithmBinaryOperatorType.Add, new AlgorithmPrimitiveExpression(10))));
+            stmts.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("y"), new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("y"), AlgorithmBinaryOperatorType.Addition, new AlgorithmPrimitiveExpression(10))));
 
             entryPoint.Statements.Add(new AlgorithmIterationStatement(initialization, incrementation, condition, true, stmts));
             entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("y")));

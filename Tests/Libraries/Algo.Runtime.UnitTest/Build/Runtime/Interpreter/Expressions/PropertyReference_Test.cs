@@ -17,7 +17,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             var entryPoint = new AlgorithmEntryPointMethod();
             entryPoint.Statements.Add(new AlgorithmVariableDeclaration("var1"));
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("var1"), new AlgorithmInstanciateExpression(new AlgorithmClassReferenceExpression("SecondClass"))));
-            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmPropertyReferenceExpression(new AlgorithmVariableReferenceExpression("var1"), "Property1"), AlgorithmBinaryOperatorType.Add, new AlgorithmPropertyReferenceExpression(new AlgorithmThisReferenceExpression(), "Property2"))));
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmPropertyReferenceExpression(new AlgorithmVariableReferenceExpression("var1"), "Property1"), AlgorithmBinaryOperatorType.Addition, new AlgorithmPropertyReferenceExpression(new AlgorithmThisReferenceExpression(), "Property2"))));
 
             firstClass.Members.Add(entryPoint);
             firstClass.Members.Add(new AlgorithmClassPropertyDeclaration("Property2") { DefaultValue = new AlgorithmPrimitiveExpression(123) });

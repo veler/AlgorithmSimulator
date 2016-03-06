@@ -6,23 +6,25 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     /// Represents a variable declaration in a statement. In this structure, variables will always be of type <see cref="object"/> or <see cref="Collection{T}"/> of <see cref="object"/>
     /// </summary>
     public class AlgorithmVariableDeclaration : AlgorithmStatement, IAlgorithmVariable
-    {              
+    {
         #region Properties
+
+        internal override AlgorithmDomType DomType => AlgorithmDomType.VariableDeclaration;
 
         /// <summary>
         /// Gets or sets the name of the variable 
         /// </summary>         
-        public AlgorithmIdentifier Name { get; set; }
+        public AlgorithmIdentifier Name { get { return _name; } set { _name = value; } }
 
         /// <summary>
         /// Gets or sets whether the variable is of type <see cref="object"/> or <see cref="Collection{T}"/> of <see cref="object"/>
         /// </summary>
-        public bool IsArray { get; set; }
+        public bool IsArray { get { return _isArray; } set { _isArray = value; } }
 
         /// <summary>
         /// Gets of sets the default value of the variable
         /// </summary>
-        public AlgorithmPrimitiveExpression DefaultValue { get; set; }
+        public AlgorithmPrimitiveExpression DefaultValue { get { return _defaultValue; } set { _defaultValue = value; } }
 
         #endregion
 

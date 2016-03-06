@@ -10,7 +10,7 @@ using Algo.Runtime.Build.Runtime.Memory;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 {
-    sealed internal class MethodInterpreter : Interpret
+    internal sealed class MethodInterpreter : Interpret
     {
         #region Fields
 
@@ -20,7 +20,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         #region Properties
 
-        internal AlgorithmClassMethodDeclaration MethodDeclaration { get; set; }
+        internal AlgorithmObject MethodDeclaration { get; set; }
 
         internal bool Done { get; set; }
 
@@ -51,7 +51,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         #region Constructors
 
-        internal MethodInterpreter(AlgorithmClassMethodDeclaration methodDecl, bool memTrace)
+        internal MethodInterpreter(AlgorithmObject methodDecl, bool memTrace)
             : base(memTrace)
         {
             MethodDeclaration = methodDecl;
@@ -68,13 +68,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         internal void Run(bool awaitCall, IReadOnlyList<object> argumentValues)
         {
-            if (MethodDeclaration.Arguments.Count != argumentValues.Count)
+            if (MethodDeclaration._arguments.Count != argumentValues.Count)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(MethodDeclaration.Name.ToString(), $"There is a method '{MethodDeclaration.Name}' in the class '{GetFirstNextParentInterpreter<ClassInterpreter>().ClassDeclaration.Name}', but it does not have {argumentValues.Count} argument(s)."), GetDebugInfo())));
+                ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(MethodDeclaration._name.ToString(), $"There is a method '{MethodDeclaration._name}' in the class '{GetFirstNextParentInterpreter<ClassInterpreter>().ClassDeclaration.Name}', but it does not have {argumentValues.Count} argument(s)."), GetDebugInfo())));
                 return;
             }
 
-            if (MethodDeclaration.IsAsync)
+            if (MethodDeclaration._isAsync)
             {
                 if (awaitCall)
                 {
@@ -98,14 +98,14 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         private void RunSync(IReadOnlyList<object> argumentValues)
         {
-            var block = new BlockInterpreter(MethodDeclaration.Statements, MemTrace);
+            var block = new BlockInterpreter(MethodDeclaration._statements, MemTrace);
             block.OnGetParentInterpreter += new Func<MethodInterpreter>(() => this);
             block.StateChanged += ChangeState;
             block.Initialize();
 
-            for (var i = 0; i < MethodDeclaration.Arguments.Count; i++)
+            for (var i = 0; i < MethodDeclaration._arguments.Count; i++)
             {
-                var argDecl = MethodDeclaration.Arguments[i];
+                var argDecl = MethodDeclaration._arguments[i];
                 var argValue = argumentValues[i];
 
                 if (!(argValue is string) && argValue is IEnumerable && !argDecl.IsArray)

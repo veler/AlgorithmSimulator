@@ -9,6 +9,8 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ClassConstructorDeclaration;
+
         [JsonProperty]
         public new static bool IsAsync { get; private set; }
 

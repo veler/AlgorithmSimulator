@@ -10,15 +10,17 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ParameterDeclaration;
+
         /// <summary>
         /// Gets or sets the name of the argument 
         /// </summary>         
-        public AlgorithmIdentifier Name { get; set; }
+        public AlgorithmIdentifier Name { get { return _name; } set { _name = value; } }
 
         /// <summary>
         /// Gets or sets whether the argument is of type <see cref="object"/> or <see cref="Collection{T}"/> of <see cref="object"/>
         /// </summary>
-        public bool IsArray { get; set; }
+        public bool IsArray { get { return _isArray; } set { _isArray = value; } }
 
         /// <summary>
         /// Gets of sets the default value of the variable

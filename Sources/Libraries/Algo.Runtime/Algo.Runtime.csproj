@@ -132,6 +132,7 @@
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassReferenceExpression.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmConditionStatement.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmClassConstructorDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmDomType.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmEntryPointMethod.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmExpression.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmExpressionCollection.cs" />
@@ -207,15 +208,35 @@
     <Compile Include="Build\Runtime\SimulatorStateEventArgs.cs" />
     <Compile Include="ComponentModel\EnumExtension.cs" />
     <Compile Include="ComponentModel\ObjectExtension.cs" />
-    <Compile Include="ComponentModel\Types\CaseInfo.cs" />
-    <Compile Include="ComponentModel\Types\TypeSwitch.cs" />
+    <Compile Include="ComponentModel\OperatorHelper\OperatorHelper.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OperatorHelper.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ComponentModel\OperatorHelper\OperatorHelperCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="ComponentModel\OperatorHelper\OperatorHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>OperatorHelper.cs</LastGenOutput>
+    </Content>
     <Content Include="Properties\Algo.Runtime.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BareMetal">
       <HintPath>..\..\ExternalLibraries\BareMetal.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.Configuration.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Microsoft.NET.Native.Runtime.1.1, Version=1.1">
+      <Name>Microsoft .NET Native Runtime Package for Windows</Name>
+    </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

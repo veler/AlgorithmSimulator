@@ -7,13 +7,9 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     /// </summary>
     public class AlgorithmIdentifier : AlgorithmObject
     {
-        #region Fields
-
-        private string _identifier;
-
-        #endregion
-
         #region Properties
+
+        internal override AlgorithmDomType DomType => AlgorithmDomType.Identifier;
 
         /// <summary>
         /// Gets or sets the identifier

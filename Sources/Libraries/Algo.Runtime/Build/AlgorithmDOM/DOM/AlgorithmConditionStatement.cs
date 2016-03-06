@@ -7,20 +7,22 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ConditionStatement;
+        
         /// <summary>
         /// Gets or sets the expression to evaluate true or false
         /// </summary>
-        public AlgorithmExpression Condition { get; set; }
+        public AlgorithmExpression Condition { get { return _condition; } set { _condition = value; } }
 
         /// <summary>
         /// Gets or sets a collection of statements to run when the condition is true
         /// </summary>
-        public AlgorithmStatementCollection TrueStatements { get; set; }
+        public AlgorithmStatementCollection TrueStatements { get { return _trueStatements; } set { _trueStatements = value; } }
 
         /// <summary>
         /// Gets or sets a collection of statements to run when the condition is false
         /// </summary>
-        public AlgorithmStatementCollection FalseStatements { get; set; }
+        public AlgorithmStatementCollection FalseStatements { get { return _falseStatements; } set { _falseStatements = value; } }
 
         #endregion
 

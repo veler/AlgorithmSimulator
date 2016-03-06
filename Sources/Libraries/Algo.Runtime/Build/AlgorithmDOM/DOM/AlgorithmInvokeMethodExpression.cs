@@ -7,25 +7,27 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.InvokeMethodExpression;
+
         /// <summary>
         /// Gets or sets the class reference that contains the method
         /// </summary>
-        public virtual AlgorithmReferenceExpression TargetObect { get; set; }
+        public virtual AlgorithmReferenceExpression TargetObject { get { return _targetObject; } set { _targetObject = value; } }
 
         /// <summary>
         /// Gets or sets the name of the method to call
         /// </summary>
-        public AlgorithmIdentifier MethodName { get; set; }
+        public AlgorithmIdentifier MethodName { get { return _methodName; } set { _methodName = value; } }
 
         /// <summary>
         /// Gets or sets an array of arguments to pass to the call
         /// </summary>
-        public AlgorithmExpressionCollection Arguments { get; set; }
+        public AlgorithmExpressionCollection Arguments { get { return _argumentsExpression; } set { _argumentsExpression = value; } }
 
         /// <summary>
         /// Gets or sets whether a call to a asynchronous method should be done synchronously or not
         /// </summary>
-        public bool Await { get; set; }
+        public bool Await { get { return _await; } set { _await = value; } }
 
         #endregion
 
@@ -46,7 +48,7 @@
         public AlgorithmInvokeMethodExpression(string methodName, params AlgorithmExpression[] arguments)
             : this(null, methodName, arguments)
         {
-            TargetObect = new AlgorithmThisReferenceExpression();
+            TargetObject = new AlgorithmThisReferenceExpression();
         }
 
         /// <summary>
@@ -57,7 +59,7 @@
         /// <param name="arguments">The arguments to pass during the call</param>
         public AlgorithmInvokeMethodExpression(AlgorithmReferenceExpression targetObject, string methodName, params AlgorithmExpression[] arguments)
         {
-            TargetObect = targetObject;
+            TargetObject = targetObject;
             MethodName = new AlgorithmIdentifier(methodName);
             Arguments = new AlgorithmExpressionCollection();
             Arguments.AddRange(arguments);
@@ -73,7 +75,7 @@
         /// <returns>String that reprensents the reference</returns>
         public override string ToString()
         {
-            return $"{TargetObect}.{MethodName.Identifier}()";
+            return $"{TargetObject}.{MethodName.Identifier}()";
         }
 
         #endregion

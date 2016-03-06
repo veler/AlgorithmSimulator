@@ -5,7 +5,7 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
-    sealed internal class Condition : InterpretStatement<AlgorithmConditionStatement>
+    internal sealed class Condition : InterpretStatement
     {
         #region Properties
 
@@ -15,7 +15,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
         #region Constructors
 
-        public Condition(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmConditionStatement statement)
+        public Condition(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
             : base(memTrace, parentInterpreter, statement)
         {
         }
@@ -26,7 +26,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
         internal override void Execute()
         {
-            var conditionResult = RunCondition(ParentInterpreter, Statement.Condition);
+            var conditionResult = RunCondition(ParentInterpreter, Statement._condition);
 
             if (ParentInterpreter.Failed || conditionResult == null)
             {
@@ -82,11 +82,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
             if (conditionResult)
             {
-                statements = Statement.TrueStatements;
+                statements = Statement._trueStatements;
             }
             else
             {
-                statements = Statement.FalseStatements;
+                statements = Statement._falseStatements;
             }
 
             if (statements == null || statements.Count == 0)

@@ -7,13 +7,9 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     /// </summary>
     public class AlgorithmClassReferenceExpression : AlgorithmReferenceExpression
     {
-        #region Fields
-
-        private string _namespace;
-
-        #endregion
-
         #region Properties
+
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ClassReferenceExpression;
 
         /// <summary>
         /// Gets or sets the full namespace path that contains the class
@@ -34,12 +30,12 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets the name of the class
         /// </summary>
-        public AlgorithmIdentifier ClassName { get; set; }
+        public AlgorithmIdentifier ClassName { get { return _className; } set { _className = value; } }
 
         /// <summary>
         /// Gets or sets the type that correspond to the class
         /// </summary>
-        public Type Type { get; set; }
+        public Type Type { get { return _type; } set { _type = value; } }
 
         #endregion
 

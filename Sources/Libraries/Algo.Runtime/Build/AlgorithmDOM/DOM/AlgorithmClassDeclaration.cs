@@ -7,10 +7,12 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.ClassDeclaration;
+
         /// <summary>
         /// Gets or sets a collection of members (fields, methods...) for the class
         /// </summary>
-        public AlgorithmClassMemberCollection Members { get; set; }
+        public AlgorithmClassMemberCollection Members { get { return _members; } set { _members = value; } }
 
         #endregion
 

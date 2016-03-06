@@ -6,11 +6,11 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class ClassReference : InterpretExpression<AlgorithmClassReferenceExpression>
+    internal sealed class ClassReference : InterpretExpression
     {
         #region Constructors
 
-        internal ClassReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmClassReferenceExpression expression)
+        internal ClassReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
         }
@@ -26,12 +26,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             ParentInterpreter.Log(this, $"Reference to the class : {fullName}");
 
-            if (Expression.Type != null)
+            if (Expression._type != null)
             {
-                return Expression.Type;
+                return Expression._type;
             }
 
-            if (string.IsNullOrWhiteSpace(Expression.Namespace))
+            if (string.IsNullOrWhiteSpace(Expression._namespace))
             {
                 type = GetProjectClassReference(fullName);
             }

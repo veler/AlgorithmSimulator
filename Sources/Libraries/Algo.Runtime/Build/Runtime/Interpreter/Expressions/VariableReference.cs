@@ -7,11 +7,11 @@ using Algo.Runtime.Build.Runtime.Memory;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class VariableReference : InterpretExpression<AlgorithmVariableReferenceExpression>, IAssignable
+    internal sealed class VariableReference : InterpretExpression, IAssignable
     {
         #region Constructors
 
-        internal VariableReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmVariableReferenceExpression expression)
+        internal VariableReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
         }
@@ -34,11 +34,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         public object GetAssignableObject()
         {
-            var variable = ParentInterpreter.FindVariable(Expression.Name.ToString());
+            var variable = ParentInterpreter.FindVariable(Expression._name.ToString());
 
             if (variable == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableNotFoundException(Expression.Name.ToString()), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableNotFoundException(Expression._name.ToString()), ParentInterpreter.GetDebugInfo())));
                 return null;
             }
 

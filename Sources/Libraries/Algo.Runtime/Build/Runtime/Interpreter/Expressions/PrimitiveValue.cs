@@ -3,11 +3,11 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class PrimitiveValue : InterpretExpression<AlgorithmPrimitiveExpression>
+    internal sealed class PrimitiveValue : InterpretExpression
     {
         #region Constructors
 
-        internal PrimitiveValue(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmPrimitiveExpression expression)
+        internal PrimitiveValue(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
         }
@@ -18,9 +18,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         internal override object Execute()
         {
-            ParentInterpreter.Log(this, "Primitive value : {0}", Expression.Value == null ? "{null}" : $"'{Expression.Value}' (type:{Expression.Value.GetType().FullName})");
+            ParentInterpreter.Log(this, "Primitive value : {0}", Expression._value == null ? "{null}" : $"'{Expression._value}' (type:{Expression._value.GetType().FullName})");
 
-            return Expression.Value;
+            return Expression._value;
         }
 
         #endregion

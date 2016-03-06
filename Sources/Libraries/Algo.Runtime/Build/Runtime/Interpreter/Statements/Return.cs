@@ -5,11 +5,11 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
-    sealed internal class Return : InterpretStatement<AlgorithmReturnStatement>
+    internal sealed class Return : InterpretStatement
     {
         #region Constructors
 
-        public Return(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmReturnStatement statement)
+        public Return(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
             : base(memTrace, parentInterpreter, statement)
         {
         }
@@ -28,11 +28,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                 return;
             }
 
-            method.ReturnedValue = ParentInterpreter.RunExpression(Statement.Expression);
+            method.ReturnedValue = ParentInterpreter.RunExpression(Statement._expression);
 
             if (!ParentInterpreter.Failed)
             {
-                ParentInterpreter.Log(this, "({0}) Return : {1}", method.MethodDeclaration.Name, method.ReturnedValue == null ? "{null}" : $"'{method.ReturnedValue}' (type:{method.ReturnedValue.GetType().FullName})");
+                ParentInterpreter.Log(this, "({0}) Return : {1}", method.MethodDeclaration._name, method.ReturnedValue == null ? "{null}" : $"'{method.ReturnedValue}' (type:{method.ReturnedValue.GetType().FullName})");
             }
         }
 

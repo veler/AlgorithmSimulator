@@ -7,15 +7,14 @@ using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Interpreter.Expressions;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 using Algo.Runtime.Build.Runtime.Memory;
-using Algo.Runtime.ComponentModel.Types;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
-    sealed internal class Assign : InterpretStatement<AlgorithmAssignStatement>
+    internal sealed class Assign : InterpretStatement
     {
         #region Constructors
 
-        internal Assign(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmAssignStatement statement)
+        internal Assign(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
             : base(memTrace, parentInterpreter, statement)
         {
         }
@@ -31,8 +30,8 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             object rightValue;
             PropertyInfo propertyInfo;
             Variable propertyVariable;
-            var leftExpression = Statement.LeftExpression;
-            var rightExpression = Statement.RightExpression;
+            var leftExpression = Statement._leftExpression;
+            var rightExpression = Statement._rightExpression;
 
             ParentInterpreter.Log(this, $"Assign '{leftExpression}' to '{rightExpression}'");
 
@@ -42,22 +41,22 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                 return;
             }
 
-            TypeSwitch.Switch(
-                leftExpression,
-                TypeSwitch.Case<AlgorithmPropertyReferenceExpression>(expr =>
-                {
-                    var interpreter = new PropertyReference(MemTrace, ParentInterpreter, expr);
+            switch (leftExpression.DomType)
+            {
+                case AlgorithmDomType.PropertyReferenceExpression:
+                    var interpreter = new PropertyReference(MemTrace, ParentInterpreter, leftExpression);
                     leftValue = interpreter.GetAssignableObject();
                     targetObject = interpreter.TargetObject;
-                }),
-                TypeSwitch.Case<AlgorithmVariableReferenceExpression>(expr =>
-                {
-                    leftValue = new VariableReference(MemTrace, ParentInterpreter, expr).GetAssignableObject();
-                }),
-                TypeSwitch.Default(() =>
-                {
+                    break;
+
+                case AlgorithmDomType.VariableReferenceExpression:
+                    leftValue = new VariableReference(MemTrace, ParentInterpreter, leftExpression).GetAssignableObject();
+                    break;
+
+                default:
                     ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter  for this expression : '{leftExpression.GetType().FullName}'"), ParentInterpreter.GetDebugInfo())));
-                }));
+                    break;
+            }
 
             if (ParentInterpreter.Failed)
             {

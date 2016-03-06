@@ -2,7 +2,7 @@
 
 namespace Algo.Runtime.Build.Runtime.Debugger
 {
-    sealed public class DebugInfo
+    public sealed class DebugInfo
     {
         #region Properties
 

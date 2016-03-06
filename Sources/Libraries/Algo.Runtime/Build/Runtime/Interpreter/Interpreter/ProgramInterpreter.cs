@@ -6,10 +6,11 @@ using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using System;
 using System.Threading.Tasks;
 using Algo.Runtime.Build.Runtime.Interpreter.Expressions;
+using Algo.Runtime.ComponentModel.OperatorHelper;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 {
-    sealed internal class ProgramInterpreter : Interpret
+    internal sealed class ProgramInterpreter : Interpret
     {
         #region Properties
 
@@ -30,11 +31,8 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         {
             ProgramDeclaration = programDecl;
 
-            Task.Run(() =>
-            {
-                // Just for better performances after, we call it a first time
-                BinaryOperatorStatic.OperatorsMethodsNames["Add"](1, 1);
-            });
+            // Just for better performances after, we call it a first time
+            OperatorHelperCache.Initialize();
         }
 
         #endregion

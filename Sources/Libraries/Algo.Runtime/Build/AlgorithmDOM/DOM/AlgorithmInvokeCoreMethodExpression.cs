@@ -7,15 +7,11 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     /// </summary>
     public class AlgorithmInvokeCoreMethodExpression : AlgorithmInvokeMethodExpression
     {
-        #region Fields
-
-        private AlgorithmReferenceExpression _targetObject;
-
-        #endregion
-
         #region Properties
 
-        public override sealed AlgorithmReferenceExpression TargetObect
+        internal override AlgorithmDomType DomType => AlgorithmDomType.InvokeCoreMethodExpression;
+
+        public sealed override AlgorithmReferenceExpression TargetObject
         {
             get
             {
@@ -35,7 +31,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets an array that defines the type of each arguments of the method
         /// </summary>
-        public Type[] ArgumentsTypes { get; set; }
+        public Type[] ArgumentsTypes { get { return _argumentsTypes; } set { _argumentsTypes = value; } }
 
         #endregion
 
@@ -58,7 +54,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         public AlgorithmInvokeCoreMethodExpression(AlgorithmReferenceExpression targetObject, string methodName, Type[] argumentTypes, params AlgorithmExpression[] arguments)
             : base(targetObject, methodName, arguments)
         {
-            TargetObect = targetObject;
+            TargetObject = targetObject;
             ArgumentsTypes = argumentTypes;
         }
 
@@ -72,7 +68,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <returns>String that reprensents the reference</returns>
         public override string ToString()
         {
-            return $"{TargetObect}.{MethodName}()";
+            return $"{TargetObject}.{MethodName}()";
         }
 
         #endregion

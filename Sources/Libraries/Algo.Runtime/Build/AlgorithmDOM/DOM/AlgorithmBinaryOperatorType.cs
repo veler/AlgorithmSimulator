@@ -11,12 +11,12 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// Addition operator
         /// </summary>
         [Description("+")]
-        Add = 0,
+        Addition = 0,
         /// <summary>
         /// Subtraction operator
         /// </summary>
         [Description("-")]
-        Subtract = 1,
+        Subtraction = 1,
         /// <summary>
         /// Multiplication operator
         /// </summary>
@@ -26,7 +26,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// Division operator
         /// </summary>
         [Description("/")]
-        Divide = 3,
+        Division = 3,
         /// <summary>
         /// Modulus operator
         /// </summary>
@@ -36,17 +36,17 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// Identity not equal operator
         /// </summary>
         [Description("!=")]
-        IdentityInequality = 5,
+        Inequality = 5,
         /// <summary>
         /// Identity equal operator
         /// </summary>
         [Description("==")]
-        IdentityEquality = 6,
+        Equality = 6,
         /// <summary>
         /// Value equal operator
         /// </summary>
-        [Description("==")]
-        ValueEquality = 7,
+        [Description("Equals")]
+        Equals = 7,
         /// <summary>
         /// Bitwise or operator
         /// </summary>
@@ -63,14 +63,14 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// a correct value.
         /// </summary>
         [Description("||")]
-        Or = 10,
+        LogicalOr = 10,
         /// <summary>
         /// Boolean and operator. This represents a short circuiting operator. A short circuiting
         /// operator will evaluate only as many expressions as necessary before returning
         /// a correct value.
         /// </summary>
         [Description("&&")]
-        And = 11,
+        LogicalAnd = 11,
         /// <summary>
         /// Less than operator
         /// </summary>

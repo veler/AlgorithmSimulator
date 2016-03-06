@@ -1,13 +1,14 @@
-﻿using Algo.Runtime.Build.AlgorithmDOM.DOM;
+﻿using Algo.Runtime.Build.AlgorithmDOM;
+using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
-    sealed internal class VariableDeclaration : InterpretStatement<AlgorithmVariableDeclaration>
+    internal sealed class VariableDeclaration : InterpretStatement
     {
         #region Constructors
 
-        public VariableDeclaration(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmVariableDeclaration statement)
+        public VariableDeclaration(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
             : base(memTrace, parentInterpreter, statement)
         {
         }
@@ -19,9 +20,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
         internal override void Execute()
         {
             object defaultValue = null;
-            if (Statement.DefaultValue != null)
+            if (Statement._defaultValue != null)
             {
-                defaultValue = ParentInterpreter.RunExpression(Statement.DefaultValue);
+                defaultValue = ParentInterpreter.RunExpression(Statement._defaultValue);
             }
 
             if (ParentInterpreter.Failed)
@@ -29,7 +30,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                 return;
             }
 
-            ParentInterpreter.AddVariable(Statement, defaultValue);
+            ParentInterpreter.AddVariable((IAlgorithmVariable)Statement, defaultValue);
         }
 
         #endregion

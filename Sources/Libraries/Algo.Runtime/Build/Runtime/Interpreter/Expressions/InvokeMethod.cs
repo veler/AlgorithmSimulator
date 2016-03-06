@@ -7,11 +7,11 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
-    sealed internal class InvokeMethod : InterpretExpression<AlgorithmInvokeMethodExpression>
+    internal sealed class InvokeMethod : InterpretExpression
     {
         #region Constructors
 
-        internal InvokeMethod(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmInvokeMethodExpression expression)
+        internal InvokeMethod(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
             : base(memTrace, parentInterpreter, expression)
         {
         }
@@ -22,15 +22,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         internal override object Execute()
         {
-            if (Expression.TargetObect == null)
+            if (Expression._targetObject == null)
             {
                 ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to invoke a method when the TargetObject of an AlgorithmInvokeMethodExpression is null."), ParentInterpreter.GetDebugInfo())));
                 return null;
             }
 
-            ParentInterpreter.Log(this, $"Calling method '{Expression.TargetObect}.{Expression.MethodName}'");
+            ParentInterpreter.Log(this, $"Calling method '{Expression._targetObject}.{Expression._methodName}'");
 
-            var referenceClass = ParentInterpreter.RunExpression(Expression.TargetObect) as ClassInterpreter;
+            var referenceClass = ParentInterpreter.RunExpression(Expression._targetObject) as ClassInterpreter;
 
             if (ParentInterpreter.Failed)
             {
@@ -64,7 +64,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         {
             var argumentValues = new Collection<object>();
 
-            foreach (var arg in Expression.Arguments)
+            foreach (var arg in Expression._argumentsExpression)
             {
                 if (!ParentInterpreter.Failed)
                 {

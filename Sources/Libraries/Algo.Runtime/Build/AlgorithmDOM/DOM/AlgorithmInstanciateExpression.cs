@@ -7,15 +7,17 @@
     {
         #region Properties
 
+        internal override AlgorithmDomType DomType => AlgorithmDomType.InstanciateExpression;
+
         /// <summary>
         /// Gets or sets a reference to the class to instanciate
         /// </summary>
-        public AlgorithmClassReferenceExpression CreateType { get; set; }
+        public AlgorithmClassReferenceExpression CreateType { get { return _createType; } set { _createType = value; } }
 
         /// <summary>
         /// Gets or sets the arguments to pass in the class's constructor
         /// </summary>
-        public AlgorithmExpressionCollection Arguments { get; set; }
+        public AlgorithmExpressionCollection Arguments { get { return _argumentsExpression; } set { _argumentsExpression = value; } }
 
         #endregion
 

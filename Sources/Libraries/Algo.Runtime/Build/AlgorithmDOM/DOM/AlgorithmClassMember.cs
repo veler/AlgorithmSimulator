@@ -10,7 +10,7 @@
         /// <summary>
         /// Gets or sets the name of the member.
         /// </summary>
-        public AlgorithmIdentifier Name { get; set; }
+        public AlgorithmIdentifier Name { get { return _name; } set { _name = value; } }
 
         #endregion
 
