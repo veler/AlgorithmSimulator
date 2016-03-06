@@ -1,0 +1,318 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core, Version=4.0.0.0, Culture=neutral" #>
+<#@ assembly name="Microsoft.CSharp, Version=4.0.0.0, Culture=neutral" #>
+<#@ import namespace="Microsoft.CSharp" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.CodeDom" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+	var allTypes = new List<TypeValue> 
+	{
+		new TypeValue(typeof(bool), true), 
+		new TypeValue(typeof(int), 1),  
+		new TypeValue(typeof(long), 1), 
+		new TypeValue(typeof(short), 1), 
+		new TypeValue(typeof(uint), 1),  
+		new TypeValue(typeof(ulong), 1), 
+		new TypeValue(typeof(ushort), 1), 
+		new TypeValue(typeof(double), 1.0), 
+		new TypeValue(typeof(float), 1.0), 
+		new TypeValue(typeof(decimal), 1.0), 
+		new TypeValue(typeof(string), "yo"), 
+		new TypeValue(typeof(char), 'A'), 
+		new TypeValue(typeof(DateTime), DateTime.Now),
+		new TypeValue(typeof(TimeSpan), TimeSpan.FromMinutes(5)),
+		new TypeValue(typeof(byte), 1), 
+		new TypeValue(typeof(sbyte), 1), 
+		new TypeValue(typeof(object), new {}), 
+    };
+	
+	var mixableTypes = new List<TypeValue> 
+	{
+		new TypeValue(typeof(int), 10),  
+		new TypeValue(typeof(long), 10), 
+		new TypeValue(typeof(short), 10), 
+		new TypeValue(typeof(uint), 10),  
+		new TypeValue(typeof(ushort), 10), 
+		new TypeValue(typeof(float), 3.14), 
+		new TypeValue(typeof(double), 3.14), 
+		new TypeValue(typeof(decimal), 3.14), 
+		new TypeValue(typeof(string), "yo"), 
+		new TypeValue(typeof(char), 'A'), 
+		new TypeValue(typeof(DateTime), DateTime.Now),
+		new TypeValue(typeof(TimeSpan), TimeSpan.FromMinutes(5)),
+		new TypeValue(typeof(byte), 1), 
+		new TypeValue(typeof(sbyte), 1),  
+    };
+
+	var operators = new List<Operator>()
+    {
+		new Operator(AlgorithmBinaryOperatorType.Addition			, "+"	, (a, b) => a + b	, allTypes),
+		new Operator(AlgorithmBinaryOperatorType.Subtraction		, "-"	, (a, b) => a - b	, allTypes),
+		new Operator(AlgorithmBinaryOperatorType.Multiply			, "*"	, (a, b) => a * b	, allTypes),
+		new Operator(AlgorithmBinaryOperatorType.Division			, "/"	, (a, b) => a / b	, allTypes),
+		new Operator(AlgorithmBinaryOperatorType.Modulus			, "%"	, (a, b) => a % b	, allTypes),
+		new Operator(AlgorithmBinaryOperatorType.BitwiseOr			, "|"	, (a, b) => a | b	, allTypes),
+		new Operator(AlgorithmBinaryOperatorType.BitwiseAnd			, "&"	, (a, b) => a & b	, allTypes),
+		new Operator(AlgorithmBinaryOperatorType.LogicalOr			, "||"	, (a, b) => a || b	, allTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.LogicalAnd			, "&&"	, (a, b) => a && b	, allTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.LessThan			, "<"	, (a, b) => a < b	, allTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.LessThanOrEqual	, "<="	, (a, b) => a <= b	, allTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.GreaterThan		, ">"	, (a, b) => a > b	, allTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.GreaterThanOrEqual	, ">="	, (a, b) => a >= b	, allTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.Equality			, "=="	, (a, b) => a == b	, allTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.Inequality			, "!="	, (a, b) => a != b	, allTypes	, true),
+    };
+
+	var operatorsMixable = new List<Operator>()
+    {
+		new Operator(AlgorithmBinaryOperatorType.Addition			, "+"	, (a, b) => a + b	, mixableTypes),
+		new Operator(AlgorithmBinaryOperatorType.Subtraction		, "-"	, (a, b) => a - b	, mixableTypes),
+		new Operator(AlgorithmBinaryOperatorType.Multiply			, "*"	, (a, b) => a * b	, mixableTypes),
+		new Operator(AlgorithmBinaryOperatorType.Division			, "/"	, (a, b) => a / b	, mixableTypes),
+		new Operator(AlgorithmBinaryOperatorType.Modulus			, "%"	, (a, b) => a % b	, mixableTypes),
+		new Operator(AlgorithmBinaryOperatorType.BitwiseOr			, "|"	, (a, b) => a | b	, mixableTypes),
+		new Operator(AlgorithmBinaryOperatorType.BitwiseAnd			, "&"	, (a, b) => a & b	, mixableTypes),
+		new Operator(AlgorithmBinaryOperatorType.LogicalOr			, "||"	, (a, b) => a || b	, mixableTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.LogicalAnd			, "&&"	, (a, b) => a && b	, mixableTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.LessThan			, "<"	, (a, b) => a < b	, mixableTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.LessThanOrEqual	, "<="	, (a, b) => a <= b	, mixableTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.GreaterThan		, ">"	, (a, b) => a > b	, mixableTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.GreaterThanOrEqual	, ">="	, (a, b) => a >= b	, mixableTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.Equality			, "=="	, (a, b) => a == b	, mixableTypes	, true),
+		new Operator(AlgorithmBinaryOperatorType.Inequality			, "!="	, (a, b) => a != b	, mixableTypes	, true),
+    };
+#>
+// <auto-generated>
+//     This code was generated by a tool.
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+
+// ReSharper disable RedundantCast
+// ReSharper disable RedundantToStringCall
+// ReSharper disable CompareOfFloatsByEqualityOperator
+// ReSharper disable SpecifyACultureInStringConversionExplicitly
+#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
+namespace Algo.Runtime.ComponentModel.OperatorHelper
+{
+    /// <summary>
+    /// Provide some extension methods for an <see cref="object"/>
+    /// </summary>
+    internal static class OperatorHelper
+    {
+        #region Methods
+
+<#
+		var typeTested = new List<string>();
+
+        foreach (var op in operators) 
+        {
+#>
+        #region <#= op.OperatorName.ToString() #>
+
+<#
+			foreach (var typeValue1 in op.Types)
+            {
+				var type1 = GetTypeName(typeValue1.Type);
+				var convertType = typeValue1.Type;
+				var convertTypeName = GetTypeName(typeValue1.Type);
+				if (op.MustReturnBoolean)
+                {
+					convertTypeName = GetTypeName(typeof(bool));
+					convertType = typeof(bool);
+                }
+
+				if (typeTested.Any(s => s == op.OperatorName.ToString() + type1 + type1))
+                {
+					continue;
+                }
+
+				try
+				{
+					var testFuncResult = Convert.ChangeType(op.TestFunction(typeValue1.TestValue, typeValue1.TestValue), convertType);
+#>
+		/// <summary>
+        /// Perform an <#= op.OperatorName.ToString() #>
+        /// </summary>
+        /// <param name="a">The left object</param>
+        /// <param name="b">The right object</param>
+        /// <returns>Returns the result of the <#= op.OperatorName.ToString() #> of a <#= type1 #> with a <#= type1 #></returns>
+		public static <#= convertTypeName #> <#= op.OperatorName.ToString() #>(<#= type1 #> a, <#= type1 #> b)
+		{
+<# 
+					if (convertTypeName == "string")
+					{
+#>
+			return (<#= convertTypeName #>) (a <#= op.Expression #> b.ToString());
+<# 
+                    } else if (convertTypeName == "System.DateTime") {
+#>
+			return (<#= convertTypeName #>) (a <#= op.Expression #> b);
+<#
+					} else {
+#>
+			return (<#= convertTypeName #>) (a <#= op.Expression #> (<#= type1 #>)b);
+<# 
+					}
+#>
+		}
+
+<#
+				}
+				catch{}
+				typeTested.Add(op.OperatorName.ToString() + type1 + type1);
+			}
+#>
+
+        #endregion
+
+<#
+        }
+
+        foreach (var op in operatorsMixable) 
+        {
+#>
+        #region <#= op.OperatorName.ToString() #> Mixable
+
+<#
+			foreach (var typeValue1 in op.Types)
+            {
+				foreach (var typeValue2 in op.Types)
+				{
+					var type1 = GetTypeName(typeValue1.Type);
+					var type2 = GetTypeName(typeValue2.Type);
+					var convertType = typeValue1.Type;
+					var convertTypeName = GetTypeName(typeValue1.Type);
+					if (op.MustReturnBoolean)
+					{
+						convertTypeName = GetTypeName(typeof(bool));
+						convertType = typeof(bool);
+					}
+
+					if (typeTested.Any(s => s == op.OperatorName.ToString() + type1 + type2))
+                    {
+						continue;
+                    }
+
+					try
+					{
+						var testFuncResult = Convert.ChangeType(op.TestFunction(typeValue1.TestValue, typeValue2.TestValue), convertType);
+#>
+		/// <summary>
+        /// Perform an <#= op.OperatorName.ToString() #>
+        /// </summary>
+        /// <param name="a">The left object</param>
+        /// <param name="b">The right object</param>
+        /// <returns>Returns the result of the <#= op.OperatorName.ToString() #> of a <#= type1 #> with a <#= type2 #></returns>
+		public static <#= convertTypeName #> <#= op.OperatorName.ToString() #>(<#= type1 #> a, <#= type2 #> b)
+		{
+<# 
+					if (convertTypeName == "string")
+					{
+#>
+			return (<#= convertTypeName #>) (a <#= op.Expression #> b.ToString());
+<# 
+                    } else if (convertTypeName == "System.DateTime") {
+#>
+			return (<#= convertTypeName #>) (a <#= op.Expression #> b);
+<#
+					} else {
+#>
+			return (<#= convertTypeName #>) (a <#= op.Expression #> (<#= type1 #>)b);
+<# 
+					}
+#>
+		}
+
+<#
+					}
+					catch{}
+					typeTested.Add(op.OperatorName.ToString() + type1 + type2);
+				}
+            }
+#>
+
+        #endregion
+
+<#
+        }
+#>
+        #endregion
+    }
+}
+#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
+<#+
+    enum AlgorithmBinaryOperatorType
+    {
+        Addition = 0,
+        Subtraction = 1,
+        Multiply = 2,
+        Division = 3,
+        Modulus = 4,
+        Inequality = 5,
+        Equality = 6,
+        Equals = 7,
+        BitwiseOr = 8,
+        BitwiseAnd = 9,
+        LogicalOr = 10,
+        LogicalAnd = 11,
+        LessThan = 12,
+        LessThanOrEqual = 13,
+        GreaterThan = 14,
+        GreaterThanOrEqual = 15
+    }
+
+	class Operator
+    {
+        public AlgorithmBinaryOperatorType OperatorName { get; set; }
+
+        public string Expression { get; set; }
+
+		public Func<dynamic, dynamic, object> TestFunction { get; set; }
+
+        public List<TypeValue> Types { get; set; }
+
+		public bool MustReturnBoolean { get; set; }
+
+        public Operator (AlgorithmBinaryOperatorType operatorName, string expression, Func<dynamic, dynamic, object> testFunction, List<TypeValue> types, bool mustReturnBoolean = false)
+        {
+			OperatorName = operatorName;
+			Expression = expression;
+			TestFunction = testFunction;
+			Types = types;
+			MustReturnBoolean = mustReturnBoolean;
+        }
+    }
+
+	class TypeValue
+    {
+		public Type Type { get; set; }
+
+		public object TestValue { get; set; }
+
+		public TypeValue(Type type, object testValue)
+        {
+			Type = type;
+			TestValue = testValue;
+        }
+    }
+
+	private string GetTypeName(Type type)
+	{
+		using (var provider = new CSharpCodeProvider())
+		{
+		    var typeRef = new CodeTypeReference(type);
+		    return provider.GetTypeOutput(typeRef);
+		}
+    }
+
+	private T Cast<T>(object o)
+    {
+        return (T)o;
+    }
+#>
