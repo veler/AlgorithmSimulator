@@ -16,9 +16,7 @@ It means several things :
 
 ### Be Indulgent
 
-**It is just a prototype !** There is no Unit Test. There is not a lot of comments and documentation.
-
-The simulator is not complete and not very clean ! There miss a lot of classes in AlgorithmDom compared to the existing CodeDom. It miss a lot of interpreters, the support of asynchronous simulation...etc. **It is just the minimum !**
+**It is just a prototype !** There is not a lot of comments and documentation, and the performances are poor.
 
 # How Does It Work
 
