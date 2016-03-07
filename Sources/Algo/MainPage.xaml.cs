@@ -19,7 +19,7 @@ namespace Algo
             InitializeComponent();
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             var program = new AlgorithmProgram("MyApp");
             var firstClass = new AlgorithmClassDeclaration("FirstClass");
@@ -58,7 +58,7 @@ namespace Algo
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("stopWatch"), new AlgorithmInstanciateExpression(new AlgorithmClassReferenceExpression(typeof(Stopwatch)))));
             entryPoint.Statements.Add(new AlgorithmExpressionStatement(new AlgorithmInvokeCoreMethodExpression(new AlgorithmVariableReferenceExpression("stopWatch"), "Start", null)));
 
-            entryPoint.Statements.Add(new AlgorithmExpressionStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(100))));
+            entryPoint.Statements.Add(new AlgorithmExpressionStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(5000))));
 
             entryPoint.Statements.Add(new AlgorithmExpressionStatement(new AlgorithmInvokeCoreMethodExpression(new AlgorithmVariableReferenceExpression("stopWatch"), "Stop", null)));
 
@@ -73,7 +73,8 @@ namespace Algo
 
             var simulator = new Simulator(program);
 
-            var task = simulator.StartAsync(debugMode: false);
+            await simulator.StartAsync(debugMode: false); 
+            //task.Wait();
             //task.RunSynchronously();
         }
     }

@@ -467,7 +467,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             firstClass.Members.Add(firstMethod);
 
             var entryPoint = new AlgorithmEntryPointMethod();
-            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(100))));
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(1000))));
             firstClass.Members.Add(entryPoint);
 
             program.Classes.Add(firstClass);
@@ -479,14 +479,14 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 1004);
+            Assert.AreEqual(simulator.StateChangeHistory.Count, 10004);
             Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
             Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
             Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[1002].LogMessage, "(Main) Return : '1' (type:System.Int32)");
+            Assert.AreEqual(simulator.StateChangeHistory[10002].LogMessage, "(Main) Return : '1' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[1003].State, SimulatorState.Stopped);
+            Assert.AreEqual(simulator.StateChangeHistory[10003].State, SimulatorState.Stopped);
             Assert.AreEqual(simulator.State, SimulatorState.Stopped);
 
             Simulator_Test.RunProgramWithoutDebug(program);

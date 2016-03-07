@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Windows.System.Threading;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime.Debugger;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
@@ -9,6 +11,14 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
     internal sealed class InvokeMethod : InterpretExpression
     {
+        #region Fields
+
+        private static short _callCount = 0;
+
+        private object _result;
+
+        #endregion
+
         #region Constructors
 
         internal InvokeMethod(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
@@ -54,8 +64,22 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             if (!ParentInterpreter.Failed)
             {
                 // TODO: Detect infinite loop and stackoverflow
+                _result = null;
                 ParentInterpreter.UpdateCallStack();
-                return referenceClass.CallMethod(ParentInterpreter, Expression, argumentValues);
+
+                if (_callCount > 400)
+                {
+                    // Make a new thread avoid the stack overflow.
+                    _callCount = 0;
+                    CallMethodNewThread(referenceClass, argumentValues).Wait();
+                }
+                else
+                {
+                    _callCount++;
+                    _result = referenceClass.CallMethod(ParentInterpreter, Expression, argumentValues);
+                }
+
+                return _result;
             }
             return null;
         }
@@ -73,6 +97,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             }
 
             return argumentValues;
+        }
+
+        private async Task CallMethodNewThread(ClassInterpreter referenceClass, Collection<object> argumentValues)
+        {
+            await ThreadPool.RunAsync(delegate { _result = referenceClass.CallMethod(ParentInterpreter, Expression, argumentValues); });
         }
 
         #endregion

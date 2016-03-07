@@ -1,5 +1,4 @@
-﻿using System;
-using Algo.Runtime.Build.AlgorithmDOM.DOM;
+﻿using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 

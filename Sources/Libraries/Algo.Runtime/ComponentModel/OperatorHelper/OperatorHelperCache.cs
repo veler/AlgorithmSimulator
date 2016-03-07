@@ -47,6 +47,12 @@ namespace Algo.Runtime.ComponentModel.OperatorHelper
             }
         }
 
+        internal static void ClearCache()
+        {
+            _methods.Clear();
+            _methods = null;
+        }
+
         internal static MethodInfo GetOperator(AlgorithmBinaryOperatorType operatorType, Type leftType, Type rightType)
         {
             var operatorTypeString = operatorType.ToString();

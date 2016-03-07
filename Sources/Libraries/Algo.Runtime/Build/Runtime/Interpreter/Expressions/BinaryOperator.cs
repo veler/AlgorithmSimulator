@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime.Debugger;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
-using Algo.Runtime.ComponentModel;
 using Algo.Runtime.ComponentModel.OperatorHelper;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions

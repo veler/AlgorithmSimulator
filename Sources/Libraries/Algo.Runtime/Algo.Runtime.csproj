@@ -188,6 +188,7 @@
     <Compile Include="Build\Runtime\Interpreter\Expressions\VariableReference.cs" />
     <Compile Include="Build\Runtime\Interpreter\IAssignable.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpreter\BlockInterpreter.cs" />
+    <Compile Include="Build\Runtime\Utils\CallMethodEventArgs.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpreter\ClassInterpreter.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpret.cs" />
     <Compile Include="Build\Runtime\Interpreter\InterpretExpression.cs" />

@@ -43,7 +43,6 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             object referenceClass;
             object returnedValue;
             Type type;
-            Task<object> taskResult;
             Task task;
 
             ParentInterpreter.Log(this, $"Calling core method '{Expression._targetObject}.{Expression._methodName}'");

@@ -5,7 +5,6 @@ using Algo.Runtime.Build.Runtime.Debugger;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using System;
 using System.Threading.Tasks;
-using Algo.Runtime.Build.Runtime.Interpreter.Expressions;
 using Algo.Runtime.ComponentModel.OperatorHelper;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
@@ -154,6 +153,8 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     Classes.Clear();
                 }
                 Classes = null;
+
+                OperatorHelperCache.ClearCache();
             });
         }
 

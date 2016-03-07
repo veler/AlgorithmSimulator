@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Algo.Runtime.Build.Runtime.Debugger.Exceptions
+﻿namespace Algo.Runtime.Build.Runtime.Debugger.Exceptions
 {
     public class MethodNotAwaitableException : MethodNotFoundException
     {
