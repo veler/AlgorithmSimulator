@@ -1,4 +1,7 @@
-﻿using Algo.Runtime.Build.AlgorithmDOM.DOM;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -14,6 +17,26 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
             var task = simulator.StartAsync(debugMode: false);
 
             task.Wait();
+
+            Assert.AreEqual(simulator.StateChangeHistory.Count, 4);
+            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
+            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
+            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(simulator.StateChangeHistory[3].State, SimulatorState.Stopped);
+            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+        }
+
+        public static void RunProgramStopWithoutDebug(AlgorithmProgram program, bool mustCrash = false)
+        {
+            var simulator = new Simulator(program);
+
+            var task = simulator.StartAsync(debugMode: false);
+
+            Task.Delay(TimeSpan.FromMilliseconds(100)).Wait();
+
+            simulator.Stop();
+
+            Task.Delay(TimeSpan.FromSeconds(3)).Wait();
 
             Assert.AreEqual(simulator.StateChangeHistory.Count, 4);
             Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
@@ -95,9 +118,9 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
             Assert.AreEqual(simulator.StateChangeHistory[3].State, SimulatorState.Log);
             Assert.AreEqual(simulator.StateChangeHistory[4].State, SimulatorState.StoppedWithError);
             Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.Error.DebugInfo.CallStack.Count, 4);
-            Assert.AreEqual(simulator.Error.DebugInfo.CallStack[0].Variables.Count, 1);
-            Assert.AreEqual(simulator.Error.DebugInfo.CallStack[0].Variables[0].Name, "MyVar");
+            Assert.AreEqual(simulator.Error.DebugInfo.CallStackService.CallStacks.Count(), 1);
+            Assert.AreEqual(simulator.Error.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables.Count, 1);
+            Assert.AreEqual(simulator.Error.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "MyVar");
 
             Simulator_Test.RunProgramWithoutDebug(program);
         }

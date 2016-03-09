@@ -18,8 +18,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         internal override object Execute()
         {
-            ParentInterpreter.Log(this, "Primitive value : {0}", Expression._value == null ? "{null}" : $"'{Expression._value}' (type:{Expression._value.GetType().FullName})");
-
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, "Primitive value : {0}", Expression._value == null ? "{null}" : $"'{Expression._value}' (type:{Expression._value.GetType().FullName})");
+            }
             return Expression._value;
         }
 

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Algo.Runtime.Build.Runtime
@@ -26,6 +27,8 @@ namespace Algo.Runtime.Build.Runtime
         public Error Error { get; private set; }
 
         private AlgorithmProgram Program { get; set; }
+
+        private ProgramInterpreter ProgramInterpreter { get; set; }
 
         #endregion
 
@@ -71,7 +74,12 @@ namespace Algo.Runtime.Build.Runtime
 
         }
 
-        public void Pause(bool calledByChangeState)
+        public void Pause()
+        {
+            Pause(false);
+        }
+
+        internal void Pause(bool calledByChangeState)
         {
             Break(calledByChangeState);
         }
@@ -119,7 +127,12 @@ namespace Algo.Runtime.Build.Runtime
             }
         }
 
-        public void Stop(bool calledByChangeState, bool withError = false)
+        public void Stop()
+        {
+            ProgramInterpreter.Stop();
+        }
+
+        internal void Stop(bool calledByChangeState, bool withError = false)
         {
             if (State == SimulatorState.Pause || State == SimulatorState.Running)
             {
@@ -147,15 +160,15 @@ namespace Algo.Runtime.Build.Runtime
         {
             return Task.Run(() =>
             {
-                var programInterpret = new ProgramInterpreter(Program, debugMode);
+                ProgramInterpreter = new ProgramInterpreter(Program, debugMode);
 
-                programInterpret.StateChanged += ChangeState;
-                programInterpret.Start();
+                ProgramInterpreter.StateChanged += ChangeState;
+                ProgramInterpreter.Start();
 
                 Stop(false);
 
-                programInterpret.StateChanged -= ChangeState;
-                programInterpret.Dispose();
+                ProgramInterpreter.StateChanged -= ChangeState;
+                ProgramInterpreter.Dispose();
             });
         }
 
@@ -171,55 +184,55 @@ namespace Algo.Runtime.Build.Runtime
             Task.Run(() =>
             {
 #endif
-                if (PreviewStateChanged != null)
-                {
-                    PreviewStateChanged(source, e);
-                }
+            if (PreviewStateChanged != null)
+            {
+                PreviewStateChanged(source, e);
+            }
 
-                switch (e.State)
-                {
-                    case SimulatorState.StoppedWithError:
-                    case SimulatorState.PauseWithError:
-                        Break(true, e);
-                        break;
+            switch (e.State)
+            {
+                case SimulatorState.StoppedWithError:
+                case SimulatorState.PauseWithError:
+                    Break(true, e);
+                    break;
 
-                    case SimulatorState.PauseBreakpoint:
-                        // TODO: Break(breakpoint);
-                        State = SimulatorState.PauseBreakpoint;
-                        break;
+                case SimulatorState.PauseBreakpoint:
+                    // TODO: Break(breakpoint);
+                    State = SimulatorState.PauseBreakpoint;
+                    break;
 
-                    case SimulatorState.Stopped:
-                        Stop(true);
-                        break;
+                case SimulatorState.Stopped:
+                    Stop(true);
+                    break;
 
-                    case SimulatorState.Pause:
-                        Pause(true);
-                        break;
+                case SimulatorState.Pause:
+                    Pause(true);
+                    break;
 
-                    case SimulatorState.Preparing:
-                        State = SimulatorState.Preparing;
-                        break;
+                case SimulatorState.Preparing:
+                    State = SimulatorState.Preparing;
+                    break;
 
-                    case SimulatorState.Ready:
-                        State = SimulatorState.Ready;
-                        break;
+                case SimulatorState.Ready:
+                    State = SimulatorState.Ready;
+                    break;
 
-                    case SimulatorState.Running:
-                        State = SimulatorState.Running;
-                        break;
+                case SimulatorState.Running:
+                    State = SimulatorState.Running;
+                    break;
 
-                    case SimulatorState.Log:
-                        Debug.WriteLine(e.LogMessage);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                case SimulatorState.Log:
+                    Debug.WriteLine(e.LogMessage);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
-                AddStateChangeHistory(e);
+            AddStateChangeHistory(e);
 
-                if (StateChanged != null)
-                {
-                    StateChanged(source, e);
+            if (StateChanged != null)
+            {
+                StateChanged(source, e);
             }
 #if !DEBUG
             });
@@ -229,10 +242,19 @@ namespace Algo.Runtime.Build.Runtime
         private void AddStateChangeHistory(SimulatorStateEventArgs simulatorStateEventArgs)
         {
 #if DEBUG
+            if (_stateChangedHistory.Count > 0)
+            {
+                var lastSimulatorStateEventArgs = _stateChangedHistory[_stateChangedHistory.Count - 1];
+                if (lastSimulatorStateEventArgs != null && lastSimulatorStateEventArgs.State == SimulatorState.Stopped)
+                {
+                    return;
+                }
+            }
+
             _stateChangedHistory.Add(simulatorStateEventArgs);
 #endif
         }
 
-#endregion
+        #endregion
     }
 }

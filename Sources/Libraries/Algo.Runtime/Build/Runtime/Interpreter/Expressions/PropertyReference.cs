@@ -34,7 +34,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             Variable propertyVariable;
             var property = GetAssignableObject();
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
@@ -68,11 +68,14 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             ClassInterpreter classTargetObject;
             Variable propertyVariable;
 
-            ParentInterpreter.Log(this, $"Getting the property '{Expression}'");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Getting the property '{Expression}'");
+            }
 
             TargetObject = ParentInterpreter.RunExpression(Expression._targetObject);
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
@@ -111,8 +114,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 value = propertyInfo.GetValue(TargetObject);
             }
 
-            ParentInterpreter.Log(this, "Value of the property '{0}' is {1}", Expression._propertyName.ToString(), value == null ? "{null}" : $"'{value}' (type:{value.GetType().FullName})");
-
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, "Value of the property '{0}' is {1}", Expression._propertyName.ToString(), value == null ? "{null}" : $"'{value}' (type:{value.GetType().FullName})");
+            }
             return property;
         }
 

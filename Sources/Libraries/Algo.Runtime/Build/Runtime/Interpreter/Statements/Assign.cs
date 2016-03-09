@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Reflection;
 using Algo.Runtime.Build.AlgorithmDOM;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
@@ -33,7 +34,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             var leftExpression = Statement._leftExpression;
             var rightExpression = Statement._rightExpression;
 
-            ParentInterpreter.Log(this, $"Assign '{leftExpression}' to '{rightExpression}'");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Assign '{leftExpression}' to '{rightExpression}'");
+            }
 
             if (!(leftExpression is IAlgorithmAssignable))
             {
@@ -54,18 +58,18 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                     break;
 
                 default:
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter  for this expression : '{leftExpression.GetType().FullName}'"), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this expression : '{leftExpression.GetType().FullName}'"), ParentInterpreter.GetDebugInfo())));
                     break;
             }
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return;
             }
 
             rightValue = ParentInterpreter.RunExpression(rightExpression);
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return;
             }
@@ -84,10 +88,23 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             propertyVariable = leftValue as Variable;
             if (propertyVariable != null)
             {
+                if (propertyVariable.IsArray && !(rightValue is Array || rightValue is IEnumerable))
+                {
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression wait for an array, but the right value is not an array."), ParentInterpreter.GetDebugInfo())));
+                    return;
+                }
+                if (!propertyVariable.IsArray && (rightValue is Array || rightValue is IEnumerable))
+                {
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression does not support array value, but the right value is  an array."), ParentInterpreter.GetDebugInfo())));
+                    return;
+                }
                 propertyVariable.Value = rightValue;
             }
 
-            ParentInterpreter.Log(this, "'{0}' is now equal to {1}", leftExpression.ToString(), rightValue == null ? "{null}" : $"'{rightValue}' (type:{rightValue.GetType().FullName})");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, "'{0}' is now equal to {1}", leftExpression.ToString(), rightValue == null ? "{null}" : $"'{rightValue}' (type:{rightValue.GetType().FullName})");
+            }
         }
 
         #endregion

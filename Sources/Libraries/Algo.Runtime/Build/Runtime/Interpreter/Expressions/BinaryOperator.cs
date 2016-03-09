@@ -29,19 +29,22 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             left = ParentInterpreter.RunExpression(Expression._leftExpression);
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
 
             right = ParentInterpreter.RunExpression(Expression._rightExpression);
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
 
-            ParentInterpreter.Log(this, $"Doing an operation '{Expression._operator}'");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Doing an operation '{Expression._operator}'");
+            }
 
             if (Expression._operator == AlgorithmBinaryOperatorType.Equals)
             {

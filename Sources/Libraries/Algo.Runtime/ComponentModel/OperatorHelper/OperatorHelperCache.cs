@@ -28,6 +28,10 @@ namespace Algo.Runtime.ComponentModel.OperatorHelper
 
         internal static void Initialize()
         {
+            if (_methods != null)
+            {
+                return;
+            }
             _methods = new List<Method>();
             foreach (var methodInfo in typeof(OperatorHelper).GetRuntimeMethods().ToList())
             {
@@ -40,17 +44,11 @@ namespace Algo.Runtime.ComponentModel.OperatorHelper
                 var method = new Method
                 {
                     MethodInfo = methodInfo,
-                    ParametersType = new[] {parameters[0].ParameterType, parameters[1].ParameterType}
+                    ParametersType = new[] { parameters[0].ParameterType, parameters[1].ParameterType }
                 };
 
                 _methods.Add(method);
             }
-        }
-
-        internal static void ClearCache()
-        {
-            _methods.Clear();
-            _methods = null;
         }
 
         internal static MethodInfo GetOperator(AlgorithmBinaryOperatorType operatorType, Type leftType, Type rightType)

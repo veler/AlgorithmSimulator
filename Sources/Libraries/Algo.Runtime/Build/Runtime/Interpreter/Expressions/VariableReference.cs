@@ -23,7 +23,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         {
             var variable = GetAssignableObject() as Variable;
 
-            if (ParentInterpreter.Failed || variable == null)
+            if (ParentInterpreter.FailedOrStop || variable == null)
             {
                 return null;
             }
@@ -41,8 +41,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            ParentInterpreter.Log(this, "Value of the variable '{0}' is {1}", variable.Name, variable.Value == null ? "{null}" : $"'{variable.Value}' (type:{variable.Value.GetType().FullName})");
-
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, "Value of the variable '{0}' is {1}", variable.Name, variable.Value == null ? "{null}" : $"'{variable.Value}' (type:{variable.Value.GetType().FullName})");
+            }
             return variable;
         }
 

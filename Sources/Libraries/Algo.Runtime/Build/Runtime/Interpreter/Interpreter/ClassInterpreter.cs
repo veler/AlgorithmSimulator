@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Algo.Runtime.Build.AlgorithmDOM;
+using Algo.Runtime.Build.Runtime.Debugger.CallStack;
 using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
@@ -18,6 +19,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
     internal sealed class ClassInterpreter : Interpret
     {
         #region Properties
+
+        [JsonIgnore]
+        internal override InterpreterType InterpreterType => InterpreterType.ClassInterpreter;
 
         [JsonProperty]
         internal AlgorithmClassDeclaration ClassDeclaration { get; private set; }
@@ -64,7 +68,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             Constructors = new Collection<MethodInterpreter>();
             Methods = new Collection<MethodInterpreter>();
 
-            while (i < ClassDeclaration.Members.Count && !Failed)
+            while (i < ClassDeclaration.Members.Count && !FailedOrStop)
             {
                 member = ClassDeclaration.Members[i];
 
@@ -93,7 +97,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                         Methods.Add(new MethodInterpreter(member, MemTrace));
                         break;
                 }
-                
+
                 i++;
             }
         }
@@ -122,7 +126,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             }
             else
             {
-                Log(this, $"Calling a constructor of '{ClassDeclaration.Name}'");
+                if (MemTrace)
+                {
+                    Log(this, $"Calling a constructor of '{ClassDeclaration.Name}'");
+                }
                 constructor = new MethodInterpreter(constructor.MethodDeclaration, MemTrace);
                 constructor.StateChanged += ChangeState;
                 constructor.OnGetParentInterpreter += new Func<ClassInterpreter>(() => this);
@@ -132,8 +139,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     met.StateChanged -= ChangeState;
                 });
                 constructor.Initialize();
-                constructor.UpdateCallStack();
-                constructor.Run(false, arguments);
+                constructor.Run(false, arguments, Guid.Empty);
             }
         }
 
@@ -154,21 +160,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             return constructor;
         }
 
-        internal ClassInterpreter CloneInstance()
-        {
-            if (!IsInstance)
-            {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException("Unable to clone a class not instancied."), GetDebugInfo())));
-                return null;
-            }
-            return this.DeepClone();
-        }
-
-        internal object CallMethod(Interpret callerInterpreter, AlgorithmExpression invokeExpression, Collection<object> argumentValues)
+        internal object CallMethod(Interpret callerInterpreter, AlgorithmExpression invokeExpression, Collection<object> argumentValues, MethodInterpreter parentMethodInterpreter, CallStackService callStackService)
         {
             var methodName = invokeExpression._methodName.ToString();
-            var method = Methods.FirstOrDefault(
-                m => m.MethodDeclaration._name.ToString() == methodName);
+            var method = Methods.FirstOrDefault(m => m.MethodDeclaration._name.ToString() == methodName);
 
             if (method == null)
             {
@@ -182,7 +177,28 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 return null;
             }
 
+            Guid stackTraceId;
             var isAsync = method.MethodDeclaration._isAsync;
+
+            if (parentMethodInterpreter == null)
+            {
+                stackTraceId = Guid.Empty;
+            }
+            else
+            {
+                stackTraceId = parentMethodInterpreter.StacktraceId;
+                if (MemTrace)
+                {
+                    var callStack = callStackService.CallStacks.Single(cs => cs.TaceId == stackTraceId);
+                    var call = callStack.Stack.Pop();
+                    if (call != null)
+                    {
+                        call.Variables = callerInterpreter.GetAllAccessibleVariable().DeepClone();
+                        callStack.Stack.Push(call);
+                    }
+                }
+            }
+
             method = new MethodInterpreter(method.MethodDeclaration, MemTrace);
             method.StateChanged += ChangeState;
             method.OnGetParentInterpreter += new Func<ClassInterpreter>(() => this);
@@ -192,8 +208,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                  met.StateChanged -= ChangeState;
              });
             method.Initialize();
-            method.UpdateCallStack();
-            method.Run(invokeExpression._await, argumentValues);
+            method.Run(invokeExpression._await, argumentValues, stackTraceId);
 
             if (isAsync && !invokeExpression._await)
             {

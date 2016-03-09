@@ -45,11 +45,14 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             Type type;
             Task task;
 
-            ParentInterpreter.Log(this, $"Calling core method '{Expression._targetObject}.{Expression._methodName}'");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Calling core method '{Expression._targetObject}.{Expression._methodName}'");
+            }
 
             referenceClass = ParentInterpreter.RunExpression(Expression._targetObject);
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
@@ -76,7 +79,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 returnedValue = InvokeMethod(referenceClass.GetType(), referenceClass);
             }
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
@@ -126,7 +129,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             arguments = GetArgumentValues();
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
@@ -164,7 +167,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             foreach (var arg in Expression._argumentsExpression)
             {
-                if (!ParentInterpreter.Failed)
+                if (!ParentInterpreter.FailedOrStop)
                 {
                     argumentValues.Add(ParentInterpreter.RunExpression(arg));
                 }

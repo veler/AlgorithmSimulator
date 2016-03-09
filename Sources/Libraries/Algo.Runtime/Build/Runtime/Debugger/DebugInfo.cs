@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Algo.Runtime.Build.Runtime.Debugger.CallStack;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Debugger
 {
@@ -7,10 +8,10 @@ namespace Algo.Runtime.Build.Runtime.Debugger
         #region Properties
 
         /// <summary>
-        /// Gets or sets the call stack of the algorithm
+        /// Gets or sets the call stack service
         /// </summary>   
         [JsonProperty]
-        public CallStack.CallStack CallStack { get; private set; }
+        public CallStackService CallStackService { get; private set; }
 
         #endregion
 
@@ -19,10 +20,9 @@ namespace Algo.Runtime.Build.Runtime.Debugger
         /// <summary>
         /// Initialize a new instance of <see cref="DebugInfo"/>
         /// </summary>
-        /// <param name="callstack">The call stack of the algorithm</param>
-        internal DebugInfo(CallStack.CallStack callstack)
+        internal DebugInfo()
         {
-            CallStack = callstack;
+            CallStackService = new CallStackService();
         }
 
         #endregion

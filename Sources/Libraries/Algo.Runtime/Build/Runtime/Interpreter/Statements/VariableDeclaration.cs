@@ -1,5 +1,8 @@
-﻿using Algo.Runtime.Build.AlgorithmDOM;
+﻿using System.Linq.Expressions;
+using Algo.Runtime.Build.AlgorithmDOM;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
+using Algo.Runtime.Build.Runtime.Debugger;
+using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
@@ -25,7 +28,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                 defaultValue = ParentInterpreter.RunExpression(Statement._defaultValue);
             }
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return;
             }

@@ -116,7 +116,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <None Include="Build\AlgorithmDOM\DOM\Architecture.dgml" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -162,8 +161,10 @@
     <Compile Include="Build\AlgorithmDOM\IAlgorithmVariable.cs" />
     <Compile Include="Build\AlgorithmDOM\Utils.cs" />
     <Compile Include="Build\Runtime\Debugger\CallStack\Call.cs" />
+    <Compile Include="Build\Runtime\Debugger\CallStack\CallStackService.cs" />
     <Compile Include="Build\Runtime\Debugger\DebugInfo.cs" />
     <Compile Include="Build\Runtime\Debugger\Error.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\StackOverflowException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\BadArgumentException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\IdenticalConstructorsException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\ClassNotFoundException.cs" />
@@ -187,8 +188,8 @@
     <Compile Include="Build\Runtime\Interpreter\Expressions\PropertyReference.cs" />
     <Compile Include="Build\Runtime\Interpreter\Expressions\VariableReference.cs" />
     <Compile Include="Build\Runtime\Interpreter\IAssignable.cs" />
+    <Compile Include="Build\Runtime\Interpreter\InterpreterType.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpreter\BlockInterpreter.cs" />
-    <Compile Include="Build\Runtime\Utils\CallMethodEventArgs.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpreter\ClassInterpreter.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpret.cs" />
     <Compile Include="Build\Runtime\Interpreter\InterpretExpression.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Build\Runtime\Memory\Variable.cs" />
     <Compile Include="Build\Runtime\Debugger\CallStack\CallStack.cs" />
     <Compile Include="Build\Runtime\SimulatorStateEventArgs.cs" />
+    <Compile Include="Build\Runtime\Utils\Consts.cs" />
     <Compile Include="ComponentModel\EnumExtension.cs" />
     <Compile Include="ComponentModel\ObjectExtension.cs" />
     <Compile Include="ComponentModel\OperatorHelper\OperatorHelper.cs">

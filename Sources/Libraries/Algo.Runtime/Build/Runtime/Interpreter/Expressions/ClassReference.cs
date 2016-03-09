@@ -24,7 +24,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             object type;
             var fullName = Expression.ToString();
 
-            ParentInterpreter.Log(this, $"Reference to the class : {fullName}");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Reference to the class : {fullName}");
+            }
 
             if (Expression._type != null)
             {
@@ -57,7 +60,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         private ClassInterpreter GetProjectClassReference(string className)
         {
             ClassInterpreter classReference = null;
-            var program = ParentInterpreter.GetFirstNextParentInterpreter<ProgramInterpreter>();
+            var program = (ProgramInterpreter)ParentInterpreter.GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
             var i = 0;
 
             while (i < program.Classes.Count && classReference == null)

@@ -1,4 +1,7 @@
-﻿using Algo.Runtime.Build.AlgorithmDOM.DOM;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -104,17 +107,76 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
 
             Simulator_Test.RunProgramWithoutDebug(program);
         }
-
+        
         [TestMethod]
         public void IterationInfiniteLoop()
         {
-            Assert.Fail("Todo");
+            // while (true) {
+            //      object myVar;
+            // }
+
+            var program = new AlgorithmProgram("MyApp");
+            var firstClass = new AlgorithmClassDeclaration("FirstClass");
+            var entryPoint = new AlgorithmEntryPointMethod();
+
+            entryPoint.Statements.Add(new AlgorithmIterationStatement(null, null, new AlgorithmPrimitiveExpression(true), false, new AlgorithmStatementCollection() { new AlgorithmVariableDeclaration("myVar") }));
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(1)));
+
+            firstClass.Members.Add(entryPoint);
+            program.Classes.Add(firstClass);
+
+            program.UpdateEntryPointPath();
+
+            var simulator = new Simulator(program);
+
+            var task = simulator.StartAsync(debugMode: true);
+            
+            Task.Delay(TimeSpan.FromMilliseconds(100)).Wait();
+
+            simulator.Stop();
+
+            Task.Delay(TimeSpan.FromSeconds(3)).Wait();
+
+            Assert.AreEqual(simulator.StateChangeHistory.Last().State, SimulatorState.Stopped);
+            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+
+            Simulator_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
         public void IterationExceptionInside()
         {
-            Assert.Fail("Todo");
+            // while (true) {
+            //      object myVar;
+            //      object myVar;
+            // }
+
+            var program = new AlgorithmProgram("MyApp");
+            var firstClass = new AlgorithmClassDeclaration("FirstClass");
+            var entryPoint = new AlgorithmEntryPointMethod();
+
+            entryPoint.Statements.Add(new AlgorithmIterationStatement(null, null, new AlgorithmPrimitiveExpression(true), false, new AlgorithmStatementCollection() { new AlgorithmVariableDeclaration("myVar"), new AlgorithmVariableDeclaration("myVar") }));
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmPrimitiveExpression(1)));
+
+            firstClass.Members.Add(entryPoint);
+            program.Classes.Add(firstClass);
+
+            program.UpdateEntryPointPath();
+
+            var simulator = new Simulator(program);
+
+            var task = simulator.StartAsync(debugMode: true);
+            task.Wait();
+
+            Assert.AreEqual(simulator.StateChangeHistory.Count, 6);
+            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
+            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
+            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+
+            Assert.AreEqual(simulator.StateChangeHistory[5].State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+
+            Simulator_Test.RunProgramWithoutDebug(program);
         }
     }
 }

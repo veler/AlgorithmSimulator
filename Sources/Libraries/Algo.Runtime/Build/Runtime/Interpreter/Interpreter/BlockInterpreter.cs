@@ -14,6 +14,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
     {
         #region Properties
 
+        [JsonIgnore]
+        internal override InterpreterType InterpreterType => InterpreterType.BlockInterpreter;
+
         [JsonProperty]
         private AlgorithmStatementCollection Statements { get; set; }
 
@@ -38,7 +41,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         internal bool Run()
         {
-            var program = GetFirstNextParentInterpreter<ProgramInterpreter>();
+            var program = (ProgramInterpreter)GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
             var returnStmt = false;
             var i = 0;
 
@@ -46,7 +49,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             {
                 returnStmt = RunStatement(Statements[i]);
 
-                if (Failed || (program != null && (program.State == SimulatorState.Stopped || program.State == SimulatorState.StoppedWithError)))
+                if (FailedOrStop || (program != null && (program.State == SimulatorState.Stopped || program.State == SimulatorState.StoppedWithError)))
                 {
                     return false;
                 }
@@ -152,7 +155,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     break;
             }
 
-            return Failed ? null : result;
+            return FailedOrStop ? null : result;
         }
 
         public override void Dispose()

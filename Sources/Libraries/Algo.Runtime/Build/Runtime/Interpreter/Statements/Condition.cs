@@ -28,7 +28,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
         {
             var conditionResult = RunCondition(ParentInterpreter, Statement._condition);
 
-            if (ParentInterpreter.Failed || conditionResult == null)
+            if (ParentInterpreter.FailedOrStop || conditionResult == null)
             {
                 return;
             }
@@ -46,7 +46,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
             var conditionResult = parentInterpreter.RunExpression(condition);
 
-            if (parentInterpreter.Failed)
+            if (parentInterpreter.FailedOrStop)
             {
                 return null;
             }
@@ -98,7 +98,6 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             block.OnGetParentInterpreter += new Func<BlockInterpreter>(() => ParentInterpreter);
             block.StateChanged += ParentInterpreter.ChangeState;
             block.Initialize();
-            block.UpdateCallStack();
             ReturnOccured = block.Run();
             block.StateChanged -= ParentInterpreter.ChangeState;
             block.Dispose();

@@ -1,4 +1,7 @@
-﻿using Algo.Runtime.Build.AlgorithmDOM.DOM;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -341,7 +344,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             var task = simulator.StartAsync(debugMode: true);
 
             task.Wait();
-            
+
             Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
             Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
             Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
@@ -356,7 +359,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             Assert.AreEqual(simulator.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
             Assert.AreEqual(simulator.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
             Assert.AreEqual(simulator.StateChangeHistory[12].LogMessage, "(Main) Return : {null}");
-            
+
             Assert.AreEqual(simulator.State, SimulatorState.Stopped);
 
             Simulator_Test.RunProgramWithoutDebug(program);
@@ -467,7 +470,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             firstClass.Members.Add(firstMethod);
 
             var entryPoint = new AlgorithmEntryPointMethod();
-            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(1000))));
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(5000))));
             firstClass.Members.Add(entryPoint);
 
             program.Classes.Add(firstClass);
@@ -479,17 +482,160 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 10004);
+            Assert.AreEqual(simulator.StateChangeHistory.Count, 50004);
             Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
             Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
             Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[10002].LogMessage, "(Main) Return : '1' (type:System.Int32)");
+            Assert.AreEqual(simulator.StateChangeHistory[50002].LogMessage, "(Main) Return : '1' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[10003].State, SimulatorState.Stopped);
+            Assert.AreEqual(simulator.StateChangeHistory[50003].State, SimulatorState.Stopped);
             Assert.AreEqual(simulator.State, SimulatorState.Stopped);
 
             Simulator_Test.RunProgramWithoutDebug(program);
+        }
+
+        [TestMethod]
+        public void InvokeMethodRecursivityStackOverflow()
+        {
+            var program = new AlgorithmProgram("MyApp");
+            var firstClass = new AlgorithmClassDeclaration("FirstClass");
+
+            // FirstMethod(num)
+            // {
+            //      if (num > 1)
+            //          return FirstMethod(num - 1)
+            //      return num;
+            // }
+            var firstMethod = new AlgorithmClassMethodDeclaration("FirstMethod", false);
+            firstMethod.Arguments.Add(new AlgorithmParameterDeclaration("num"));
+
+            firstMethod.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.GreaterThan, new AlgorithmPrimitiveExpression(1)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.Subtraction, new AlgorithmPrimitiveExpression(1)))) }, null));
+            firstMethod.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("num")));
+
+            firstClass.Members.Add(firstMethod);
+
+            var entryPoint = new AlgorithmEntryPointMethod();
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(90000000))));
+            firstClass.Members.Add(entryPoint);
+
+            program.Classes.Add(firstClass);
+            program.UpdateEntryPointPath();
+
+            var simulator = new Simulator(program);
+
+            var task = simulator.StartAsync(debugMode: true);
+
+            task.Wait();
+
+            Assert.AreEqual(simulator.StateChangeHistory.Count, 90016);
+            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
+            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
+            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+
+            Assert.AreEqual(simulator.StateChangeHistory[90015].Error.Exception.Message, "You called too many (more than 10000) methods in the same thread.");
+
+            Assert.AreEqual(simulator.StateChangeHistory[90015].State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+
+            Simulator_Test.RunProgramWithoutDebug(program);
+        }
+
+        [TestMethod]
+        public void InvokeMethodRecursivityException()
+        {
+            var program = new AlgorithmProgram("MyApp");
+            var firstClass = new AlgorithmClassDeclaration("FirstClass");
+
+            // FirstMethod(num)
+            // {
+            //      if (num == 2)
+            //          object num; // throw an error because "num" already exists.   
+            //      else if (num > 1)
+            //          return FirstMethod(num - 1)
+            //      return num;
+            // }
+            var firstMethod = new AlgorithmClassMethodDeclaration("FirstMethod", false);
+            firstMethod.Arguments.Add(new AlgorithmParameterDeclaration("num"));
+
+            firstMethod.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.Equality, new AlgorithmPrimitiveExpression(2)), new AlgorithmStatementCollection() { new AlgorithmVariableDeclaration("num") }, new AlgorithmStatementCollection() { new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.GreaterThan, new AlgorithmPrimitiveExpression(1)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.Subtraction, new AlgorithmPrimitiveExpression(1)))) }, null) }));
+            firstMethod.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("num")));
+
+            firstClass.Members.Add(firstMethod);
+
+            var entryPoint = new AlgorithmEntryPointMethod();
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(10))));
+            firstClass.Members.Add(entryPoint);
+
+            program.Classes.Add(firstClass);
+            program.UpdateEntryPointPath();
+
+            var simulator = new Simulator(program);
+
+            var task = simulator.StartAsync(debugMode: true);
+
+            task.Wait();
+
+            Assert.AreEqual(simulator.StateChangeHistory.Count, 107);
+            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
+            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
+            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            
+            Assert.AreEqual(simulator.StateChangeHistory[106].Error.DebugInfo.CallStackService.CallStacks.First().Stack.Count, 10);
+            Assert.AreEqual(simulator.StateChangeHistory[106].Error.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "num");
+            Assert.AreEqual(simulator.StateChangeHistory[106].Error.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)2);
+
+            Assert.AreEqual(simulator.StateChangeHistory[106].State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+
+            Simulator_Test.RunProgramWithoutDebug(program);
+        }
+
+        [TestMethod]
+        public void InvokeMethodRecursivityStop()
+        {
+            var program = new AlgorithmProgram("MyApp");
+            var firstClass = new AlgorithmClassDeclaration("FirstClass");
+
+            // FirstMethod(num)
+            // {
+            //      if (num > 1)
+            //          return FirstMethod(num - 1)
+            //      return num;
+            // }
+            var firstMethod = new AlgorithmClassMethodDeclaration("FirstMethod", false);
+            firstMethod.Arguments.Add(new AlgorithmParameterDeclaration("num"));
+
+            firstMethod.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.GreaterThan, new AlgorithmPrimitiveExpression(1)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.Subtraction, new AlgorithmPrimitiveExpression(1)))) }, null));
+            firstMethod.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("num")));
+
+            firstClass.Members.Add(firstMethod);
+
+            var entryPoint = new AlgorithmEntryPointMethod();
+            entryPoint.Statements.Add(new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmPrimitiveExpression(90000000))));
+            firstClass.Members.Add(entryPoint);
+
+            program.Classes.Add(firstClass);
+            program.UpdateEntryPointPath();
+
+            var simulator = new Simulator(program);
+
+            var task = simulator.StartAsync(debugMode: true);
+            
+            Task.Delay(TimeSpan.FromMilliseconds(100)).Wait();
+
+            simulator.Stop();
+
+            Task.Delay(TimeSpan.FromSeconds(3)).Wait();
+            
+            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
+            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
+            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+
+            Assert.AreEqual(simulator.StateChangeHistory.Last().State, SimulatorState.Stopped);
+            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            
+            Simulator_Test.RunProgramStopWithoutDebug(program);
         }
     }
 }

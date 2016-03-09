@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Algo.Runtime.Build.AlgorithmDOM;
-using Algo.Runtime.Build.Runtime.Debugger.CallStack;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 using Algo.Runtime.ComponentModel;
@@ -18,36 +17,63 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
         #region Fields
 
         private bool _failed;
-        private ProgramInterpreter parentProgram;
+        private bool _stopped;
+        private ProgramInterpreter _parentProgram;
 
         #endregion
 
         #region Properties
 
-        internal Collection<Variable> Variables { get; set; }
+        [JsonIgnore]
+        internal abstract InterpreterType InterpreterType { get; }
 
         [JsonProperty]
-        internal Call Call { get; private set; }
+        internal Collection<Variable> Variables { get; set; }
 
         [JsonIgnore]
-        internal bool Failed
+        internal bool FailedOrStop
         {
             get
             {
-                if (parentProgram == null)
-                {
-                    parentProgram = GetFirstNextParentInterpreter<ProgramInterpreter>();
-                }
-                if (parentProgram == null)
+                return Failed | Stopped;
+            }
+        }
+
+        [JsonIgnore]
+        protected bool Failed
+        {
+            get
+            {
+                SetParentProgramInterpreter();
+                if (_parentProgram == null)
                 {
                     return _failed;
                 }
-                _failed = parentProgram.Failed;
-                return parentProgram.Failed;
+                _failed = _parentProgram.Failed;
+                return _parentProgram.Failed;
             }
             private set
             {
                 _failed = value;
+            }
+        }
+
+        [JsonIgnore]
+        protected bool Stopped
+        {
+            get
+            {
+                SetParentProgramInterpreter();
+                if (_parentProgram == null)
+                {
+                    return _stopped;
+                }
+                _stopped = _parentProgram.Stopped;
+                return _parentProgram.Stopped;
+            }
+            set
+            {
+                _stopped = value;
             }
         }
 
@@ -86,6 +112,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             {
                 Failed = true;
             }
+            else if (e.State == SimulatorState.Stopped)
+            {
+                Stopped = true;
+            }
 
             if (StateChanged != null)
             {
@@ -95,23 +125,17 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
 
         internal void Log(object source, string format, params object[] args)
         {
-            if (MemTrace)
-            {
-                ChangeState(source, new SimulatorStateEventArgs(string.Format(format, args)));
-            }
+            ChangeState(source, new SimulatorStateEventArgs(string.Format(format, args)));
         }
 
         internal void Log(object source, string log)
         {
-            if (MemTrace)
-            {
-                ChangeState(source, new SimulatorStateEventArgs(log));
-            }
+            ChangeState(source, new SimulatorStateEventArgs(log));
         }
 
         internal Interpret GetParentInterpreter()
         {
-            if (this is ProgramInterpreter)
+            if (InterpreterType == InterpreterType.ProgramInterpreter)
             {
                 return null;
             }
@@ -124,27 +148,26 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             return OnGetParentInterpreter();
         }
 
-        internal T GetFirstNextParentInterpreter<T>(bool allowCurrent = true) where T : Interpret
+        internal Interpret GetFirstNextParentInterpreter(InterpreterType interpreterType, bool allowCurrent = true)
         {
-            if (this is ProgramInterpreter)
+            if (InterpreterType == InterpreterType.ProgramInterpreter)
             {
                 return null;
             }
 
-            var val = this as T;
-            if (allowCurrent && val != null)
+            if (allowCurrent && InterpreterType == interpreterType)
             {
-                return val;
+                return this;
             }
 
-            Interpret parent = this;
+            var parent = this;
 
             do
             {
                 parent = parent.GetParentInterpreter();
-            } while (parent != null && parent.GetType() != typeof(T));
+            } while (parent != null && parent.InterpreterType != interpreterType);
 
-            return (T)parent;
+            return parent;
         }
 
         internal void AddVariable(IAlgorithmVariable variable, object defaultValue = null, bool isArg = false)
@@ -161,11 +184,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             {
                 location = "method's argument";
             }
-            else if (this is ProgramInterpreter)
+            else if (InterpreterType == InterpreterType.ProgramInterpreter)
             {
                 location = "program";
             }
-            else if (this is ClassInterpreter)
+            else if (InterpreterType == InterpreterType.ClassInterpreter)
             {
                 location = "class";
             }
@@ -180,7 +203,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             }
             Variables.Add(new Variable(variable.Name.ToString(), MemTrace, defaultValue, variable.IsArray));
 
-            Log(this, "Variable '{0}' declared in the {1} => IsArray:{2}, DefaultValue:{3}", variable.Name, location, variable.IsArray, defaultValue == null ? "{null}" : defaultValue.ToString());
+            if (MemTrace)
+            {
+                Log(this, "Variable '{0}' declared in the {1} => IsArray:{2}, DefaultValue:{3}", variable.Name, location, variable.IsArray, defaultValue == null ? "{null}" : defaultValue.ToString());
+            }
         }
 
         internal Variable FindVariable(string variableName)
@@ -219,31 +245,48 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             return variables.AsReadOnly();
         }
 
-        internal void UpdateCallStack()
-        {
-            if (!MemTrace)
-            {
-                return;
-            }
-
-            Call = new Call(GetAllAccessibleVariable().DeepClone());
-        }
-
         internal DebugInfo GetDebugInfo()
         {
-            var interpreter = this;
-            var callStack = new CallStack();
-
-            UpdateCallStack();
-
-            do
+            SetParentProgramInterpreter();
+            if (_parentProgram == null)
             {
-                callStack.Add(interpreter.Call);
-                interpreter = interpreter.GetParentInterpreter();
-            } while (interpreter != null);
+                throw new NullReferenceException("The parent program interpreter is null.");
+            }
 
-            var debugInfo = new DebugInfo(callStack);
+            var debugInfo = _parentProgram.DebugInfo;
+
+            if (MemTrace && this is BlockInterpreter)
+            {
+                var interpreter = GetFirstNextParentInterpreter(InterpreterType.MethodInterpreter);
+                if (interpreter != null)
+                {
+                    var methodInterpreter = (MethodInterpreter)interpreter;
+                    var callStack = debugInfo.CallStackService.CallStacks.Single(cs => cs.TaceId == methodInterpreter.StacktraceId);
+                    var call = callStack.Stack.Pop();
+                    if (call != null)
+                    {
+                        call.Variables = GetAllAccessibleVariable().DeepClone();
+                        callStack.Stack.Push(call);
+                    }
+                }
+            }
+
+            debugInfo.CallStackService.CallCount = 0;
+            debugInfo.CallStackService.StackTraceCallCount.Clear();
+
             return debugInfo;
+        }
+
+        private void SetParentProgramInterpreter()
+        {
+            if (_parentProgram == null)
+            {
+                var interpreter = GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
+                if (interpreter != null)
+                {
+                    _parentProgram = (ProgramInterpreter)interpreter;
+                }
+            }
         }
 
         #endregion

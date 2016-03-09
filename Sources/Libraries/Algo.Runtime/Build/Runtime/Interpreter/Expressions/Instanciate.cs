@@ -28,19 +28,22 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             var createType = Expression._createType;
             var reference = ParentInterpreter.RunExpression(createType);
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
 
-            ParentInterpreter.Log(this, $"Creating a new instance of '{createType}'");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Creating a new instance of '{createType}'");
+            }
 
             var classInterpreter = reference as ClassInterpreter;
             if (classInterpreter != null)
             {
-                var program = ParentInterpreter.GetFirstNextParentInterpreter<ProgramInterpreter>();
+                var program = (ProgramInterpreter)ParentInterpreter.GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
                 var classInstance = (classInterpreter).CreateNewInstance();
-                
+
                 classInstance.StateChanged += ParentInterpreter.ChangeState;
                 classInstance.OnGetParentInterpreter += new Func<ProgramInterpreter>(() => program);
                 classInstance.OnDone += new Action<ClassInterpreter>((cl) =>
@@ -51,7 +54,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
                 argumentValues = GetArgumentValues();
 
-                if (ParentInterpreter.Failed)
+                if (ParentInterpreter.FailedOrStop)
                 {
                     return null;
                 }
@@ -66,7 +69,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 object classInstance = null;
                 argumentValues = GetArgumentValues();
 
-                if (ParentInterpreter.Failed)
+                if (ParentInterpreter.FailedOrStop)
                 {
                     return null;
                 }
@@ -102,7 +105,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             foreach (var arg in Expression._argumentsExpression)
             {
-                if (!ParentInterpreter.Failed)
+                if (!ParentInterpreter.FailedOrStop)
                 {
                     argumentValues.Add(ParentInterpreter.RunExpression(arg));
                 }

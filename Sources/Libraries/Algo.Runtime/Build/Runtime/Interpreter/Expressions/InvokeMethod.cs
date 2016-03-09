@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 using Windows.System.Threading;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime.Debugger;
+using Algo.Runtime.Build.Runtime.Debugger.CallStack;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
+using Algo.Runtime.Build.Runtime.Utils;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
     internal sealed class InvokeMethod : InterpretExpression
     {
         #region Fields
-
-        private static short _callCount = 0;
 
         private object _result;
 
@@ -38,11 +38,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            ParentInterpreter.Log(this, $"Calling method '{Expression._targetObject}.{Expression._methodName}'");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Calling method '{Expression._targetObject}.{Expression._methodName}'");
+            }
 
             var referenceClass = ParentInterpreter.RunExpression(Expression._targetObject) as ClassInterpreter;
+            var callerMethod = (MethodInterpreter)ParentInterpreter.GetFirstNextParentInterpreter(InterpreterType.MethodInterpreter);
 
-            if (ParentInterpreter.Failed)
+            if (ParentInterpreter.FailedOrStop)
             {
                 return null;
             }
@@ -61,22 +65,21 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             var argumentValues = GetArgumentValues();
 
-            if (!ParentInterpreter.Failed)
+            if (!ParentInterpreter.FailedOrStop)
             {
-                // TODO: Detect infinite loop and stackoverflow
+                var callStackService = ((ProgramInterpreter)ParentInterpreter.GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter)).DebugInfo.CallStackService;
                 _result = null;
-                ParentInterpreter.UpdateCallStack();
 
-                if (_callCount > 400)
+                if (callStackService.CallCount > Consts.InvokeMethodCountBeforeNewThread)
                 {
                     // Make a new thread avoid the stack overflow.
-                    _callCount = 0;
-                    CallMethodNewThread(referenceClass, argumentValues).Wait();
+                    callStackService.CallCount = 0;
+                    CallMethodNewThread(referenceClass, argumentValues, callerMethod, callStackService).Wait();
                 }
                 else
                 {
-                    _callCount++;
-                    _result = referenceClass.CallMethod(ParentInterpreter, Expression, argumentValues);
+                    callStackService.CallCount++;
+                    _result = referenceClass.CallMethod(ParentInterpreter, Expression, argumentValues, callerMethod, callStackService);
                 }
 
                 return _result;
@@ -90,7 +93,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             foreach (var arg in Expression._argumentsExpression)
             {
-                if (!ParentInterpreter.Failed)
+                if (!ParentInterpreter.FailedOrStop)
                 {
                     argumentValues.Add(ParentInterpreter.RunExpression(arg));
                 }
@@ -99,9 +102,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             return argumentValues;
         }
 
-        private async Task CallMethodNewThread(ClassInterpreter referenceClass, Collection<object> argumentValues)
+        private async Task CallMethodNewThread(ClassInterpreter referenceClass, Collection<object> argumentValues, MethodInterpreter callerMethod, CallStackService callStackService)
         {
-            await ThreadPool.RunAsync(delegate { _result = referenceClass.CallMethod(ParentInterpreter, Expression, argumentValues); });
+            await ThreadPool.RunAsync(delegate { _result = referenceClass.CallMethod(ParentInterpreter, Expression, argumentValues, callerMethod, callStackService); });
         }
 
         #endregion

@@ -1,22 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Debugger.CallStack
 {
-    public class CallStack : Collection<Call>
+    public sealed class CallStack
     {
-        #region Methods
+        #region Properties
 
-        /// <summary>
-        /// Add a range of <see cref="Call"/> item to the collection
-        /// </summary>
-        /// <param name="items">The items to add to the collection</param>
-        public void AddRange(IEnumerable<Call> items)
+        [JsonIgnore]
+        internal Guid TaceId { get; private set; }
+
+        [JsonProperty]
+        public Stack<Call> Stack { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        public CallStack(Guid traceId)
         {
-            foreach (var item in items)
-            {
-                Add(item);
-            }
+            TaceId = traceId;
+            Stack = new Stack<Call>();
         }
 
         #endregion

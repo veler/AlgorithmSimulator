@@ -13,10 +13,43 @@ It means several things :
 * And make an `interpreter` that will `analyze the AlgorithmDom and perform an action` depending of it.
 
 **Remark : the code is not very complicated, but the project architecture is complex because it uses a LOT of abstraction.**
+  
+## Use Case
+  
+* Any programming learning app (SoftwareZator, Spark, Scratch...).
+* If you want to download a part of an application from internet in WinRT and want to run it. I guess that we cannot load an Assembly at runtime with WinRT. Download an algorithm and simulate it can be a solution.
 
-### Be Indulgent
+# Features
 
-**It is just a prototype !** There is not a lot of comments and documentation, and the performances are poor.
+| Features                                                                               | Supported |
+| -------------------------------------------------------------------------------------- |:---------:|
+| variable                                                                               | yes       |
+| class                                                                                  | yes       |
+| method                                                                                 | yes       |
+| recursivity                                                                            | yes       |
+| loop (while/do while)                                                                  | yes       |
+| call a method                                                                          | yes       |
+| use feature from WinRT                                                                 | yes       |
+| start the simulator                                                                    | yes       |
+| stop the simulator (even in an infinite loop)                                          | yes       |
+| pause the simulator                                                                    | **no**    |
+| breakpoint                                                                             | **no**    |
+| detect when a user call too many methods in the same thread (aka. stack overflow)      | yes       |
+| async functions                                                                        | yes       |
+| keep a call stack with info on variables values                                        | yes       |
+| try catch                                                                              | **no**    |
+| interaction with the UI                                                                | **no**    |
+| inheritance with classes                                                               | **no**    |
+| mode debug                                                                             | yes       |
+
+# Performances
+
+Performances are not comparable with a JavaScript runtime or a compiled language like C++. The reason is that this interpreter is made in C# and it's designed to be maintenable, more than fast.
+It also use a lot of RAM.
+
+| Scenarios                  | Execution time (in millisec) |
+| -------------------------- |:----------------------------:|
+| a loop with 100 iterations | 9.28760                      |
 
 # How Does It Work
 
@@ -30,7 +63,7 @@ It means several things :
   * ...etc
 0. And then, we start the [Simulator](https://github.com/veler/AlgorithmSimulator/tree/master/PortableSimulator/Build/Simulator).
 
-# What Does The Simulator
+## What Does The Simulator
 
 0. The first step is to create a dictionary that contains a definition of each variable in the project and their associated values.
 0. Then, we start to simulate/interpret each Action of the algorithm :
@@ -38,8 +71,7 @@ It means several things :
   * The action will generate an [AlgorithmDom](https://github.com/veler/AlgorithmSimulator/tree/master/PortableSimulator/Build/AlgorithmDOM/DOM) (my cross-plateform CodeDom-like architecture)
   * And we will ask to the [Interpreter](https://github.com/veler/AlgorithmSimulator/tree/master/PortableSimulator/Build/Simulator/Interpreter) to analyze it and change, for example, the value of a variable if tha AlgorithmDom is corresponding to an assignation.
   * In case of exception in the algorithm (for example : I want to read a file that does not exists), we ask to the current Action to bring us some tips to fix this error (imagine that we are in [SoftwareZator](http://softwarezator.velersoftware.com/) for example :-) ).
-  
-# Use Case
-  
-* Any programming learning app (SoftwareZator, Spark, Scratch...).
-* If you want to download a part of an application from internet in WinRT and want to run it. I guess that we cannot load an Assembly at runtime with WinRT. Download an algorithm and simulate it can be a solution.
+
+# Change log
+
+[Check the change log here](https://github.com/veler/AlgorithmSimulator/blob/master/CHANGELOG.md)

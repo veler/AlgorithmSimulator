@@ -20,13 +20,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         internal override object Execute()
         {
-            var parentClass = ParentInterpreter.GetFirstNextParentInterpreter<ClassInterpreter>();
+            var parent = ParentInterpreter.GetFirstNextParentInterpreter(InterpreterType.ClassInterpreter);
 
-            if (parentClass == null)
+            if (parent == null)
             {
                 ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the parent class does not exists."), ParentInterpreter.GetDebugInfo())));
                 return null;
             }
+
+            var parentClass = (ClassInterpreter)parent;
 
             if (!parentClass.IsInstance)
             {
@@ -34,7 +36,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            ParentInterpreter.Log(this, $"Reference to the current instance : {parentClass.ClassDeclaration.Name}");
+            if (MemTrace)
+            {
+                ParentInterpreter.Log(this, $"Reference to the current instance : {parentClass.ClassDeclaration.Name}");
+            }
 
             return parentClass;
         }
