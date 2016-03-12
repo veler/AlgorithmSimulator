@@ -49,7 +49,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             {
                 if (value is AlgorithmExpression || value is AlgorithmStatement)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new Exception("A method's returned value must not be an AlgorithmObject"), GetDebugInfo())));
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new Exception("A method's returned value must not be an AlgorithmObject")), GetDebugInfo()));
                     return;
                 }
                 _returnedValue = value;
@@ -86,7 +86,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         {
             if (MethodDeclaration._arguments.Count != argumentValues.Count)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(MethodDeclaration._name.ToString(), $"There is a method '{MethodDeclaration._name}' in the class '{((ClassInterpreter)GetFirstNextParentInterpreter(InterpreterType.ClassInterpreter)).ClassDeclaration.Name}', but it does not have {argumentValues.Count} argument(s)."), GetDebugInfo())));
+                ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(MethodDeclaration._name.ToString(), $"There is a method '{MethodDeclaration._name}' in the class '{((ClassInterpreter)GetFirstNextParentInterpreter(InterpreterType.ClassInterpreter)).ClassDeclaration.Name}', but it does not have {argumentValues.Count} argument(s).")), GetDebugInfo()));
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             {
                 if (_callStackService.StackTraceCallCount[stackTraceId] > Consts.CallStackSize)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new StackOverflowException($"You called too many (more than {Consts.CallStackSize}) methods in the same thread."), GetParentInterpreter().GetDebugInfo())));
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new StackOverflowException($"You called too many (more than {Consts.CallStackSize}) methods in the same thread.")), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
                 _callStackService.StackTraceCallCount[stackTraceId] = (short)(_callStackService.StackTraceCallCount[stackTraceId] + 1);
@@ -154,6 +154,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 callStack.Stack.Push(call);
             }
 
+            var program = (ProgramInterpreter)GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
             var block = new BlockInterpreter(MethodDeclaration._statements, MemTrace);
             block.OnGetParentInterpreter += new Func<MethodInterpreter>(() => this);
             block.StateChanged += ChangeState;
@@ -166,12 +167,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
                 if (!(argValue is string) && argValue is IEnumerable && !argDecl.IsArray)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must not be an array of values."), GetParentInterpreter().GetDebugInfo())));
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must not be an array of values.")), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
                 if ((!(argValue is IEnumerable) || argValue is string) && argDecl.IsArray)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must be an array of values."), GetParentInterpreter().GetDebugInfo())));
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must be an array of values.")), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
 

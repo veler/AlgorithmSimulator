@@ -40,7 +40,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
         {
             if (condition == null)
             {
-                parentInterpreter.ChangeState(parentInterpreter, new SimulatorStateEventArgs(new Error(new NullReferenceException("A conditional expression is missing."), parentInterpreter.GetDebugInfo())));
+                parentInterpreter.ChangeState(parentInterpreter, new SimulatorStateEventArgs(new Error(new NullReferenceException("A conditional expression is missing.")), parentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -67,12 +67,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                     case 0:
                         return false;
                     default:
-                        parentInterpreter.ChangeState(parentInterpreter, new SimulatorStateEventArgs(new Error(new InvalidCastException("Unable to cast this number to a boolean."), parentInterpreter.GetDebugInfo())));
+                        parentInterpreter.ChangeState(parentInterpreter, new SimulatorStateEventArgs(new Error(new InvalidCastException("Unable to cast this number to a boolean.")), parentInterpreter.GetDebugInfo()));
                         return null;
                 }
             }
 
-            parentInterpreter.ChangeState(parentInterpreter, new SimulatorStateEventArgs(new Error(new InvalidCastException("Unable to perform a condition statement without a boolean value as conditional expression result."), parentInterpreter.GetDebugInfo())));
+            parentInterpreter.ChangeState(parentInterpreter, new SimulatorStateEventArgs(new Error(new InvalidCastException("Unable to perform a condition statement without a boolean value as conditional expression result.")), parentInterpreter.GetDebugInfo()));
             return null;
         }
 

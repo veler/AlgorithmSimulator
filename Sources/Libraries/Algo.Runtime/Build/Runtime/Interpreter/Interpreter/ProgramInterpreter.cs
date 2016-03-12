@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using Algo.Runtime.Build.Runtime.Debugger;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Algo.Runtime.Build.Runtime.Debugger.CallStack;
 using Algo.Runtime.Build.Runtime.Interpreter.Expressions;
@@ -33,6 +34,8 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         [JsonProperty]
         private ClassInterpreter EntryPointInstance { get; set; }
+
+        internal AutoResetEvent Waiter { get; private set; }
 
         #endregion
 
@@ -76,8 +79,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         internal void Start()
         {
-            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Preparing));
+            if (State != SimulatorState.Ready && State != SimulatorState.Stopped && State != SimulatorState.StoppedWithError)
+            {
+                throw new InvalidOperationException("Unable to start a simulator which is not stopped.");
+            }
 
+            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Preparing));
+            
             Initialize();
 
             var entryPointMethod = ProgramDeclaration.GetEntryPointMethod();
@@ -86,7 +94,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
             if (entryPointMethod == null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath), GetDebugInfo())));
+                ChangeState(this, new SimulatorStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath)), GetDebugInfo()));
                 return;
             }
 
@@ -104,7 +112,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
             if (entryPointClass == null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath), GetDebugInfo())));
+                ChangeState(this, new SimulatorStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath)), GetDebugInfo()));
                 return;
             }
 
@@ -136,6 +144,31 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         {
             ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Stopped));
             Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+        }
+
+        internal void Pause()
+        {
+            Waiter = new AutoResetEvent(false);
+            Waiter.Reset();
+            Task.Delay(TimeSpan.FromMilliseconds(200)).Wait();
+            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Pause));
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+        }
+
+        internal void Breakpoint()
+        {
+            Waiter = new AutoResetEvent(false);
+            Waiter.Reset();
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+        }
+
+        internal void Resume()
+        {
+            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Running));
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+            Waiter.Set();
+            Waiter.Dispose();
+            Waiter = null;
         }
 
         internal override void ChangeState(object source, SimulatorStateEventArgs e)

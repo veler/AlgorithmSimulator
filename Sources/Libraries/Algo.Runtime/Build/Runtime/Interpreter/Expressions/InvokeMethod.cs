@@ -34,7 +34,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         {
             if (Expression._targetObject == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to invoke a method when the TargetObject of an AlgorithmInvokeMethodExpression is null."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to invoke a method when the TargetObject of an AlgorithmInvokeMethodExpression is null.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -53,13 +53,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (referenceClass == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference class does not exists."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference class does not exists.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
             if (!referenceClass.IsInstance)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException("Unable to invoke a method of a not instancied class."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException("Unable to invoke a method of a not instancied class.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 

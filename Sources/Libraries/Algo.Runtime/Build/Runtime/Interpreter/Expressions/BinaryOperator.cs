@@ -62,7 +62,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             operatorMethod = OperatorHelperCache.GetOperator(Expression._operator, left.GetType(), right.GetType());
             if (operatorMethod == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), $"Operator '{Expression._operator}' cannot be applied to operands of type '{left.GetType().FullName}' and '{right.GetType().FullName}'"), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), $"Operator '{Expression._operator}' cannot be applied to operands of type '{left.GetType().FullName}' and '{right.GetType().FullName}'")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -74,7 +74,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 }
                 catch (Exception ex)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), ex.InnerException?.Message), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), ex.InnerException?.Message)), ParentInterpreter.GetDebugInfo()));
                     return null;
                 }
             }

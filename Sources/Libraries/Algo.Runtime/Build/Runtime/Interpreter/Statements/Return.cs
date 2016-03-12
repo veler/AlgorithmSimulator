@@ -24,7 +24,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
             if (interpreter == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("{Unknow}", "It looks like the caller/parent's method does not exists."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("{Unknow}", "It looks like the caller/parent's method does not exists.")), ParentInterpreter.GetDebugInfo()));
                 return;
             }
 

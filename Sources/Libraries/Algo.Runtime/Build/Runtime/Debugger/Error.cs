@@ -19,12 +19,6 @@ namespace Algo.Runtime.Build.Runtime.Debugger
         public Exception Exception { get; private set; }
 
         /// <summary>
-        /// Gets or sets the debug information
-        /// </summary>   
-        [JsonProperty]
-        public DebugInfo DebugInfo { get; private set; }
-
-        /// <summary>
         /// Gets or sets the ID of the <see cref="AlgorithmObject"/> that thrown the exception
         /// </summary>
         public string AlgorithmObjectId { get; set; }
@@ -47,11 +41,9 @@ namespace Algo.Runtime.Build.Runtime.Debugger
         /// Initialize a new instance of <see cref="Error"/>
         /// </summary>
         /// <param name="exception">The exception thrown</param>
-        /// <param name="debugInfo">The call stack</param>
-        public Error(Exception exception, DebugInfo debugInfo)
+        public Error(Exception exception)
         {
             Exception = exception;
-            DebugInfo = debugInfo;
         }
 
         #endregion

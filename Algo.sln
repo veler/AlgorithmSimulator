@@ -161,4 +161,30 @@ Global
 		{3FDCC0A9-764A-40CD-B2D7-63881404EC55} = {BDCD0CD2-27A4-47E9-8486-BD42E47151DB}
 		{A18D8C8B-155A-4141-9CFB-2927CAAECC20} = {E5E8CE20-A352-4E15-9F8A-05367C71E2F0}
 	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 6
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://velersoftware.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Sources\\Algo\\Algo.csproj
+		SccProjectTopLevelParentUniqueName1 = Algo.sln
+		SccProjectName1 = Sources/Algo
+		SccLocalPath1 = Sources\\Algo
+		SccProjectUniqueName2 = Sources\\Libraries\\Algo.Design\\Algo.Design.csproj
+		SccProjectTopLevelParentUniqueName2 = Algo.sln
+		SccProjectName2 = Sources/Libraries/Algo.Design
+		SccLocalPath2 = Sources\\Libraries\\Algo.Design
+		SccProjectUniqueName3 = Sources\\Libraries\\Algo.Runtime\\Algo.Runtime.csproj
+		SccProjectTopLevelParentUniqueName3 = Algo.sln
+		SccProjectName3 = Sources/Libraries/Algo.Runtime
+		SccLocalPath3 = Sources\\Libraries\\Algo.Runtime
+		SccProjectUniqueName4 = Tests\\Algo.UnitTest\\Algo.UnitTest.csproj
+		SccProjectTopLevelParentUniqueName4 = Algo.sln
+		SccProjectName4 = Tests/Algo.UnitTest
+		SccLocalPath4 = Tests\\Algo.UnitTest
+		SccProjectUniqueName5 = Tests\\Libraries\\Algo.Runtime.UnitTest\\Algo.Runtime.UnitTest.csproj
+		SccProjectTopLevelParentUniqueName5 = Algo.sln
+		SccProjectName5 = Tests/Libraries/Algo.Runtime.UnitTest
+		SccLocalPath5 = Tests\\Libraries\\Algo.Runtime.UnitTest
+	EndGlobalSection
 EndGlobal

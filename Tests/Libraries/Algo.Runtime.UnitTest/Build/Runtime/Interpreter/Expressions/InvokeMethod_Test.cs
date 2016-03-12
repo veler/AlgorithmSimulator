@@ -581,9 +581,9 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
             Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
             
-            Assert.AreEqual(simulator.StateChangeHistory[106].Error.DebugInfo.CallStackService.CallStacks.First().Stack.Count, 10);
-            Assert.AreEqual(simulator.StateChangeHistory[106].Error.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "num");
-            Assert.AreEqual(simulator.StateChangeHistory[106].Error.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)2);
+            Assert.AreEqual(simulator.DebugInfo.CallStackService.CallStacks.First().Stack.Count, 10);
+            Assert.AreEqual(simulator.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "num");
+            Assert.AreEqual(simulator.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)2);
 
             Assert.AreEqual(simulator.StateChangeHistory[106].State, SimulatorState.StoppedWithError);
             Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);

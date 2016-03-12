@@ -143,6 +143,7 @@
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmIterationStatement.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmObject.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmParameterDeclaration.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmBreakpointStatement.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmSnippetExpression.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmSnippetStatement.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmThisReferenceExpression.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Build\Runtime\Interpreter\InterpretStatement.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpreter\MethodInterpreter.cs" />
     <Compile Include="Build\Runtime\Interpreter\Interpreter\ProgramInterpreter.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Statements\Breakpoint.cs" />
     <Compile Include="Build\Runtime\Interpreter\Statements\Iteration.cs" />
     <Compile Include="Build\Runtime\Interpreter\Statements\ExpressionStatement.cs" />
     <Compile Include="Build\Runtime\Interpreter\Statements\Return.cs" />

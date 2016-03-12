@@ -37,7 +37,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (variable == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableNotFoundException(Expression._name.ToString()), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableNotFoundException(Expression._name.ToString())), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 

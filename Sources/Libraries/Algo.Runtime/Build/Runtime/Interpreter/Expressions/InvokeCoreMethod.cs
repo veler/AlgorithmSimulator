@@ -36,7 +36,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         {
             if (Expression._targetObject == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to invoke a core method when the TargetObject of an AlgorithmInvokeCoreMethodExpression is null."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to invoke a core method when the TargetObject of an AlgorithmInvokeCoreMethodExpression is null.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -59,13 +59,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (referenceClass == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
             if (referenceClass is ClassInterpreter)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "Unable to call a core method from a class made with AlgorithmDOM."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "Unable to call a core method from a class made with AlgorithmDOM.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -97,7 +97,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                     }
                     return null;
                 }
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException($"{Expression._targetObject}.{Expression._methodName}"), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException($"{Expression._targetObject}.{Expression._methodName}")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -117,13 +117,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (method == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"The method '{Expression._methodName}' does not exists in the current class or is not accessible."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"The method '{Expression._methodName}' does not exists in the current class or is not accessible.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
             if (obj == null && !method.IsStatic)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException($"Unable to invoke the non-static core method '{method.Name}' without instanciate the class."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException($"Unable to invoke the non-static core method '{method.Name}' without instanciate the class.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -145,15 +145,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 {
                     if (ex is ArgumentException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message), ParentInterpreter.GetDebugInfo())));
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message)), ParentInterpreter.GetDebugInfo()));
                     }
                     else if (ex is TargetParameterCountException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"There is a method '{Expression._methodName}' in the class '{Expression._targetObject}', but it does not have {arguments.Count} argument(s)."), ParentInterpreter.GetDebugInfo())));
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"There is a method '{Expression._methodName}' in the class '{Expression._targetObject}', but it does not have {arguments.Count} argument(s).")), ParentInterpreter.GetDebugInfo()));
                     }
                     else
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex, ParentInterpreter.GetDebugInfo())));
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex), ParentInterpreter.GetDebugInfo()));
                     }
                 }
             }).AsTask().Wait();

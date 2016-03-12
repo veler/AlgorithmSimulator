@@ -58,7 +58,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         {
             if (Expression._targetObject == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to access to a property when the TargetObject of an AlgorithmPropertyReferenceExpression is null."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to access to a property when the TargetObject of an AlgorithmPropertyReferenceExpression is null.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -82,7 +82,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (TargetObject == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -93,7 +93,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
                 if (propertyVariable == null)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString()), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString())), ParentInterpreter.GetDebugInfo()));
                     return null;
                 }
 
@@ -106,7 +106,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
                 if (propertyInfo == null)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString()), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString())), ParentInterpreter.GetDebugInfo()));
                     return null;
                 }
 

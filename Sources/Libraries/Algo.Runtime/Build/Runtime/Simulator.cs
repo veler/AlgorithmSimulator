@@ -26,6 +26,8 @@ namespace Algo.Runtime.Build.Runtime
 
         public Error Error { get; private set; }
 
+        public DebugInfo DebugInfo { get; private set; }
+
         private AlgorithmProgram Program { get; set; }
 
         private ProgramInterpreter ProgramInterpreter { get; set; }
@@ -71,12 +73,13 @@ namespace Algo.Runtime.Build.Runtime
 
         public void Resume()
         {
-
+            DebugInfo = null;
+            ProgramInterpreter.Resume();
         }
 
         public void Pause()
         {
-            Pause(false);
+            ProgramInterpreter.Pause();
         }
 
         internal void Pause(bool calledByChangeState)
@@ -91,11 +94,17 @@ namespace Algo.Runtime.Build.Runtime
                 if (simulatorState != null)
                 {
                     Error = simulatorState.Error;
+                    DebugInfo = simulatorState.DebugInfo;
 
                     switch (simulatorState.State)
                     {
                         case SimulatorState.StoppedWithError:
                             Stop(calledByChangeState, true);
+                            break;
+
+                        case SimulatorState.PauseBreakpoint:
+                            ProgramInterpreter.Breakpoint();
+                            State = SimulatorState.PauseBreakpoint;
                             break;
 
                         case SimulatorState.PauseWithError:
@@ -112,7 +121,6 @@ namespace Algo.Runtime.Build.Runtime
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-                // TODO: else if (breakpoint != null)
                 else
                 {
                     if (!calledByChangeState)
@@ -129,12 +137,16 @@ namespace Algo.Runtime.Build.Runtime
 
         public void Stop()
         {
-            ProgramInterpreter.Stop();
+            if (State != SimulatorState.Stopped && State != SimulatorState.StoppedWithError)
+            {
+                DebugInfo = null;
+                ProgramInterpreter.Stop();
+            }
         }
 
         internal void Stop(bool calledByChangeState, bool withError = false)
         {
-            if (State == SimulatorState.Pause || State == SimulatorState.Running)
+            if (State == SimulatorState.Pause || State == SimulatorState.PauseBreakpoint || State == SimulatorState.PauseWithError || State == SimulatorState.Running)
             {
                 if (!calledByChangeState)
                 {
@@ -193,12 +205,8 @@ namespace Algo.Runtime.Build.Runtime
             {
                 case SimulatorState.StoppedWithError:
                 case SimulatorState.PauseWithError:
-                    Break(true, e);
-                    break;
-
                 case SimulatorState.PauseBreakpoint:
-                    // TODO: Break(breakpoint);
-                    State = SimulatorState.PauseBreakpoint;
+                    Break(true, e);
                     break;
 
                 case SimulatorState.Stopped:

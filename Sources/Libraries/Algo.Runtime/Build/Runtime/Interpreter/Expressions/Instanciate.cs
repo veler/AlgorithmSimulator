@@ -82,15 +82,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 {
                     if (ex is ArgumentException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message), ParentInterpreter.GetDebugInfo())));
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message)), ParentInterpreter.GetDebugInfo()));
                     }
                     else if (ex is TargetParameterCountException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {argumentValues.Count} argument(s) in the class '{Expression._createType}'."), ParentInterpreter.GetDebugInfo())));
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {argumentValues.Count} argument(s) in the class '{Expression._createType}'.")), ParentInterpreter.GetDebugInfo()));
                     }
                     else
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex, ParentInterpreter.GetDebugInfo())));
+                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex), ParentInterpreter.GetDebugInfo()));
                     }
                     return null;
                 }

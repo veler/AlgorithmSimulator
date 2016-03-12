@@ -48,7 +48,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return type;
             }
 
-            ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException(fullName, $"Unable to find the class '{fullName}' because it does not exist or it is not accessible."), ParentInterpreter.GetDebugInfo())));
+            ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException(fullName, $"Unable to find the class '{fullName}' because it does not exist or it is not accessible.")), ParentInterpreter.GetDebugInfo()));
             return null;
         }
 

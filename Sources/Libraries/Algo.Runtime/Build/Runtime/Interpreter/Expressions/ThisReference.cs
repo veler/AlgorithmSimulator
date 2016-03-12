@@ -24,7 +24,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (parent == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the parent class does not exists."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the parent class does not exists.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -32,7 +32,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (!parentClass.IsInstance)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException("Unable to get the instance of the parent class of a static method."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException("Unable to get the instance of the parent class of a static method.")), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 

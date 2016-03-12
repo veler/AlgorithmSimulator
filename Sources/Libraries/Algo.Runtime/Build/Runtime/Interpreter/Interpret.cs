@@ -35,7 +35,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
         {
             get
             {
-                return Failed | Stopped;
+                return Failed || Stopped;
             }
         }
 
@@ -141,7 +141,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             }
             if (OnGetParentInterpreter == null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("OnGetParentInterpreter handler is null"), GetDebugInfo())));
+                ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("OnGetParentInterpreter handler is null")), GetDebugInfo()));
                 return null;
             }
 
@@ -174,7 +174,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
         {
             if (MemTrace && FindVariable(variable.Name.ToString()) != null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableAlreadyExistsException(variable.Name.ToString()), GetDebugInfo())));
+                ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableAlreadyExistsException(variable.Name.ToString())), GetDebugInfo()));
                 return;
             }
 
@@ -245,7 +245,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             return variables.AsReadOnly();
         }
 
-        internal DebugInfo GetDebugInfo()
+        internal DebugInfo GetDebugInfo(bool clearCallStack = true)
         {
             SetParentProgramInterpreter();
             if (_parentProgram == null)
@@ -271,8 +271,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
                 }
             }
 
-            debugInfo.CallStackService.CallCount = 0;
-            debugInfo.CallStackService.StackTraceCallCount.Clear();
+            if (clearCallStack)
+            {
+                debugInfo.CallStackService.CallCount = 0;
+                debugInfo.CallStackService.StackTraceCallCount.Clear();
+            }
 
             return debugInfo;
         }

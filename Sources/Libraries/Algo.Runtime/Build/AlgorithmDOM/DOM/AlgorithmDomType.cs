@@ -26,6 +26,7 @@
         SnippetStatement,
         ThisReferenceExpression,
         VariableDeclaration,
-        VariableReferenceExpression
+        VariableReferenceExpression,
+        BreakpointStatement
     }
 }

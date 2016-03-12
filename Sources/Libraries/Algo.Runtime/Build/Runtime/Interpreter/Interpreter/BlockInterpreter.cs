@@ -47,9 +47,14 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
             while (i < Statements.Count && !returnStmt)
             {
+                if (program.Waiter != null)
+                {
+                    program.Waiter.WaitOne();
+                }
+
                 returnStmt = RunStatement(Statements[i]);
 
-                if (FailedOrStop || (program != null && (program.State == SimulatorState.Stopped || program.State == SimulatorState.StoppedWithError)))
+                if (FailedOrStop || program.State == SimulatorState.Stopped || program.State == SimulatorState.StoppedWithError)
                 {
                     return false;
                 }
@@ -100,8 +105,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     new ExpressionStatement(MemTrace, this, statement).Execute();
                     break;
 
+                case AlgorithmDomType.BreakpointStatement:
+                    new Breakpoint(MemTrace, this).Execute();
+                    break;
+
                 default:
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this statement : '{statement.GetType().FullName}'"), GetDebugInfo())));
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this statement : '{statement.GetType().FullName}'")), GetDebugInfo()));
                     break;
             }
 
@@ -151,7 +160,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     break;
 
                 default:
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this expression : '{expression.GetType().FullName}'"), GetDebugInfo())));
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this expression : '{expression.GetType().FullName}'")), GetDebugInfo()));
                     break;
             }
 

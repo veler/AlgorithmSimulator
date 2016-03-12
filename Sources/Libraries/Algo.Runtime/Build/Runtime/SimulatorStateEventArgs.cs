@@ -1,5 +1,6 @@
 ﻿using Algo.Runtime.Build.Runtime.Debugger;
 using System;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime
 {
@@ -20,13 +21,22 @@ namespace Algo.Runtime.Build.Runtime
         /// <summary>
         /// Gets or sets the <see cref="SimulatorState"/>
         /// </summary>
+        [JsonProperty]
         public SimulatorState State { get; private set; }
 
         /// <summary>
         /// Gets or sets an <see cref="Error"/>
         /// </summary>
+        [JsonProperty]
         public Error Error { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the debug information
+        /// </summary>   
+        [JsonProperty]
+        public DebugInfo DebugInfo { get; private set; }
+
+        [JsonProperty]
         public string LogMessage { get; set; }
 
         #endregion
@@ -49,11 +59,24 @@ namespace Algo.Runtime.Build.Runtime
         /// <summary>
         /// Initialize a new instance of <see cref="SimulatorStateEventArgs"/>
         /// </summary>
+        /// <param name="state">The <see cref="SimulatorState"/></param>
+        /// <param name="debugInfo">The debug information</param>
+        public SimulatorStateEventArgs(SimulatorState state, DebugInfo debugInfo)
+            : this(state)
+        {
+            DebugInfo = debugInfo;
+        }
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="SimulatorStateEventArgs"/>
+        /// </summary>
         /// <param name="error">An <see cref="Error"/></param>
-        public SimulatorStateEventArgs(Error error)
+        /// <param name="debugInfo">The debug information</param>
+        public SimulatorStateEventArgs(Error error, DebugInfo debugInfo)
         {
             State = SimulatorState.StoppedWithError;
             Error = error;
+            DebugInfo = debugInfo;
         }
 
         /// <summary>

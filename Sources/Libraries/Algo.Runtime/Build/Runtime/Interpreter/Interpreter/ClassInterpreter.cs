@@ -81,7 +81,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     case AlgorithmDomType.ClassConstructorDeclaration:
                         if (Constructors.Any(c => c.MethodDeclaration._arguments.Count == member._arguments.Count))
                         {
-                            ChangeState(this, new SimulatorStateEventArgs(new Error(new IdenticalConstructorsException(ClassDeclaration.Name.ToString(), "A class should not have multiple constructors with the same number of arguments."), GetDebugInfo())));
+                            ChangeState(this, new SimulatorStateEventArgs(new Error(new IdenticalConstructorsException(ClassDeclaration.Name.ToString(), "A class should not have multiple constructors with the same number of arguments.")), GetDebugInfo()));
                         }
                         else
                         {
@@ -121,7 +121,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             {
                 if (Constructors.Count > 0)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {arguments.Count} argument(s) in the class '{ClassDeclaration.Name}'."), GetDebugInfo())));
+                    ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {arguments.Count} argument(s) in the class '{ClassDeclaration.Name}'.")), GetDebugInfo()));
                 }
             }
             else
@@ -167,13 +167,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
             if (method == null)
             {
-                callerInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(methodName, $"The method '{methodName}' does not exists in the current class or is not accessible."), callerInterpreter.GetDebugInfo())));
+                callerInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(methodName, $"The method '{methodName}' does not exists in the current class or is not accessible.")), callerInterpreter.GetDebugInfo()));
                 return null;
             }
 
             if (!method.MethodDeclaration._isAsync && invokeExpression._await)
             {
-                callerInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException(methodName), callerInterpreter.GetDebugInfo())));
+                callerInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException(methodName)), callerInterpreter.GetDebugInfo()));
                 return null;
             }
 

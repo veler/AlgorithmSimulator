@@ -41,7 +41,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
             if (!(leftExpression is IAlgorithmAssignable))
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression is not assignable."), ParentInterpreter.GetDebugInfo())));
+                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression is not assignable.")), ParentInterpreter.GetDebugInfo()));
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                     break;
 
                 default:
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this expression : '{leftExpression.GetType().FullName}'"), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new InvalidCastException($"Unable to find an interpreter for this expression : '{leftExpression.GetType().FullName}'")), ParentInterpreter.GetDebugInfo()));
                     break;
             }
 
@@ -79,7 +79,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             {
                 if (!propertyInfo.CanWrite)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"This core property is not assignable."), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"This core property is not assignable.")), ParentInterpreter.GetDebugInfo()));
                     return;
                 }
                 propertyInfo.SetValue(targetObject, rightValue);
@@ -90,12 +90,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             {
                 if (propertyVariable.IsArray && !(rightValue is Array || rightValue is IEnumerable))
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression wait for an array, but the right value is not an array."), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression wait for an array, but the right value is not an array.")), ParentInterpreter.GetDebugInfo()));
                     return;
                 }
                 if (!propertyVariable.IsArray && (rightValue is Array || rightValue is IEnumerable))
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression does not support array value, but the right value is  an array."), ParentInterpreter.GetDebugInfo())));
+                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NotAssignableException($"The left expression does not support array value, but the right value is  an array.")), ParentInterpreter.GetDebugInfo()));
                     return;
                 }
                 propertyVariable.Value = rightValue;
