@@ -8,6 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{E5E8CE20-A352-4E15-9F8A-05367C71E2F0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{85852D61-5BAD-43AF-BE8E-F5502ACD7D3F}"
+	ProjectSection(SolutionItems) = preProject
+		Tests\UnitTest.runsettings = Tests\UnitTest.runsettings
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{BDCD0CD2-27A4-47E9-8486-BD42E47151DB}"
 EndProject

@@ -20,21 +20,39 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="InterpreterType"/> used to identify the object without reflection
+        /// </summary>
         [JsonIgnore]
         internal override InterpreterType InterpreterType => InterpreterType.ClassInterpreter;
 
+        /// <summary>
+        /// Gets or sets the class declaration
+        /// </summary>
         [JsonProperty]
         internal AlgorithmClassDeclaration ClassDeclaration { get; private set; }
 
+        /// <summary>
+        /// Gets or sets if the current <see cref="ClassInterpreter"/> is an instance
+        /// </summary>
         [JsonProperty]
         internal bool IsInstance { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the list of the constructors interpreter
+        /// </summary>
         [JsonProperty]
         internal Collection<MethodInterpreter> Constructors { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the list of the methods interpreter. It does not includes the constructors.
+        /// </summary>
         [JsonProperty]
         internal Collection<MethodInterpreter> Methods { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the program entry point interpreter, if it is in the current class
+        /// </summary>
         [JsonProperty]
         internal MethodInterpreter EntryPoint { get; private set; }
 
@@ -42,22 +60,33 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         #region Handlers
 
+        /// <summary>
+        /// Raised when a method or a block is done
+        /// </summary>
         internal Action<ClassInterpreter> OnDone;
 
         #endregion
 
         #region Constructors
 
-        internal ClassInterpreter(AlgorithmClassDeclaration classDecl, bool memTrace)
-            : base(memTrace)
+        /// <summary>
+        /// Initialize a new instance of <see cref="ClassInterpreter"/>
+        /// </summary>
+        /// <param name="classDeclaration">The class declaration</param>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        internal ClassInterpreter(AlgorithmClassDeclaration classDeclaration, bool debugMode)
+            : base(debugMode)
         {
-            ClassDeclaration = classDecl;
+            ClassDeclaration = classDeclaration;
         }
 
         #endregion
 
         #region Methods          
 
+        /// <summary>
+        /// Initialize, after the constructor, the other properties
+        /// </summary>
         internal override void Initialize()
         {
             AlgorithmClassMember member;
@@ -81,20 +110,20 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     case AlgorithmDomType.ClassConstructorDeclaration:
                         if (Constructors.Any(c => c.MethodDeclaration._arguments.Count == member._arguments.Count))
                         {
-                            ChangeState(this, new SimulatorStateEventArgs(new Error(new IdenticalConstructorsException(ClassDeclaration.Name.ToString(), "A class should not have multiple constructors with the same number of arguments.")), GetDebugInfo()));
+                            ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new IdenticalConstructorsException(ClassDeclaration.Name.ToString(), "A class should not have multiple constructors with the same number of arguments.")), GetDebugInfo()));
                         }
                         else
                         {
-                            Constructors.Add(new MethodInterpreter(member, MemTrace));
+                            Constructors.Add(new MethodInterpreter(member, DebugMode));
                         }
                         break;
 
                     case AlgorithmDomType.EntryPointMethod:
-                        EntryPoint = new MethodInterpreter(member, MemTrace);
+                        EntryPoint = new MethodInterpreter(member, DebugMode);
                         break;
 
                     case AlgorithmDomType.ClassMethodDeclaration:
-                        Methods.Add(new MethodInterpreter(member, MemTrace));
+                        Methods.Add(new MethodInterpreter(member, DebugMode));
                         break;
                 }
 
@@ -102,12 +131,20 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             }
         }
 
+        /// <summary>
+        /// Create a new instance of the current class interpreter.
+        /// </summary>
+        /// <returns>returns the new object</returns>
         internal ClassInterpreter CreateNewInstance()
         {
-            var instance = new ClassInterpreter(ClassDeclaration, MemTrace);
+            var instance = new ClassInterpreter(ClassDeclaration, DebugMode);
             return instance;
         }
 
+        /// <summary>
+        /// Call the constructor of the class, if exists.
+        /// </summary>
+        /// <param name="arguments">the argument values</param>
         internal void CreateNewInstanceCallConstructors(Collection<object> arguments)
         {
             if (arguments == null)
@@ -121,16 +158,16 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             {
                 if (Constructors.Count > 0)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {arguments.Count} argument(s) in the class '{ClassDeclaration.Name}'.")), GetDebugInfo()));
+                    ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {arguments.Count} argument(s) in the class '{ClassDeclaration.Name}'.")), GetDebugInfo()));
                 }
             }
             else
             {
-                if (MemTrace)
+                if (DebugMode)
                 {
                     Log(this, $"Calling a constructor of '{ClassDeclaration.Name}'");
                 }
-                constructor = new MethodInterpreter(constructor.MethodDeclaration, MemTrace);
+                constructor = new MethodInterpreter(constructor.MethodDeclaration, DebugMode);
                 constructor.StateChanged += ChangeState;
                 constructor.OnGetParentInterpreter += new Func<ClassInterpreter>(() => this);
                 constructor.OnDone += new Action<MethodInterpreter>((met) =>
@@ -143,6 +180,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             }
         }
 
+        /// <summary>
+        /// Find the constructor which correspond to the given argument count
+        /// </summary>
+        /// <param name="argumentCount">The number of argument to search</param>
+        /// <returns>Returns null if the constructor has not be found</returns>
         private MethodInterpreter FindCorrespondingConstructor(int argumentCount)
         {
             MethodInterpreter constructor = null;
@@ -160,20 +202,29 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             return constructor;
         }
 
-        internal object CallMethod(Interpret callerInterpreter, AlgorithmExpression invokeExpression, Collection<object> argumentValues, MethodInterpreter parentMethodInterpreter, CallStackService callStackService)
+        /// <summary>
+        /// Invoke the specified method
+        /// </summary>
+        /// <param name="callerInterpreter">The caller interpreter (usually a block)</param>
+        /// <param name="invokeExpression">The invoke expression</param>
+        /// <param name="argumentValues">The list of argument values</param>
+        /// <param name="parentMethodInterpreter">The parent method interpret from where the invocation happened</param>
+        /// <param name="callStackService">The user call stack service</param>
+        /// <returns>Returns the result of the method</returns>
+        internal object InvokeMethod(Interpret callerInterpreter, AlgorithmExpression invokeExpression, Collection<object> argumentValues, MethodInterpreter parentMethodInterpreter, CallStackService callStackService)
         {
             var methodName = invokeExpression._methodName.ToString();
             var method = Methods.FirstOrDefault(m => m.MethodDeclaration._name.ToString() == methodName);
 
             if (method == null)
             {
-                callerInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(methodName, $"The method '{methodName}' does not exists in the current class or is not accessible.")), callerInterpreter.GetDebugInfo()));
+                callerInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotFoundException(methodName, $"The method '{methodName}' does not exists in the current class or is not accessible."), ClassDeclaration), callerInterpreter.GetDebugInfo()));
                 return null;
             }
 
             if (!method.MethodDeclaration._isAsync && invokeExpression._await)
             {
-                callerInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException(methodName)), callerInterpreter.GetDebugInfo()));
+                callerInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotAwaitableException(methodName), method.MethodDeclaration), callerInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -187,7 +238,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             else
             {
                 stackTraceId = parentMethodInterpreter.StacktraceId;
-                if (MemTrace)
+                if (DebugMode)
                 {
                     var callStack = callStackService.CallStacks.Single(cs => cs.TaceId == stackTraceId);
                     var call = callStack.Stack.Pop();
@@ -199,7 +250,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 }
             }
 
-            method = new MethodInterpreter(method.MethodDeclaration, MemTrace);
+            method = new MethodInterpreter(method.MethodDeclaration, DebugMode);
             method.StateChanged += ChangeState;
             method.OnGetParentInterpreter += new Func<ClassInterpreter>(() => this);
             method.OnDone += new Action<MethodInterpreter>((met) =>
@@ -217,6 +268,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             return method.ReturnedValue;
         }
 
+        /// <summary>
+        /// Dispose the resources
+        /// </summary>
         public override void Dispose()
         {
             Task.Run(() =>

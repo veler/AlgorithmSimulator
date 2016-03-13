@@ -28,22 +28,22 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 21);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 21);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
             
-            Assert.AreEqual(simulator.StateChangeHistory[20].Error.Exception.Message,"The left expression wait for an array, but the right value is not an array.");
-            Assert.AreEqual(simulator.StateChangeHistory[20].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[20].Error.Exception.Message,"The left expression wait for an array, but the right value is not an array.");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[20].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
     }
 }

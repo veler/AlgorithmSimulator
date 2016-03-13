@@ -3,6 +3,9 @@ using Algo.Runtime.Build.AlgorithmDOM.DOM;
 
 namespace Algo.Runtime.Build.AlgorithmDOM
 {
+    /// <summary>
+    /// Represents a variable
+    /// </summary>
     interface IAlgorithmVariable
     {
         /// <summary>

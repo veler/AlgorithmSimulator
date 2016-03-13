@@ -8,6 +8,11 @@
         #region Properties
 
         /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
+        internal override AlgorithmDomType DomType => AlgorithmDomType.PrimitiveExpression;
+
+        /// <summary>
         /// Gets or sets the primitive value
         /// </summary>
         public object Value { get { return _value; } set { _value = value; } }
@@ -15,8 +20,6 @@
         #endregion
 
         #region Consturctors
-
-        internal override AlgorithmDomType DomType => AlgorithmDomType.PrimitiveExpression;
 
         /// <summary>
         /// Initialize a new instance of <see cref="AlgorithmPrimitiveExpression"/>

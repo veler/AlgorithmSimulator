@@ -1,5 +1,5 @@
 # Algorithm Simulator
-This is a `prototype` of a portable algorithm simulator based on the architecture of [SoftwareZator](http://softwarezator.velersoftware.com/).
+This is a `prototype` of a portable algorithm interpreter based on the architecture of [SoftwareZator](http://softwarezator.velersoftware.com/).
 
 ## What Is The Concept
 
@@ -17,45 +17,49 @@ It means several things :
 ## Use Case
   
 * Any programming learning app (SoftwareZator, Spark, Scratch...).
-* If you want to download a part of an application from internet in WinRT and want to run it. I guess that we cannot load an Assembly at runtime with WinRT. Download an algorithm and simulate it can be a solution.
+* If you want to download a part of an application from internet in WinRT and want to run it. I guess that we cannot load an Assembly at runtime with WinRT. Download an algorithm and interpret it can be a solution.
 
 # Features
 
 | Features                                                                               | Supported |
 | -------------------------------------------------------------------------------------- |:---------:|
+| start the algorithm interpreter                                                        | yes       |
+| stop the algorithm interpreter (even in an infinite loop)                              | yes       |
+| pause the algorithm interpreter                                                        | yes       |
+| debug mode                                                                             | yes       |
+| [debug mode] step over                                                                 | yes       |
+| [debug mode] step into                                                                 | yes       |
+| [debug mode] step out                                                                  | yes       |
+| [debug mode] breakpoint                                                                | yes       |
 | variable                                                                               | yes       |
 | class                                                                                  | yes       |
+| class properties                                                                       | yes       |
 | method                                                                                 | yes       |
 | recursivity                                                                            | yes       |
 | loop (while/do while)                                                                  | yes       |
 | call a method                                                                          | yes       |
-| use feature from WinRT                                                                 | yes       |
-| start the simulator                                                                    | yes       |
-| stop the simulator (even in an infinite loop)                                          | yes       |
-| pause the simulator                                                                    | yes       |
-| breakpoint                                                                             | yes       |
+| use feature from .Net/WinRT                                                            | yes       |
 | detect when a user call too many methods in the same thread (aka. stack overflow)      | yes       |
 | async functions                                                                        | yes       |
 | keep a call stack with info on variables values                                        | yes       |
 | try catch                                                                              | **no**    |
 | interaction with the UI                                                                | **no**    |
 | inheritance with classes                                                               | **no**    |
-| mode debug                                                                             | yes       |
 
 # Performances
 
 Performances are not comparable with a JavaScript runtime or a compiled language like C++. The reason is that this interpreter is made in C# and it's designed to be maintenable, more than fast.
 It also use a lot of RAM.
 
-| Scenarios                  | Execution time (in millisec) |
-| -------------------------- |:----------------------------:|
-| a loop with 100 iterations | 9.28760                      |
+| Scenarios                  | Execution time (in millisec)      |
+| -------------------------- |:---------------------------------:|
+| a loop with 100 iterations | 22 at first run | 7 at second run |
 
 # How Does It Work
 
 0. First of all, we create a [Program](https://github.com/veler/AlgorithmSimulator/blob/master/Sources/Libraries/Algo.Runtime/Build/AlgorithmDOM/DOM/AlgorithmProgram.cs) that represents a program with classes and methods.
-0. We add our global variables (it is simpler to manage in the simulator).
-0. In a method, we add an `algorithm`. This algorithm is represented by an action. An action, in [SoftwareZator](http://softwarezator.velersoftware.com/), as in this simulator, it is a part of an algorithm that does something. For example :
+0. We add our global variables (it is simpler to manage in the algorithm interpreter).
+0. In a method, we add an `algorithm`. This algorithm is represented by an action. An action, in [SoftwareZator](http://softwarezator.velersoftware.com/), as in this algorithm interpreter, it is a part of an algorithm that does something. For example :
   * [Assign a value to a variable](https://github.com/veler/AlgorithmSimulator/blob/master/Sources/Libraries/Algo.Runtime/Build/Runtime/Interpreter/Statements/Assign.cs)
   * Read a file
   * Do an HTTP request
@@ -96,7 +100,7 @@ PROGRAM MyApp
 END PROGRAM
 ```
 
-Can be translated and interpreted by the simulator like this in C# :
+Can be translated and interpreted by the algorithm interpreter like this in C# :
 
 ```csharp
 var program = new AlgorithmProgram("MyApp");
@@ -122,9 +126,9 @@ firstClass.Members.Add(firstMethod);
 program.Classes.Add(firstClass);
 program.UpdateEntryPointPath();
 
-var simulator = new Simulator(program);
+var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-var task = simulator.StartAsync(debugMode: true);
+var task = algorithmInterpreter.StartAsync(debugMode: true);
 
 task.Wait();
 ```

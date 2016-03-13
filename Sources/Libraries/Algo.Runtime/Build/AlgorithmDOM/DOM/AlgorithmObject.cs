@@ -46,15 +46,15 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         #region Properties
 
         /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
+        internal abstract AlgorithmDomType DomType { get; }
+
+        /// <summary>
         /// Gets a unique GUID to identify a part of an algorithm
         /// </summary>   
         [JsonProperty]
         public string Id { get; private set; }
-
-        /// <summary>
-        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
-        /// </summary>
-        internal abstract AlgorithmDomType DomType { get; }
 
         #endregion
 

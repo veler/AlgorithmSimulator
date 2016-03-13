@@ -39,7 +39,7 @@ namespace Algo.Runtime.Build.Runtime.Memory
             set
             {
                 _value = value;
-                if (MemTrace)
+                if (DebugMode)
                 {
                     UpdateSizeAsync();
                 }
@@ -61,10 +61,10 @@ namespace Algo.Runtime.Build.Runtime.Memory
         /// <summary>
         /// Initialize a new instance of <see cref="MemoryObject"/>
         /// </summary>
-        /// <param name="memTrace">Defines whether the size of the value should be determinated each time the value change</param>
+        /// <param name="debugMode">Defines whether the size of the value should be determinated each time the value change</param>
         /// <param name="value">Sets a value</param>
-        internal MemoryObject(bool memTrace, object value = null)
-            : base(memTrace)
+        internal MemoryObject(bool debugMode, object value = null)
+            : base(debugMode)
         {
             Value = value;
         }
@@ -174,8 +174,7 @@ namespace Algo.Runtime.Build.Runtime.Memory
                     return size;
                 }
 
-                const BindingFlags flags =
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+                const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
                 foreach (var property in valueType.GetFields(flags))
                 {
                     if (property.DeclaringType != typeof(Delegate))
@@ -217,7 +216,7 @@ namespace Algo.Runtime.Build.Runtime.Memory
         /// <returns>Returns the size of the value</returns>
         public async Task<ulong> GetSizeAsync()
         {
-            if (!MemTrace)
+            if (!DebugMode)
             {
                 await UpdateSizeAsync();
             }

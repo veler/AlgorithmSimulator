@@ -9,8 +9,14 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.EntryPointMethod;
 
+        /// <summary>
+        /// Gets or sets if the method is asynchronous or not.
+        /// </summary>
         [JsonProperty]
         public new static bool IsAsync { get; private set; }
 

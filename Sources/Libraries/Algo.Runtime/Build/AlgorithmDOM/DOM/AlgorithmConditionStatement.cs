@@ -7,6 +7,9 @@
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.ConditionStatement;
         
         /// <summary>
@@ -44,8 +47,8 @@
         public AlgorithmConditionStatement(AlgorithmExpression condition, AlgorithmStatementCollection trueStatement, AlgorithmStatementCollection falseStatement)
         {
             Condition = condition;
-            TrueStatements = trueStatement == null ? new AlgorithmStatementCollection() : trueStatement;
-            FalseStatements = falseStatement == null ? new AlgorithmStatementCollection() : falseStatement;
+            TrueStatements = trueStatement ?? new AlgorithmStatementCollection();
+            FalseStatements = falseStatement ?? new AlgorithmStatementCollection();
         }
 
         #endregion

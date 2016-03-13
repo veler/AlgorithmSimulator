@@ -3,6 +3,9 @@ using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Debugger
 {
+    /// <summary>
+    /// Represents the debug information
+    /// </summary>
     public sealed class DebugInfo
     {
         #region Properties

@@ -10,11 +10,13 @@ using System.Threading.Tasks;
 using Algo.Runtime.Build.Runtime.Debugger.CallStack;
 using Algo.Runtime.Build.Runtime.Memory;
 using Algo.Runtime.Build.Runtime.Utils;
-using Algo.Runtime.ComponentModel;
 using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 {
+    /// <summary>
+    /// Provide a sets of method to interpret a method in an algorithm
+    /// </summary>
     internal sealed class MethodInterpreter : Interpret
     {
         #region Fields
@@ -26,18 +28,33 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="InterpreterType"/> used to identify the object without reflection
+        /// </summary>
         [JsonIgnore]
         internal override InterpreterType InterpreterType => InterpreterType.MethodInterpreter;
 
+        /// <summary>
+        /// Gets or sets the method declaration
+        /// </summary>
         [JsonProperty]
         internal AlgorithmObject MethodDeclaration { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value that defines if the execution is done or not.
+        /// </summary>
         [JsonProperty]
         internal bool Done { get; set; }
 
+        /// <summary>
+        /// Gets or sets the user stack trace id
+        /// </summary>
         [JsonProperty]
         internal Guid StacktraceId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the returned value of the method
+        /// </summary>
         [JsonProperty]
         internal object ReturnedValue
         {
@@ -49,7 +66,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             {
                 if (value is AlgorithmExpression || value is AlgorithmStatement)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new Exception("A method's returned value must not be an AlgorithmObject")), GetDebugInfo()));
+                    ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new Exception("A method's returned value must not be an AlgorithmObject")), GetDebugInfo()));
                     return;
                 }
                 _returnedValue = value;
@@ -59,34 +76,53 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         #endregion
 
         #region Handlers
-
+        
+        /// <summary>
+        /// Raised when a method or a block is done
+        /// </summary>
         internal Action<MethodInterpreter> OnDone;
 
         #endregion
 
         #region Constructors
 
-        internal MethodInterpreter(AlgorithmObject methodDecl, bool memTrace)
-            : base(memTrace)
+        /// <summary>
+        /// Initialize a new instance of <see cref="MethodInterpreter"/>
+        /// </summary>
+        /// <param name="methodDeclaration">the method declaration</param>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        internal MethodInterpreter(AlgorithmObject methodDeclaration, bool debugMode)
+            : base(debugMode)
         {
-            MethodDeclaration = methodDecl;
+            MethodDeclaration = methodDeclaration;
         }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// Initialize, after the constructor, the other properties
+        /// </summary>
         internal override void Initialize()
         {
             Variables = new Collection<Variable>();
-            _callStackService = ((ProgramInterpreter)GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter)).DebugInfo.CallStackService;
+            ParentProgramInterpreter = (ProgramInterpreter)GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
+            ParentClassInterpreter = (ClassInterpreter)GetFirstNextParentInterpreter(InterpreterType.ClassInterpreter);
+            _callStackService = ParentProgramInterpreter.DebugInfo.CallStackService;
         }
 
+        /// <summary>
+        /// Run the method
+        /// </summary>
+        /// <param name="awaitCall">defines if we should wait an asynchronous method</param>
+        /// <param name="argumentValues">the list of argument values</param>
+        /// <param name="stackTraceId">the user stack trace id</param>
         internal void Run(bool awaitCall, IReadOnlyList<object> argumentValues, Guid stackTraceId)
         {
             if (MethodDeclaration._arguments.Count != argumentValues.Count)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(MethodDeclaration._name.ToString(), $"There is a method '{MethodDeclaration._name}' in the class '{((ClassInterpreter)GetFirstNextParentInterpreter(InterpreterType.ClassInterpreter)).ClassDeclaration.Name}', but it does not have {argumentValues.Count} argument(s).")), GetDebugInfo()));
+                ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotFoundException(MethodDeclaration._name.ToString(), $"There is a method '{MethodDeclaration._name}' in the class '{ParentClassInterpreter.ClassDeclaration.Name}', but it does not have {argumentValues.Count} argument(s)."), MethodDeclaration), GetDebugInfo()));
                 return;
             }
 
@@ -115,18 +151,30 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             }
         }
 
+        /// <summary>
+        /// Execute a method in a new thread
+        /// </summary>
+        /// <param name="argumentValues">the list of argument values</param>
+        /// <param name="mustClearStackAtTheEnd">defines if the user call stack must be cleared at the end of this call</param>
+        /// <returns>Returns a task associated to the execution</returns>
         private Task RunAsync(IReadOnlyList<object> argumentValues, bool mustClearStackAtTheEnd)
         {
             return Task.Run(() => RunSync(argumentValues, GenerateNewStackTraceId(), mustClearStackAtTheEnd));
         }
 
+        /// <summary>
+        /// Execute a method in the current thread
+        /// </summary>
+        /// <param name="argumentValues">the list of argument values</param>
+        /// <param name="stackTraceId">the user stack trace id</param>
+        /// <param name="mustClearStackAtTheEnd">defines if the user call stack must be cleared at the end of this call</param>
         private void RunSync(IReadOnlyList<object> argumentValues, Guid stackTraceId, bool mustClearStackAtTheEnd)
         {
             if (_callStackService.StackTraceCallCount.ContainsKey(stackTraceId))
             {
                 if (_callStackService.StackTraceCallCount[stackTraceId] > Consts.CallStackSize)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new StackOverflowException($"You called too many (more than {Consts.CallStackSize}) methods in the same thread.")), GetParentInterpreter().GetDebugInfo()));
+                    ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new StackOverflowException($"You called too many (more than {Consts.CallStackSize}) methods in the same thread.")), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
                 _callStackService.StackTraceCallCount[stackTraceId] = (short)(_callStackService.StackTraceCallCount[stackTraceId] + 1);
@@ -134,16 +182,16 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             else
             {
                 _callStackService.StackTraceCallCount.Add(stackTraceId, 0);
-                if (MemTrace)
+                if (DebugMode)
                 {
                     _callStackService.CallStacks.Add(new CallStack(stackTraceId));
                 }
             }
 
             StacktraceId = stackTraceId;
-            if (MemTrace)
+            if (DebugMode)
             {
-                var classReference = new AlgorithmClassReferenceExpression(((ClassInterpreter)GetFirstNextParentInterpreter(InterpreterType.ClassInterpreter)).ClassDeclaration.Name.ToString());
+                var classReference = new AlgorithmClassReferenceExpression(ParentClassInterpreter.ClassDeclaration.Name.ToString());
                 var callStack = _callStackService.CallStacks.Single(cs => cs.TaceId == stackTraceId);
                 var arguments = new List<AlgorithmExpression>();
                 foreach (var argumentValue in argumentValues)
@@ -153,9 +201,8 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 var call = new Call(classReference, new AlgorithmInvokeMethodExpression(classReference, MethodDeclaration._name.ToString(), arguments.ToArray()));
                 callStack.Stack.Push(call);
             }
-
-            var program = (ProgramInterpreter)GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
-            var block = new BlockInterpreter(MethodDeclaration._statements, MemTrace);
+            
+            var block = new BlockInterpreter(MethodDeclaration._statements, DebugMode, ParentProgramInterpreter, this, null, ParentClassInterpreter);
             block.OnGetParentInterpreter += new Func<MethodInterpreter>(() => this);
             block.StateChanged += ChangeState;
             block.Initialize();
@@ -167,12 +214,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
                 if (!(argValue is string) && argValue is IEnumerable && !argDecl.IsArray)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must not be an array of values.")), GetParentInterpreter().GetDebugInfo()));
+                    ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must not be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
                 if ((!(argValue is IEnumerable) || argValue is string) && argDecl.IsArray)
                 {
-                    ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must be an array of values.")), GetParentInterpreter().GetDebugInfo()));
+                    ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
 
@@ -191,13 +238,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             if (mustClearStackAtTheEnd)
             {
                 _callStackService.StackTraceCallCount.Remove(stackTraceId);
-                if (MemTrace && !Failed)
+                if (DebugMode && !Failed)
                 {
                     _callStackService.CallStacks.Remove(_callStackService.CallStacks.Single(callStack => callStack.TaceId == stackTraceId));
                 }
             }
 
-            if (MemTrace && !Failed && !mustClearStackAtTheEnd)
+            if (DebugMode && !Failed && !mustClearStackAtTheEnd)
             {
                 _callStackService.CallStacks.Single(callStack => callStack.TaceId == stackTraceId).Stack.Pop();
             }
@@ -206,6 +253,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             OnDone(this);
         }
 
+        /// <summary>
+        /// Generate a new user stack trace id
+        /// </summary>
+        /// <returns>Returns a new <see cref="Guid"/></returns>
         private Guid GenerateNewStackTraceId()
         {
             Guid guid;
@@ -216,6 +267,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             return guid;
         }
 
+        /// <summary>
+        /// Dispose the resources
+        /// </summary>
         public override void Dispose()
         {
             Task.Run(() =>

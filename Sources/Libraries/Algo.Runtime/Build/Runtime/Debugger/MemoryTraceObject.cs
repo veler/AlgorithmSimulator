@@ -13,7 +13,7 @@ namespace Algo.Runtime.Build.Runtime.Debugger
         /// Gets or sets a value that defines whether a memory trace will be kept or not
         /// </summary>    
         [JsonProperty]
-        protected bool MemTrace { get; set; }
+        protected bool DebugMode { get; set; }
 
         #endregion
 
@@ -22,10 +22,10 @@ namespace Algo.Runtime.Build.Runtime.Debugger
         /// <summary>
         /// Initialize a new instance of <see cref="MemoryTraceObject"/>
         /// </summary>
-        /// <param name="memTrace">Defines whether a memory trace will be kept or not</param>
-        internal MemoryTraceObject(bool memTrace)
+        /// <param name="debugMode">Defines whether a memory trace will be kept or not</param>
+        internal MemoryTraceObject(bool debugMode)
         {
-            MemTrace = memTrace;
+            DebugMode = debugMode;
         }
 
         #endregion

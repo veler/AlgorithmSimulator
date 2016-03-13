@@ -8,18 +8,30 @@ using Algo.Runtime.Build.Runtime.Memory;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
+    /// <summary>
+    /// Provide the interpreter for a invocation
+    /// </summary>
     internal sealed class PropertyReference : InterpretExpression, IAssignable
     {
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the targeted object
+        /// </summary>
         internal object TargetObject { get; set; }
 
         #endregion
 
         #region Constructors
 
-        internal PropertyReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
-            : base(memTrace, parentInterpreter, expression)
+        /// <summary>
+        /// Initialize a new instance of <see cref="PropertyReference"/>
+        /// </summary>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        /// <param name="parentInterpreter">The parent block interpreter</param>
+        /// <param name="expression">The algorithm expression</param>
+        internal PropertyReference(bool debugMode, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
+            : base(debugMode, parentInterpreter, expression)
         {
         }
 
@@ -27,6 +39,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         #region Methods
 
+        /// <summary>
+        /// Run the interpretation
+        /// </summary>
+        /// <returns>Returns the result of the interpretation</returns>
         internal override object Execute()
         {
             object value = null;
@@ -54,11 +70,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             return value;
         }
 
+        /// <summary>
+        /// Returns the corresponding assignable object
+        /// </summary>
+        /// <returns>the assignable object</returns>
         public object GetAssignableObject()
         {
             if (Expression._targetObject == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to access to a property when the TargetObject of an AlgorithmPropertyReferenceExpression is null.")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NullReferenceException("Unable to access to a property when the TargetObject of an AlgorithmPropertyReferenceExpression is null."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -68,7 +88,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             ClassInterpreter classTargetObject;
             Variable propertyVariable;
 
-            if (MemTrace)
+            if (DebugMode)
             {
                 ParentInterpreter.Log(this, $"Getting the property '{Expression}'");
             }
@@ -82,7 +102,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (TargetObject == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists.")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -93,7 +113,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
                 if (propertyVariable == null)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString())), ParentInterpreter.GetDebugInfo()));
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString()), Expression), ParentInterpreter.GetDebugInfo()));
                     return null;
                 }
 
@@ -106,7 +126,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
                 if (propertyInfo == null)
                 {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString())), ParentInterpreter.GetDebugInfo()));
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new PropertyNotFoundException(Expression._propertyName.ToString()), Expression), ParentInterpreter.GetDebugInfo()));
                     return null;
                 }
 
@@ -114,7 +134,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 value = propertyInfo.GetValue(TargetObject);
             }
 
-            if (MemTrace)
+            if (DebugMode)
             {
                 ParentInterpreter.Log(this, "Value of the property '{0}' is {1}", Expression._propertyName.ToString(), value == null ? "{null}" : $"'{value}' (type:{value.GetType().FullName})");
             }

@@ -7,6 +7,9 @@
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.SnippetExpression;
 
         /// <summary>
@@ -39,9 +42,9 @@
         #region Methods
 
         /// <summary>
-        /// Gets a string representation of the reference
+        /// Gets a string representation of the expression
         /// </summary>
-        /// <returns>String that reprensents the reference</returns>
+        /// <returns>String that reprensents the expression</returns>
         public override string ToString()
         {
             return $"'{Code}'";

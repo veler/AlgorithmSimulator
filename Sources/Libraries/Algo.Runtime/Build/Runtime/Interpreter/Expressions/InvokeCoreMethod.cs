@@ -12,6 +12,9 @@ using Windows.UI.Core;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
+    /// <summary>
+    /// Provide the interpreter for a invocation of a core method
+    /// </summary>
     internal sealed class InvokeCoreMethod : InterpretExpression
     {
         #region Fields
@@ -22,8 +25,14 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         #region Constructors
 
-        internal InvokeCoreMethod(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
-            : base(memTrace, parentInterpreter, expression)
+        /// <summary>
+        /// Initialize a new instance of <see cref="InvokeCoreMethod"/>
+        /// </summary>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        /// <param name="parentInterpreter">The parent block interpreter</param>
+        /// <param name="expression">The algorithm expression</param>
+        internal InvokeCoreMethod(bool debugMode, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
+            : base(debugMode, parentInterpreter, expression)
         {
             _dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
         }
@@ -32,11 +41,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         #region Methods
 
+        /// <summary>
+        /// Run the interpretation
+        /// </summary>
+        /// <returns>Returns the result of the interpretation</returns>
         internal override object Execute()
         {
             if (Expression._targetObject == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("Unable to invoke a core method when the TargetObject of an AlgorithmInvokeCoreMethodExpression is null.")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NullReferenceException("Unable to invoke a core method when the TargetObject of an AlgorithmInvokeCoreMethodExpression is null."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -45,7 +58,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             Type type;
             Task task;
 
-            if (MemTrace)
+            if (DebugMode)
             {
                 ParentInterpreter.Log(this, $"Calling core method '{Expression._targetObject}.{Expression._methodName}'");
             }
@@ -59,13 +72,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (referenceClass == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists.")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the reference object does not exists."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
             if (referenceClass is ClassInterpreter)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "Unable to call a core method from a class made with AlgorithmDOM.")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "Unable to call a core method from a class made with AlgorithmDOM."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
@@ -97,13 +110,19 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                     }
                     return null;
                 }
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotAwaitableException($"{Expression._targetObject}.{Expression._methodName}")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotAwaitableException($"{Expression._targetObject}.{Expression._methodName}"), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
             return returnedValue;
         }
 
+        /// <summary>
+        /// Invoke a code method
+        /// </summary>
+        /// <param name="type">The type which contains the method</param>
+        /// <param name="obj">The instance</param>
+        /// <returns>Returns the result of the invoke</returns>
         private object InvokeMethod(Type type, object obj)
         {
             if (Expression._argumentsTypes == null)
@@ -117,17 +136,17 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
             if (method == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"The method '{Expression._methodName}' does not exists in the current class or is not accessible.")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"The method '{Expression._methodName}' does not exists in the current class or is not accessible."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
             if (obj == null && !method.IsStatic)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new NoInstanceReferenceException($"Unable to invoke the non-static core method '{method.Name}' without instanciate the class.")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NoInstanceReferenceException($"Unable to invoke the non-static core method '{method.Name}' without instanciate the class."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
-            arguments = GetArgumentValues();
+            arguments = Expressions.InvokeMethod.GetArgumentValues(Expression, ParentInterpreter);
 
             if (ParentInterpreter.FailedOrStop)
             {
@@ -145,37 +164,22 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 {
                     if (ex is ArgumentException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message)), ParentInterpreter.GetDebugInfo()));
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message), Expression), ParentInterpreter.GetDebugInfo()));
                     }
                     else if (ex is TargetParameterCountException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"There is a method '{Expression._methodName}' in the class '{Expression._targetObject}', but it does not have {arguments.Count} argument(s).")), ParentInterpreter.GetDebugInfo()));
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotFoundException(Expression._methodName.ToString(), $"There is a method '{Expression._methodName}' in the class '{Expression._targetObject}', but it does not have {arguments.Count} argument(s)."), Expression), ParentInterpreter.GetDebugInfo()));
                     }
                     else
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex), ParentInterpreter.GetDebugInfo()));
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(ex, Expression), ParentInterpreter.GetDebugInfo()));
                     }
                 }
             }).AsTask().Wait();
 
             return result;
         }
-
-        private Collection<object> GetArgumentValues()
-        {
-            var argumentValues = new Collection<object>();
-
-            foreach (var arg in Expression._argumentsExpression)
-            {
-                if (!ParentInterpreter.FailedOrStop)
-                {
-                    argumentValues.Add(ParentInterpreter.RunExpression(arg));
-                }
-            }
-
-            return argumentValues;
-        }
-
+        
         #endregion
     }
 }

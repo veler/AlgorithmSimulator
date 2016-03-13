@@ -44,7 +44,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Memory
         public void VariableWithoutMemTrace()
         {
             Task<ulong> task;
-            var variable = new Variable("myVar", memTrace: false);
+            var variable = new Variable("myVar", debugMode: false);
             var tests = GetTests();
 
             foreach (var test in tests)
@@ -62,7 +62,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Memory
         public void VariableWithMemTrace()
         {
             Task<ulong> task;
-            var variable = new Variable("myVar", memTrace: true);
+            var variable = new Variable("myVar", debugMode: true);
             var tests = GetTests();
 
             foreach (var test in tests)

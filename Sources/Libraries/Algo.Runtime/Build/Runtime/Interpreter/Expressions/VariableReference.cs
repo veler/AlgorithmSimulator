@@ -6,12 +6,21 @@ using Algo.Runtime.Build.Runtime.Memory;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
+    /// <summary>
+    /// Provide the interpreter for a reference to a variable
+    /// </summary>
     internal sealed class VariableReference : InterpretExpression, IAssignable
     {
         #region Constructors
 
-        internal VariableReference(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
-            : base(memTrace, parentInterpreter, expression)
+        /// <summary>
+        /// Initialize a new instance of <see cref="VariableReference"/>
+        /// </summary>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        /// <param name="parentInterpreter">The parent block interpreter</param>
+        /// <param name="expression">The algorithm expression</param>
+        internal VariableReference(bool debugMode, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
+            : base(debugMode, parentInterpreter, expression)
         {
         }
 
@@ -19,6 +28,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         #region Methods
 
+        /// <summary>
+        /// Run the interpretation
+        /// </summary>
+        /// <returns>Returns the result of the interpretation</returns>
         internal override object Execute()
         {
             var variable = GetAssignableObject() as Variable;
@@ -31,17 +44,21 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             return variable.Value;
         }
 
+        /// <summary>
+        /// Returns the corresponding assignable object
+        /// </summary>
+        /// <returns>the assignable object</returns>
         public object GetAssignableObject()
         {
             var variable = ParentInterpreter.FindVariable(Expression._name.ToString());
 
             if (variable == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableNotFoundException(Expression._name.ToString())), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new VariableNotFoundException(Expression._name.ToString()), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
-            if (MemTrace)
+            if (DebugMode)
             {
                 ParentInterpreter.Log(this, "Value of the variable '{0}' is {1}", variable.Name, variable.Value == null ? "{null}" : $"'{variable.Value}' (type:{variable.Value.GetType().FullName})");
             }

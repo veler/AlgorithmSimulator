@@ -9,8 +9,14 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.InvokeCoreMethodExpression;
 
+        /// <summary>
+        /// Gets or sets the class reference that contains the method
+        /// </summary>
         public sealed override AlgorithmReferenceExpression TargetObject
         {
             get

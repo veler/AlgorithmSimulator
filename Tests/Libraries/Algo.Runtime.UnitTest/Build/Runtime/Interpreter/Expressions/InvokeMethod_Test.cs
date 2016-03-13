@@ -27,36 +27,36 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 9);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 9);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
 
-            Assert.AreEqual(simulator.StateChangeHistory[4].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
 
-            Assert.AreEqual(simulator.StateChangeHistory[5].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Primitive value : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Primitive value : '123' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[6].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "(FirstMethod) Return : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "(FirstMethod) Return : '123' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[7].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "(Main) Return : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "(Main) Return : '123' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[8].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -77,26 +77,26 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 7);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 7);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Calling method 'MyVar.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Calling method 'MyVar.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
 
-            Assert.AreEqual(simulator.StateChangeHistory[6].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.Error.Exception.Message, "It looks like the reference class does not exists.");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.Error.Exception.Message, "It looks like the reference class does not exists.");
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
 
         [TestMethod]
@@ -118,34 +118,34 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 16);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 16);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
-            Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
-            Assert.AreEqual(simulator.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
-            Assert.AreEqual(simulator.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
-            Assert.AreEqual(simulator.StateChangeHistory[12].LogMessage, "Primitive value : '123' (type:System.Int32)");
-            Assert.AreEqual(simulator.StateChangeHistory[13].LogMessage, "(FirstMethod) Return : '123' (type:System.Int32)");
-            Assert.AreEqual(simulator.StateChangeHistory[14].LogMessage, "(Main) Return : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[12].LogMessage, "Primitive value : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[13].LogMessage, "(FirstMethod) Return : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[14].LogMessage, "(Main) Return : '123' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[15].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[15].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -161,28 +161,28 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 6);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 6);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Calling method 'This.MethodThatDoesNotExists'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Calling method 'This.MethodThatDoesNotExists'");
 
-            Assert.AreEqual(simulator.StateChangeHistory[4].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
 
-            Assert.AreEqual(simulator.StateChangeHistory[5].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.Error.Exception.Message, "The method 'MethodThatDoesNotExists' does not exists in the current class or is not accessible.");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.Error.Exception.Message, "The method 'MethodThatDoesNotExists' does not exists in the current class or is not accessible.");
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
 
         [TestMethod]
@@ -203,31 +203,31 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 13);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 13);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Reference to the current instance : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "Primitive value : 'Hello World!' (type:System.String)");
-            Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "Variable 'parm1' declared in the method's argument => IsArray:False, DefaultValue:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter");
-            Assert.AreEqual(simulator.StateChangeHistory[8].LogMessage, "Variable 'param2' declared in the method's argument => IsArray:False, DefaultValue:Hello World!");
-            Assert.AreEqual(simulator.StateChangeHistory[9].LogMessage, "Value of the variable 'param2' is 'Hello World!' (type:System.String)");
-            Assert.AreEqual(simulator.StateChangeHistory[10].LogMessage, "(FirstMethod) Return : 'Hello World!' (type:System.String)");
-            Assert.AreEqual(simulator.StateChangeHistory[11].LogMessage, "(Main) Return : 'Hello World!' (type:System.String)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "Primitive value : 'Hello World!' (type:System.String)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "Variable 'parm1' declared in the method's argument => IsArray:False, DefaultValue:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].LogMessage, "Variable 'param2' declared in the method's argument => IsArray:False, DefaultValue:Hello World!");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].LogMessage, "Value of the variable 'param2' is 'Hello World!' (type:System.String)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[10].LogMessage, "(FirstMethod) Return : 'Hello World!' (type:System.String)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[11].LogMessage, "(Main) Return : 'Hello World!' (type:System.String)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[12].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[12].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -248,27 +248,27 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 9);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 9);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Reference to the current instance : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "Primitive value : 'Hello World!' (type:System.String)");
-            Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "Variable 'parm1' declared in the method's argument => IsArray:False, DefaultValue:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "Primitive value : 'Hello World!' (type:System.String)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "Variable 'parm1' declared in the method's argument => IsArray:False, DefaultValue:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter");
 
-            Assert.AreEqual(simulator.StateChangeHistory[8].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
 
         [TestMethod]
@@ -289,25 +289,25 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 6);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 6);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Calling method 'This.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Reference to the current instance : FirstClass");
 
-            Assert.AreEqual(simulator.StateChangeHistory[5].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.Error.Exception.Message, "There is a method 'FirstMethod' in the class 'FirstClass', but it does not have 0 argument(s).");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.Error.Exception.Message, "There is a method 'FirstMethod' in the class 'FirstClass', but it does not have 0 argument(s).");
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
 
         private AlgorithmProgram GetAsyncProgram(bool awaitCall)
@@ -339,30 +339,30 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
         {
             var program = GetAsyncProgram(false);
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
-            Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
-            Assert.AreEqual(simulator.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
-            Assert.AreEqual(simulator.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
-            Assert.AreEqual(simulator.StateChangeHistory[12].LogMessage, "(Main) Return : {null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[12].LogMessage, "(Main) Return : {null}");
 
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -370,34 +370,34 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
         {
             var program = GetAsyncProgram(true);
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 16);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 16);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
-            Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
-            Assert.AreEqual(simulator.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
-            Assert.AreEqual(simulator.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
-            Assert.AreEqual(simulator.StateChangeHistory[12].LogMessage, "Primitive value : '123' (type:System.Int32)");
-            Assert.AreEqual(simulator.StateChangeHistory[13].LogMessage, "(FirstMethod) Return : '123' (type:System.Int32)");
-            Assert.AreEqual(simulator.StateChangeHistory[14].LogMessage, "(Main) Return : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[12].LogMessage, "Primitive value : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[13].LogMessage, "(FirstMethod) Return : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[14].LogMessage, "(Main) Return : '123' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[15].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[15].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -422,31 +422,31 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 13);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 13);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
-            Assert.AreEqual(simulator.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
-            Assert.AreEqual(simulator.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
-            Assert.AreEqual(simulator.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
-            Assert.AreEqual(simulator.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
-            Assert.AreEqual(simulator.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
-            Assert.AreEqual(simulator.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Assign 'MyVar' to 'new FirstClass()'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "Value of the variable 'MyVar' is {null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "Reference to the class : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "Creating a new instance of 'FirstClass'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].LogMessage, "Variable 'MyVar' declared in the class => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].LogMessage, "'MyVar' is now equal to 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[10].LogMessage, "Calling method 'MyVar.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[11].LogMessage, "Value of the variable 'MyVar' is 'Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter' (type:Algo.Runtime.Build.Runtime.Interpreter.Interpreter.ClassInterpreter)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[12].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[12].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
 
         [TestMethod]
@@ -458,13 +458,16 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             // FirstMethod(num)
             // {
             //      if (num > 1)
-            //          return FirstMethod(num - 1)
+            //          num = FirstMethod(num - 1)
             //      return num;
             // }
             var firstMethod = new AlgorithmClassMethodDeclaration("FirstMethod", false);
             firstMethod.Arguments.Add(new AlgorithmParameterDeclaration("num"));
 
-            firstMethod.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.GreaterThan, new AlgorithmPrimitiveExpression(1)), new AlgorithmStatementCollection() { new AlgorithmReturnStatement(new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.Subtraction, new AlgorithmPrimitiveExpression(1)))) }, null));
+            firstMethod.Statements.Add(new AlgorithmConditionStatement(new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.GreaterThan, new AlgorithmPrimitiveExpression(1)), new AlgorithmStatementCollection()
+            {
+                new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("num"), new AlgorithmInvokeMethodExpression(new AlgorithmThisReferenceExpression(), "FirstMethod", new AlgorithmBinaryOperatorExpression(new AlgorithmVariableReferenceExpression("num"), AlgorithmBinaryOperatorType.Subtraction, new AlgorithmPrimitiveExpression(1))))
+            }, null));
             firstMethod.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("num")));
 
             firstClass.Members.Add(firstMethod);
@@ -476,23 +479,23 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 50004);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 70000);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[50002].LogMessage, "(Main) Return : '1' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[69998].LogMessage, "(Main) Return : '1' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[50003].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[69999].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -522,23 +525,23 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 90016);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 90016);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[90015].Error.Exception.Message, "You called too many (more than 10000) methods in the same thread.");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[90015].Error.Exception.Message, "You called too many (more than 10000) methods in the same thread.");
 
-            Assert.AreEqual(simulator.StateChangeHistory[90015].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[90015].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
 
         [TestMethod]
@@ -570,25 +573,25 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 107);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 107);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
             
-            Assert.AreEqual(simulator.DebugInfo.CallStackService.CallStacks.First().Stack.Count, 10);
-            Assert.AreEqual(simulator.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "num");
-            Assert.AreEqual(simulator.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)2);
+            Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.Count, 10);
+            Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "num");
+            Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)2);
 
-            Assert.AreEqual(simulator.StateChangeHistory[106].State, SimulatorState.StoppedWithError);
-            Assert.AreEqual(simulator.State, SimulatorState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[106].State, AlgorithmInterpreterState.StoppedWithError);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }
 
         [TestMethod]
@@ -618,24 +621,24 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
             
             Task.Delay(TimeSpan.FromMilliseconds(100)).Wait();
 
-            simulator.Stop();
+            algorithmInterpreter.Stop();
 
             Task.Delay(TimeSpan.FromSeconds(3)).Wait();
             
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory.Last().State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Last().State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
             
-            Simulator_Test.RunProgramStopWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramStopWithoutDebug(program);
         }
     }
 }

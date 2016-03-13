@@ -9,12 +9,21 @@ using System.Reflection;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
+    /// <summary>
+    /// Provide the interpreter for a instanciation
+    /// </summary>
     internal sealed class Instanciate : InterpretExpression
     {
         #region Constructors
 
-        internal Instanciate(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
-            : base(memTrace, parentInterpreter, expression)
+        /// <summary>
+        /// Initialize a new instance of <see cref="Instanciate"/>
+        /// </summary>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        /// <param name="parentInterpreter">The parent block interpreter</param>
+        /// <param name="expression">The algorithm expression</param>
+        internal Instanciate(bool debugMode, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
+            : base(debugMode, parentInterpreter, expression)
         {
         }
 
@@ -22,6 +31,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         #region Methods
 
+        /// <summary>
+        /// Run the interpretation
+        /// </summary>
+        /// <returns>Returns the result of the interpretation</returns>
         internal override object Execute()
         {
             Collection<object> argumentValues;
@@ -33,7 +46,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            if (MemTrace)
+            if (DebugMode)
             {
                 ParentInterpreter.Log(this, $"Creating a new instance of '{createType}'");
             }
@@ -41,7 +54,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             var classInterpreter = reference as ClassInterpreter;
             if (classInterpreter != null)
             {
-                var program = (ProgramInterpreter)ParentInterpreter.GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
+                var program = ParentInterpreter.ParentProgramInterpreter;
                 var classInstance = (classInterpreter).CreateNewInstance();
 
                 classInstance.StateChanged += ParentInterpreter.ChangeState;
@@ -52,7 +65,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 });
                 classInstance.Initialize();
 
-                argumentValues = GetArgumentValues();
+                argumentValues = InvokeMethod.GetArgumentValues(Expression, ParentInterpreter);
 
                 if (ParentInterpreter.FailedOrStop)
                 {
@@ -67,7 +80,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             if (type != null)
             {
                 object classInstance = null;
-                argumentValues = GetArgumentValues();
+                argumentValues = InvokeMethod.GetArgumentValues(Expression, ParentInterpreter);
 
                 if (ParentInterpreter.FailedOrStop)
                 {
@@ -82,36 +95,21 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 {
                     if (ex is ArgumentException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message)), ParentInterpreter.GetDebugInfo()));
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException("{Unknow}", ex.Message), Expression), ParentInterpreter.GetDebugInfo()));
                     }
                     else if (ex is TargetParameterCountException)
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {argumentValues.Count} argument(s) in the class '{Expression._createType}'.")), ParentInterpreter.GetDebugInfo()));
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MethodNotFoundException("ctor", $"There is no constructor with {argumentValues.Count} argument(s) in the class '{Expression._createType}'."), Expression), ParentInterpreter.GetDebugInfo()));
                     }
                     else
                     {
-                        ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(ex), ParentInterpreter.GetDebugInfo()));
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(ex, Expression), ParentInterpreter.GetDebugInfo()));
                     }
                     return null;
                 }
                 return classInstance;
             }
             return null;
-        }
-
-        private Collection<object> GetArgumentValues()
-        {
-            var argumentValues = new Collection<object>();
-
-            foreach (var arg in Expression._argumentsExpression)
-            {
-                if (!ParentInterpreter.FailedOrStop)
-                {
-                    argumentValues.Add(ParentInterpreter.RunExpression(arg));
-                }
-            }
-
-            return argumentValues;
         }
 
         #endregion

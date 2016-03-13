@@ -6,7 +6,10 @@
     public class AlgorithmThisReferenceExpression : AlgorithmReferenceExpression
     {
         #region Properties
-        
+
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.ThisReferenceExpression;
 
         #endregion

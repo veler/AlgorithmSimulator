@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Debugger.CallStack
 {
+    /// <summary>
+    /// Represents a call in a call stack
+    /// </summary>
     public sealed class Call
     {
         #region Properties

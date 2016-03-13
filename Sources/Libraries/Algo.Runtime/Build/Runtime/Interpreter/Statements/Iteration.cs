@@ -4,18 +4,30 @@ using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
+    /// <summary>
+    /// Provide the interpreter for an iteration
+    /// </summary>
     internal sealed class Iteration : InterpretStatement
     {
         #region Properties
 
+        /// <summary>
+        /// Gets or sets if a "return" occured in the execution block of the iteration
+        /// </summary>
         internal bool ReturnOccured { get; set; }
 
         #endregion
 
         #region Constructors
 
-        public Iteration(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
-            : base(memTrace, parentInterpreter, statement)
+        /// <summary>
+        /// Initialize a new instance of <see cref="Condition"/>
+        /// </summary>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        /// <param name="parentInterpreter">The parent block interpreter</param>
+        /// <param name="statement">The algorithm statement</param>
+        public Iteration(bool debugMode, BlockInterpreter parentInterpreter, AlgorithmStatement statement)
+            : base(debugMode, parentInterpreter, statement)
         {
         }
 
@@ -23,6 +35,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
         #region Methods
 
+        /// <summary>
+        /// Run the interpretation
+        /// </summary>
         internal override void Execute()
         {
             var conditionResult = false;
@@ -47,7 +62,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
                 }
             }
 
-            var block = new BlockInterpreter(Statement._statements, MemTrace);
+            var block = new BlockInterpreter(Statement._statements, DebugMode, ParentInterpreter.ParentProgramInterpreter, ParentInterpreter.ParentMethodInterpreter, ParentInterpreter.ParentBlockInterpreter, ParentInterpreter.ParentClassInterpreter);
             block.OnGetParentInterpreter += new Func<BlockInterpreter>(() => ParentInterpreter);
             block.StateChanged += ParentInterpreter.ChangeState;
             block.Initialize();
@@ -80,6 +95,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             }
         }
 
+        /// <summary>
+        /// Execute the condition
+        /// </summary>
+        /// <returns>Return true or false, even in case of error</returns>
         private bool RunCondition()
         {
             var conditionResult = Condition.RunCondition(ParentInterpreter, Statement._condition);

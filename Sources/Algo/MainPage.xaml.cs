@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -43,7 +44,7 @@ namespace Algo
                var messageDialog = new MessageDialog();
                messageDialog.ShowAsync(stopWatch.Elapsed.TotalMilliseconds.ToString());
              */
-
+             
             var firstMethod = new AlgorithmClassMethodDeclaration("FirstMethod", false);
             firstMethod.Arguments.Add(new AlgorithmParameterDeclaration("num"));
 
@@ -51,7 +52,7 @@ namespace Algo
             firstMethod.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("num")));
 
             firstClass.Members.Add(firstMethod);
-
+            
             var entryPoint = new AlgorithmEntryPointMethod();
 
             entryPoint.Statements.Add(new AlgorithmVariableDeclaration("stopWatch"));
@@ -65,15 +66,16 @@ namespace Algo
             entryPoint.Statements.Add(new AlgorithmVariableDeclaration("messageDialog"));
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("messageDialog"), new AlgorithmInstanciateExpression(new AlgorithmClassReferenceExpression(typeof(MessageDialog)), new AlgorithmInvokeCoreMethodExpression(new AlgorithmPropertyReferenceExpression(new AlgorithmPropertyReferenceExpression(new AlgorithmVariableReferenceExpression("stopWatch"), "Elapsed"), "TotalMilliseconds"), "ToString", null))));
             entryPoint.Statements.Add(new AlgorithmExpressionStatement(new AlgorithmInvokeCoreMethodExpression(new AlgorithmVariableReferenceExpression("messageDialog"), "ShowAsync", null)));
-
+            
             firstClass.Members.Add(entryPoint);
 
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
+            
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
+            
+            await algorithmInterpreter.StartAsync(debugMode: false);
 
-            var simulator = new Simulator(program);
-
-            await simulator.StartAsync(debugMode: false); 
             //task.Wait();
             //task.RunSynchronously();
         }

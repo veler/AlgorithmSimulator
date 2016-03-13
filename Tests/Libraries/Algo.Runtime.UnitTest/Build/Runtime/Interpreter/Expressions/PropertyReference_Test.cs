@@ -29,23 +29,23 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 20);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 20);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
             
-            Assert.AreEqual(simulator.StateChangeHistory[18].LogMessage, "(Main) Return : '246' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[18].LogMessage, "(Main) Return : '246' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[19].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[19].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -64,23 +64,23 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 15);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 15);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[13].LogMessage, "(Main) Return : '1' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[13].LogMessage, "(Main) Return : '1' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[14].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[14].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
     }
 }

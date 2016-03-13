@@ -101,6 +101,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -112,7 +114,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
@@ -172,6 +174,7 @@
     <Compile Include="Build\Runtime\Debugger\Exceptions\MethodNotAwaitableException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\NotAssignableException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\OperatorNotFoundException.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\StateException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\VariableAlreadyExistsException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\PropertyNotFoundException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\VariableNotFoundException.cs" />
@@ -205,11 +208,11 @@
     <Compile Include="Build\Runtime\Interpreter\Statements\VariableDeclaration.cs" />
     <Compile Include="Build\Runtime\Memory\MemoryObject.cs" />
     <Compile Include="Build\Runtime\Interpreter\Statements\Assign.cs" />
-    <Compile Include="Build\Runtime\Simulator.cs" />
-    <Compile Include="Build\Runtime\SimulatorState.cs" />
+    <Compile Include="Build\Runtime\AlgorithmInterpreter.cs" />
+    <Compile Include="Build\Runtime\AlgorithmInterpreterState.cs" />
     <Compile Include="Build\Runtime\Memory\Variable.cs" />
     <Compile Include="Build\Runtime\Debugger\CallStack\CallStack.cs" />
-    <Compile Include="Build\Runtime\SimulatorStateEventArgs.cs" />
+    <Compile Include="Build\Runtime\AlgorithmInterpreterStateEventArgs.cs" />
     <Compile Include="Build\Runtime\Utils\Consts.cs" />
     <Compile Include="ComponentModel\EnumExtension.cs" />
     <Compile Include="ComponentModel\ObjectExtension.cs" />

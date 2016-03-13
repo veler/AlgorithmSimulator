@@ -20,7 +20,7 @@
         /// Initialize a new instance of <see cref="AlgorithmClassMember"/>
         /// </summary>
         /// <param name="name">The name of the member</param>
-        public AlgorithmClassMember(string name)
+        protected AlgorithmClassMember(string name)
         {
             Name = new AlgorithmIdentifier(name);
         }

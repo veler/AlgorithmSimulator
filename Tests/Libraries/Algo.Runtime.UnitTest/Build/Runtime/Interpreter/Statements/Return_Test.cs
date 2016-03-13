@@ -21,27 +21,27 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 6);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 6);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Primitive value : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Primitive value : '123' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[4].State, SimulatorState.Log);
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "(Main) Return : '123' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "(Main) Return : '123' (type:System.Int32)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[5].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -63,25 +63,25 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 7);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 7);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
 
-            Assert.AreEqual(simulator.StateChangeHistory[3].LogMessage, "Primitive value : 'True' (type:System.Boolean)");
-            Assert.AreEqual(simulator.StateChangeHistory[4].LogMessage, "Primitive value : 'True' (type:System.Boolean)");
-            Assert.AreEqual(simulator.StateChangeHistory[5].LogMessage, "(Main) Return : 'True' (type:System.Boolean)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].LogMessage, "Primitive value : 'True' (type:System.Boolean)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].LogMessage, "Primitive value : 'True' (type:System.Boolean)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].LogMessage, "(Main) Return : 'True' (type:System.Boolean)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[6].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
 
         [TestMethod]
@@ -110,24 +110,24 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Statements
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
 
-            var simulator = new Simulator(program);
+            var algorithmInterpreter = new AlgorithmInterpreter(program);
 
-            var task = simulator.StartAsync(debugMode: true);
+            var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
 
-            Assert.AreEqual(simulator.StateChangeHistory.Count, 11);
-            Assert.AreEqual(simulator.StateChangeHistory[0].State, SimulatorState.Ready);
-            Assert.AreEqual(simulator.StateChangeHistory[1].State, SimulatorState.Preparing);
-            Assert.AreEqual(simulator.StateChangeHistory[2].State, SimulatorState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 11);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
             
-            Assert.AreEqual(simulator.StateChangeHistory[8].LogMessage, "Primitive value : 'True' (type:System.Boolean)");
-            Assert.AreEqual(simulator.StateChangeHistory[9].LogMessage, "(Main) Return : 'True' (type:System.Boolean)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].LogMessage, "Primitive value : 'True' (type:System.Boolean)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].LogMessage, "(Main) Return : 'True' (type:System.Boolean)");
 
-            Assert.AreEqual(simulator.StateChangeHistory[10].State, SimulatorState.Stopped);
-            Assert.AreEqual(simulator.State, SimulatorState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[10].State, AlgorithmInterpreterState.Stopped);
+            Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);
 
-            Simulator_Test.RunProgramWithoutDebug(program);
+            AlgorithmInterpreter_Test.RunProgramWithoutDebug(program);
         }
     }
 }

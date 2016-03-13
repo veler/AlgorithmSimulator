@@ -7,6 +7,9 @@
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.InvokeMethodExpression;
 
         /// <summary>
@@ -46,9 +49,8 @@
         /// <param name="methodName">The method name to call</param>
         /// <param name="arguments">The arguments to pass during the call</param>
         public AlgorithmInvokeMethodExpression(string methodName, params AlgorithmExpression[] arguments)
-            : this(null, methodName, arguments)
+            : this(new AlgorithmThisReferenceExpression(), methodName, arguments)
         {
-            TargetObject = new AlgorithmThisReferenceExpression();
         }
 
         /// <summary>

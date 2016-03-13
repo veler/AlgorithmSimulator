@@ -12,24 +12,35 @@ using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter
 {
+    /// <summary>
+    /// Provides a basic class for an interpreter
+    /// </summary>
     internal abstract class Interpret : MemoryTraceObject, IDisposable
     {
         #region Fields
 
         private bool _failed;
         private bool _stopped;
-        private ProgramInterpreter _parentProgram;
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="InterpreterType"/> used to identify the object without reflection
+        /// </summary>
         [JsonIgnore]
         internal abstract InterpreterType InterpreterType { get; }
 
+        /// <summary>
+        /// Gets or sets the list of variables in the current interpreter
+        /// </summary>
         [JsonProperty]
         internal Collection<Variable> Variables { get; set; }
 
+        /// <summary>
+        /// Gets if this or any parent interpreter has asked to stop or has throw an error
+        /// </summary>
         [JsonIgnore]
         internal bool FailedOrStop
         {
@@ -39,18 +50,21 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             }
         }
 
+        /// <summary>
+        /// Gets or sets if this or any parent interpreter has throw an error
+        /// </summary>
         [JsonIgnore]
         protected bool Failed
         {
             get
             {
                 SetParentProgramInterpreter();
-                if (_parentProgram == null)
+                if (ParentProgramInterpreter == null)
                 {
                     return _failed;
                 }
-                _failed = _parentProgram.Failed;
-                return _parentProgram.Failed;
+                _failed = ParentProgramInterpreter.Failed;
+                return ParentProgramInterpreter.Failed;
             }
             private set
             {
@@ -58,18 +72,21 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             }
         }
 
+        /// <summary>
+        /// Gets or sets if this or any parent interpreter has asked to stop
+        /// </summary>
         [JsonIgnore]
         protected bool Stopped
         {
             get
             {
                 SetParentProgramInterpreter();
-                if (_parentProgram == null)
+                if (ParentProgramInterpreter == null)
                 {
                     return _stopped;
                 }
-                _stopped = _parentProgram.Stopped;
-                return _parentProgram.Stopped;
+                _stopped = ParentProgramInterpreter.Stopped;
+                return ParentProgramInterpreter.Stopped;
             }
             set
             {
@@ -77,24 +94,58 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             }
         }
 
+        /// <summary>
+        /// Gets or sets the parent <see cref="ProgramInterpreter"/>
+        /// </summary>
+        [JsonIgnore]
+        internal ProgramInterpreter ParentProgramInterpreter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent <see cref="ClassInterpreter"/>
+        /// </summary>
+        [JsonIgnore]
+        internal ClassInterpreter ParentClassInterpreter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent <see cref="MethodInterpreter"/>
+        /// </summary>
+        [JsonIgnore]
+        internal MethodInterpreter ParentMethodInterpreter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent <see cref="BlockInterpreter"/>
+        /// </summary>
+        [JsonIgnore]
+        internal BlockInterpreter ParentBlockInterpreter { get; set; }
+
         #endregion
 
         #region Events
 
-        internal event SimulatorStateEventHandler StateChanged;
+        /// <summary>
+        /// Raised when the state of the algorithm interpreter has changed
+        /// </summary>
+        internal event AlgorithmInterpreterStateEventHandler StateChanged;
 
         #endregion
 
         #region Handlers
 
+        /// <summary>
+        /// Invoked to get the parent interpreter
+        /// </summary>
         internal Func<Interpret> OnGetParentInterpreter;
 
         #endregion
 
         #region Constructors
 
-        internal Interpret(bool memTrace)
-            : base(memTrace)
+        /// <summary>
+        /// Initialize a new instance of <see cref="Interpret"/>
+        /// </summary>
+        /// <param name="debugMode">defines is the debug mode is enabled or not</param>
+        internal Interpret(bool debugMode)
+            : base(debugMode)
         {
         }
 
@@ -102,17 +153,28 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
 
         #region Methods
 
+        /// <summary>
+        /// Initialize, after the constructor, the other properties
+        /// </summary>
         internal abstract void Initialize();
 
+        /// <summary>
+        /// Dispose the resources
+        /// </summary>
         public abstract void Dispose();
 
-        internal virtual void ChangeState(object source, SimulatorStateEventArgs e)
+        /// <summary>
+        /// Change the state of the current interpreter
+        /// </summary>
+        /// <param name="source">The source from where we changed the state (an interpreter usually)</param>
+        /// <param name="e">The new state</param>
+        internal virtual void ChangeState(object source, AlgorithmInterpreterStateEventArgs e)
         {
-            if (e.State == SimulatorState.StoppedWithError)
+            if (e.State == AlgorithmInterpreterState.StoppedWithError)
             {
                 Failed = true;
             }
-            else if (e.State == SimulatorState.Stopped)
+            else if (e.State == AlgorithmInterpreterState.Stopped)
             {
                 Stopped = true;
             }
@@ -123,16 +185,31 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             }
         }
 
+        /// <summary>
+        /// Add a new log
+        /// </summary>
+        /// <param name="source">The source from where we changed the state (an interpreter usually)</param>
+        /// <param name="format">the message format</param>
+        /// <param name="args">the message arguments</param>
         internal void Log(object source, string format, params object[] args)
         {
-            ChangeState(source, new SimulatorStateEventArgs(string.Format(format, args)));
+            ChangeState(source, new AlgorithmInterpreterStateEventArgs(string.Format(format, args)));
         }
 
+        /// <summary>
+        /// Add a new log
+        /// </summary>
+        /// <param name="source">The source from where we changed the state (an interpreter usually)</param>
+        /// <param name="log">the log message</param>
         internal void Log(object source, string log)
         {
-            ChangeState(source, new SimulatorStateEventArgs(log));
+            ChangeState(source, new AlgorithmInterpreterStateEventArgs(log));
         }
 
+        /// <summary>
+        /// Returns the parent interpreter
+        /// </summary>
+        /// <returns>Returns the parent interpreter, if exists</returns>
         internal Interpret GetParentInterpreter()
         {
             if (InterpreterType == InterpreterType.ProgramInterpreter)
@@ -141,13 +218,19 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             }
             if (OnGetParentInterpreter == null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new NullReferenceException("OnGetParentInterpreter handler is null")), GetDebugInfo()));
+                ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NullReferenceException("OnGetParentInterpreter handler is null")), GetDebugInfo()));
                 return null;
             }
 
             return OnGetParentInterpreter();
         }
 
+        /// <summary>
+        /// Returns the first parent interpreter that correspond to the specified <see cref="InterpreterType"/>
+        /// </summary>
+        /// <param name="interpreterType">The interpreter type</param>
+        /// <param name="allowCurrent">Defines if we can consider the current interpreter as the next first parent</param>
+        /// <returns>Returns the corresponding interpreter</returns>
         internal Interpret GetFirstNextParentInterpreter(InterpreterType interpreterType, bool allowCurrent = true)
         {
             if (InterpreterType == InterpreterType.ProgramInterpreter)
@@ -170,11 +253,17 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             return parent;
         }
 
+        /// <summary>
+        /// Add a variable to the current interpreter
+        /// </summary>
+        /// <param name="variable">The variable we wand to add</param>
+        /// <param name="defaultValue">The variable default value</param>
+        /// <param name="isArg">Defines if this variable is an argument of a method</param>
         internal void AddVariable(IAlgorithmVariable variable, object defaultValue = null, bool isArg = false)
         {
-            if (MemTrace && FindVariable(variable.Name.ToString()) != null)
+            if (FindVariable(variable.Name.ToString()) != null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new VariableAlreadyExistsException(variable.Name.ToString())), GetDebugInfo()));
+                ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new VariableAlreadyExistsException(variable.Name.ToString())), GetDebugInfo()));
                 return;
             }
 
@@ -201,14 +290,19 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             {
                 defaultValue = variable.DefaultValue.Value;
             }
-            Variables.Add(new Variable(variable.Name.ToString(), MemTrace, defaultValue, variable.IsArray));
+            Variables.Add(new Variable(variable.Name.ToString(), DebugMode, defaultValue, variable.IsArray));
 
-            if (MemTrace)
+            if (DebugMode)
             {
                 Log(this, "Variable '{0}' declared in the {1} => IsArray:{2}, DefaultValue:{3}", variable.Name, location, variable.IsArray, defaultValue == null ? "{null}" : defaultValue.ToString());
             }
         }
 
+        /// <summary>
+        /// Find the first accessible variable in this interpreter and its parent with the specified name
+        /// </summary>
+        /// <param name="variableName">The variable name</param>
+        /// <returns>Returns the variable</returns>
         internal Variable FindVariable(string variableName)
         {
             var interpreter = this;
@@ -226,11 +320,20 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             return variable;
         }
 
+        /// <summary>
+        /// Find the first variable in the current interpret with the specified name
+        /// </summary>
+        /// <param name="variableName">The variable name</param>
+        /// <returns>Returns the variable</returns>
         internal Variable FindVariableInTheCurrentInterpreter(string variableName)
         {
             return Variables.FirstOrDefault(va => va.Name == variableName);
         }
 
+        /// <summary>
+        /// Returns all accessible variables from the current interpreter and its parents
+        /// </summary>
+        /// <returns>Returns the list of available variables</returns>
         internal ReadOnlyCollection<Variable> GetAllAccessibleVariable()
         {
             var variables = new List<Variable>();
@@ -245,17 +348,22 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             return variables.AsReadOnly();
         }
 
+        /// <summary>
+        /// Returns all the debug information we have at the current time
+        /// </summary>
+        /// <param name="clearCallStack">Defines if the user call stack must be cleared</param>
+        /// <returns>Returns the current debug information</returns>
         internal DebugInfo GetDebugInfo(bool clearCallStack = true)
         {
             SetParentProgramInterpreter();
-            if (_parentProgram == null)
+            if (ParentProgramInterpreter == null)
             {
                 throw new NullReferenceException("The parent program interpreter is null.");
             }
 
-            var debugInfo = _parentProgram.DebugInfo;
+            var debugInfo = ParentProgramInterpreter.DebugInfo;
 
-            if (MemTrace && this is BlockInterpreter)
+            if (DebugMode && this is BlockInterpreter)
             {
                 var interpreter = GetFirstNextParentInterpreter(InterpreterType.MethodInterpreter);
                 if (interpreter != null)
@@ -280,14 +388,17 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
             return debugInfo;
         }
 
+        /// <summary>
+        /// Sets the parent <see cref="ProgramInterpreter"/>
+        /// </summary>
         private void SetParentProgramInterpreter()
         {
-            if (_parentProgram == null)
+            if (ParentProgramInterpreter == null)
             {
                 var interpreter = GetFirstNextParentInterpreter(InterpreterType.ProgramInterpreter);
                 if (interpreter != null)
                 {
-                    _parentProgram = (ProgramInterpreter)interpreter;
+                    ParentProgramInterpreter = (ProgramInterpreter)interpreter;
                 }
             }
         }

@@ -7,6 +7,9 @@
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.SnippetStatement;
 
         /// <summary>
@@ -32,6 +35,19 @@
         public AlgorithmSnippetStatement(string code)
         {
             Code = code;
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Gets a string representation of the statement
+        /// </summary>
+        /// <returns>String that reprensents the statement</returns>
+        public override string ToString()
+        {
+            return $"'{Code}'";
         }
 
         #endregion

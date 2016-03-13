@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines identifiers for the state of the interpreter
     /// </summary>
-    public enum SimulatorState
+    public enum AlgorithmInterpreterState
     {
         /// <summary>
         /// Actually in pause, ready to continue

@@ -1,14 +1,21 @@
-﻿using Algo.Runtime.Build.AlgorithmDOM.DOM;
-using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
+﻿using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
+    /// <summary>
+    /// Provide the interpreter for a breakpoint in debug mode
+    /// </summary>
     internal sealed class Breakpoint : InterpretStatement
     {
         #region Constructors
 
-        internal Breakpoint(bool memTrace, BlockInterpreter parentInterpreter)
-            : base(memTrace, parentInterpreter, null)
+        /// <summary>
+        /// Initialize a new instance of <see cref="Breakpoint"/>
+        /// </summary>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        /// <param name="parentInterpreter">The parent block interpreter</param>
+        internal Breakpoint(bool debugMode, BlockInterpreter parentInterpreter)
+            : base(debugMode, parentInterpreter, null)
         {
         }
 
@@ -16,12 +23,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 
         #region Methods
 
+        /// <summary>
+        /// Run the interpretation
+        /// </summary>
         internal override void Execute()
         {
-            if (MemTrace)
+            if (DebugMode)
             {
                 ParentInterpreter.Log(this, "Breakpoint intercepted");
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(SimulatorState.PauseBreakpoint, ParentInterpreter.GetDebugInfo(false)));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.PauseBreakpoint, ParentInterpreter.GetDebugInfo(false)));
             }
         }
 

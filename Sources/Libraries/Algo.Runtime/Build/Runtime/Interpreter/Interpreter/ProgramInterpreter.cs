@@ -6,45 +6,92 @@ using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Algo.Runtime.Build.Runtime.Debugger.CallStack;
-using Algo.Runtime.Build.Runtime.Interpreter.Expressions;
 using Algo.Runtime.ComponentModel.OperatorHelper;
 using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 {
+    /// <summary>
+    /// Provide a sets of method to interpret a program in an algorithm
+    /// </summary>
     internal sealed class ProgramInterpreter : Interpret
     {
         #region Properties
 
+        /// <summary>
+        /// Gets a <see cref="InterpreterType"/> used to identify the object without reflection
+        /// </summary>
         [JsonIgnore]
         internal override InterpreterType InterpreterType => InterpreterType.ProgramInterpreter;
 
+        /// <summary>
+        /// Gets or sets the program declaration
+        /// </summary>
         [JsonProperty]
         internal AlgorithmProgram ProgramDeclaration { get; set; }
 
+        /// <summary>
+        /// Gets or sets the list of classes in the program
+        /// </summary>
         [JsonProperty]
         internal Collection<ClassInterpreter> Classes { get; set; }
 
+        /// <summary>
+        /// Gets or sets the current program execution state
+        /// </summary>
         [JsonProperty]
-        internal SimulatorState State { get; private set; }
+        internal AlgorithmInterpreterState State { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the current debug information
+        /// </summary>
         [JsonProperty]
         internal DebugInfo DebugInfo { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the instance of the class which have the entry point
+        /// </summary>
         [JsonProperty]
         private ClassInterpreter EntryPointInstance { get; set; }
 
+        /// <summary>
+        /// Gets or sets a waiter used by the debugger to put the program in pause
+        /// </summary>
         internal AutoResetEvent Waiter { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a secondary waiter used by the debugger to put the program in pause when we do a Step Into, Step Over or Step Out
+        /// </summary>
+        internal AutoResetEvent StepIntoOverOutWaiter { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the we actually do a Step Over
+        /// </summary>
+        internal bool StepOverSignal { get; set; }
+
+        /// <summary>
+        /// Gets or sets the we should not consider the current Step Over (usually because of a breakpoint in a method)
+        /// </summary>
+        internal bool CancelStepOverSignal { get; set; }
+
+        /// <summary>
+        /// Gets or sets the we actually do a Step Out
+        /// </summary>
+        internal bool StepOutSignal { get; set; }
 
         #endregion
 
         #region Constructors
 
-        internal ProgramInterpreter(AlgorithmProgram programDecl, bool memTrace)
-            : base(memTrace)
+        /// <summary>
+        /// Initialize a new instance of <see cref="ProgramInterpreter"/>
+        /// </summary>
+        /// <param name="programDeclaration">the program declaration</param>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        internal ProgramInterpreter(AlgorithmProgram programDeclaration, bool debugMode)
+            : base(debugMode)
         {
-            ProgramDeclaration = programDecl;
+            ProgramDeclaration = programDeclaration;
 
             // Just for better performances after, we call it a first time
             OperatorHelperCache.Initialize();
@@ -54,6 +101,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
         #region Methods
 
+        /// <summary>
+        /// Initialize, after the constructor, the other properties
+        /// </summary>
         internal override void Initialize()
         {
             Variables = new Collection<Variable>();
@@ -72,20 +122,23 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             {
                 if (!FailedOrStop)
                 {
-                    Classes.Add(new ClassInterpreter(cl, MemTrace));
+                    Classes.Add(new ClassInterpreter(cl, DebugMode));
                 }
             }
         }
 
+        /// <summary>
+        /// Start the program by finding the entry point and calling it
+        /// </summary>
         internal void Start()
         {
-            if (State != SimulatorState.Ready && State != SimulatorState.Stopped && State != SimulatorState.StoppedWithError)
+            if (State != AlgorithmInterpreterState.Ready && State != AlgorithmInterpreterState.Stopped && State != AlgorithmInterpreterState.StoppedWithError)
             {
-                throw new InvalidOperationException("Unable to start a simulator which is not stopped.");
+                throw new InvalidOperationException("Unable to start a algorithm interpreter which is not stopped.");
             }
 
-            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Preparing));
-            
+            ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.Preparing));
+
             Initialize();
 
             var entryPointMethod = ProgramDeclaration.GetEntryPointMethod();
@@ -94,11 +147,11 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
             if (entryPointMethod == null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath)), GetDebugInfo()));
+                ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath)), GetDebugInfo()));
                 return;
             }
 
-            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Running));
+            ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.Running));
 
             while (i < Classes.Count && entryPointClass == null)
             {
@@ -112,7 +165,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
             if (entryPointClass == null)
             {
-                ChangeState(this, new SimulatorStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath)), GetDebugInfo()));
+                ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new MissingEntryPointMethodException(ProgramDeclaration.EntryPointPath)), GetDebugInfo()));
                 return;
             }
 
@@ -140,47 +193,146 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
             EntryPointInstance.StateChanged -= ChangeState;
         }
 
+        /// <summary>
+        /// Stop the program
+        /// </summary>
         internal void Stop()
         {
-            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Stopped));
+            ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.Stopped));
             Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+            FreeWaiter();
         }
 
+        /// <summary>
+        /// Ask the program to pause
+        /// </summary>
         internal void Pause()
         {
             Waiter = new AutoResetEvent(false);
             Waiter.Reset();
             Task.Delay(TimeSpan.FromMilliseconds(200)).Wait();
-            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Pause));
+            ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.Pause));
+#if DEBUG
             Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+#endif
         }
 
+        /// <summary>
+        /// Put the program in pause after a breakpoint
+        /// </summary>
         internal void Breakpoint()
         {
             Waiter = new AutoResetEvent(false);
             Waiter.Reset();
+#if DEBUG
             Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+#endif
         }
 
+        /// <summary>
+        /// Resume the paused program
+        /// </summary>
         internal void Resume()
         {
-            ChangeState(this, new SimulatorStateEventArgs(SimulatorState.Running));
+            CancelStepOverSignal = true;
+            ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.Running));
             Task.Delay(TimeSpan.FromSeconds(1)).Wait();
-            Waiter.Set();
-            Waiter.Dispose();
-            Waiter = null;
+            FreeWaiter();
+            FreeStepIntoOverOutWaiter();
         }
 
-        internal override void ChangeState(object source, SimulatorStateEventArgs e)
+        /// <summary>
+        /// Step into the current statement
+        /// </summary>
+        internal void StepInto()
+        {
+            Resume();
+            ResetStepIntoOverOutWaiter();
+#if DEBUG
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+#endif
+        }
+
+        /// <summary>
+        /// Step over the current statement without goind inside the method, if it's a method invocation
+        /// </summary>
+        internal void StepOver()
+        {
+            StepOverSignal = true;
+            Resume();
+            CancelStepOverSignal = false;
+            ResetStepIntoOverOutWaiter();
+#if DEBUG
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+#endif
+        }
+
+        /// <summary>
+        /// Step out the current method and pause in the parent block
+        /// </summary>
+        internal void StepOut()
+        {
+            StepOutSignal = true;
+            Resume();
+            ResetStepIntoOverOutWaiter();
+#if DEBUG
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+#endif
+        }
+
+        /// <summary>
+        /// Change the state of the current program
+        /// </summary>
+        /// <param name="source">The source from where we changed the state (an interpreter usually)</param>
+        /// <param name="e">The new state</param>
+        internal override void ChangeState(object source, AlgorithmInterpreterStateEventArgs e)
         {
             base.ChangeState(source, e);
 
-            if (e.State != SimulatorState.Log)
+            if (e.State != AlgorithmInterpreterState.Log)
             {
                 State = e.State;
             }
         }
 
+        /// <summary>
+        /// Set the waiter
+        /// </summary>
+        private void FreeWaiter()
+        {
+            if (Waiter != null)
+            {
+                Waiter.Set();
+                Waiter.Dispose();
+                Waiter = null;
+            }
+        }
+
+        /// <summary>
+        /// Set the secondary waiter
+        /// </summary>
+        internal void FreeStepIntoOverOutWaiter()
+        {
+            if (StepIntoOverOutWaiter != null)
+            {
+                StepIntoOverOutWaiter.Set();
+                StepIntoOverOutWaiter.Dispose();
+                StepIntoOverOutWaiter = null;
+            }
+        }
+
+        /// <summary>
+        /// Reset the secondary waiter
+        /// </summary>
+        internal void ResetStepIntoOverOutWaiter()
+        {
+            StepIntoOverOutWaiter = new AutoResetEvent(false);
+            StepIntoOverOutWaiter.Reset();
+        }
+
+        /// <summary>
+        /// Dispose the resources
+        /// </summary>
         public override void Dispose()
         {
             Task.Run(() =>
@@ -210,6 +362,9 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     Classes.Clear();
                 }
                 Classes = null;
+
+                FreeWaiter();
+                FreeStepIntoOverOutWaiter();
             });
         }
 

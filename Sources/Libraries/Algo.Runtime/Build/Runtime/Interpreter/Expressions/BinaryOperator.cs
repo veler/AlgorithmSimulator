@@ -8,12 +8,21 @@ using Algo.Runtime.ComponentModel.OperatorHelper;
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 {
+    /// <summary>
+    /// Provide the interpreter for a binany operation
+    /// </summary>
     internal sealed class BinaryOperator : InterpretExpression
     {
         #region Constructors
 
-        internal BinaryOperator(bool memTrace, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
-            : base(memTrace, parentInterpreter, expression)
+        /// <summary>
+        /// Initialize a new instance of <see cref="BinaryOperator"/>
+        /// </summary>
+        /// <param name="debugMode">Defines if the debug mode is enabled</param>
+        /// <param name="parentInterpreter">The parent block interpreter</param>
+        /// <param name="expression">The algorithm expression</param>
+        internal BinaryOperator(bool debugMode, BlockInterpreter parentInterpreter, AlgorithmExpression expression)
+            : base(debugMode, parentInterpreter, expression)
         {
         }
 
@@ -21,6 +30,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
 
         #region Methods
 
+        /// <summary>
+        /// Run the interpretation
+        /// </summary>
+        /// <returns>Returns the result of the interpretation</returns>
         internal override object Execute()
         {
             object left;
@@ -41,7 +54,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            if (MemTrace)
+            if (DebugMode)
             {
                 ParentInterpreter.Log(this, $"Doing an operation '{Expression._operator}'");
             }
@@ -62,23 +75,19 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             operatorMethod = OperatorHelperCache.GetOperator(Expression._operator, left.GetType(), right.GetType());
             if (operatorMethod == null)
             {
-                ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), $"Operator '{Expression._operator}' cannot be applied to operands of type '{left.GetType().FullName}' and '{right.GetType().FullName}'")), ParentInterpreter.GetDebugInfo()));
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), $"Operator '{Expression._operator}' cannot be applied to operands of type '{left.GetType().FullName}' and '{right.GetType().FullName}'"), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
 
-            if (MemTrace)
+            try
             {
-                try
-                {
-                    return operatorMethod.Invoke(null, new[] { left, right });
-                }
-                catch (Exception ex)
-                {
-                    ParentInterpreter.ChangeState(this, new SimulatorStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), ex.InnerException?.Message)), ParentInterpreter.GetDebugInfo()));
-                    return null;
-                }
+                return operatorMethod.Invoke(null, new[] { left, right });
             }
-            return operatorMethod.Invoke(null, new[] { left, right });
+            catch (Exception ex)
+            {
+                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), ex.InnerException?.Message), Expression), ParentInterpreter.GetDebugInfo()));
+                return null;
+            }
         }
 
         #endregion

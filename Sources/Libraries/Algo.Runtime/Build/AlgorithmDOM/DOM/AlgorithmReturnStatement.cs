@@ -6,7 +6,10 @@
     public class AlgorithmReturnStatement : AlgorithmExpressionStatement
     {
         #region Properties
-        
+
+        /// <summary>
+        /// Gets a <see cref="AlgorithmDomType"/> used to identify the object without reflection
+        /// </summary>
         internal override AlgorithmDomType DomType => AlgorithmDomType.ReturnStatement;
 
         #endregion
@@ -18,7 +21,6 @@
         /// </summary>
         public AlgorithmReturnStatement()
         {
-
         }
 
         /// <summary>
