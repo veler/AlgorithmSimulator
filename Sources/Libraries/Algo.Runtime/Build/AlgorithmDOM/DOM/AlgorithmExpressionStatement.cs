@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents a statement that consists of a single expression
@@ -15,6 +17,7 @@
         /// <summary>
         /// The single expression of the statement
         /// </summary>
+        [JsonProperty]
         public AlgorithmExpression Expression { get { return _expression; } set { _expression = value; } }
 
         #endregion

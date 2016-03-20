@@ -94,7 +94,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 }
 
                 i++;
-            }
+            } 
 
             return classReference;
         }

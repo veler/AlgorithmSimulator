@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents a reference to a variable in an algorithm
@@ -15,11 +17,13 @@
         /// <summary>
         /// Gets or sets the class reference or variable that contains the property
         /// </summary>
+        [JsonProperty]
         public AlgorithmReferenceExpression TargetObect { get { return _targetObject; } set { _targetObject = value; } }
 
         /// <summary>
         /// Gets or sets the name of the variable
         /// </summary>
+        [JsonProperty]
         public AlgorithmIdentifier PropertyName { get { return _propertyName; } set { _propertyName = value; } }
 
         #endregion

@@ -267,23 +267,29 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
                 return;
             }
 
-            string location;
+            var location = string.Empty;
 
-            if (isArg)
+            if (DebugMode)
             {
-                location = "method's argument";
-            }
-            else if (InterpreterType == InterpreterType.ProgramInterpreter)
-            {
-                location = "program";
-            }
-            else if (InterpreterType == InterpreterType.ClassInterpreter)
-            {
-                location = "class";
-            }
-            else
-            {
-                location = "method";
+                if (isArg)
+                {
+                    location = "method's argument";
+                }
+                else
+                {
+                    switch (InterpreterType)
+                    {
+                        case InterpreterType.ProgramInterpreter:
+                            location = "program";
+                            break;
+                        case InterpreterType.ClassInterpreter:
+                            location = "class";
+                            break;
+                        default:
+                            location = "method";
+                            break;
+                    }
+                }
             }
 
             if (defaultValue == null && variable.DefaultValue != null)
@@ -305,7 +311,8 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
         /// <returns>Returns the variable</returns>
         internal Variable FindVariable(string variableName)
         {
-            var interpreter = this;
+            return GetAllAccessibleVariable().FirstOrDefault(va => va.Name == variableName);
+            /*  var interpreter = this;
             Variable variable;
 
             do
@@ -317,7 +324,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
                 }
             } while (variable == null && interpreter != null);
 
-            return variable;
+            return variable; */
         }
 
         /// <summary>
@@ -363,7 +370,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter
 
             var debugInfo = ParentProgramInterpreter.DebugInfo;
 
-            if (DebugMode && this is BlockInterpreter)
+            if (DebugMode && InterpreterType == InterpreterType.BlockInterpreter)
             {
                 var interpreter = GetFirstNextParentInterpreter(InterpreterType.MethodInterpreter);
                 if (interpreter != null)

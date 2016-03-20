@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime.Debugger;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
@@ -78,16 +77,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), $"Operator '{Expression._operator}' cannot be applied to operands of type '{left.GetType().FullName}' and '{right.GetType().FullName}'"), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
-
-            try
-            {
-                return operatorMethod.Invoke(null, new[] { left, right });
-            }
-            catch (Exception ex)
-            {
-                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), ex.InnerException?.Message), Expression), ParentInterpreter.GetDebugInfo()));
-                return null;
-            }
+            return operatorMethod.Invoke(null, new[] { left, right });
         }
 
         #endregion

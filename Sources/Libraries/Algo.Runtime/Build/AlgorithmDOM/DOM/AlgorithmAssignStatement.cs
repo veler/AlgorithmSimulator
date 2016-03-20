@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents an assignment in an algorithm
@@ -15,11 +17,13 @@
         /// <summary>
         /// The expression on the left of the assign symbol in the algorithm
         /// </summary>
+        [JsonProperty]
         public AlgorithmExpression LeftExpression { get { return _leftExpression; } set { _leftExpression = value; } }
 
         /// <summary>
         /// The expression on the right of the assign symbol in the algorithm
         /// </summary>
+        [JsonProperty]
         public AlgorithmExpression RightExpression { get { return _rightExpression; } set { _rightExpression = value; } }
 
         #endregion

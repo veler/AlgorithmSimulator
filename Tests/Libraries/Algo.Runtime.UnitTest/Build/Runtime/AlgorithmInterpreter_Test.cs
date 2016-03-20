@@ -386,7 +386,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
 
             algorithmInterpreter.StepInto();
 
-            Task.Delay(TimeSpan.FromSeconds(2)).Wait();
+            Task.Delay(TimeSpan.FromSeconds(3)).Wait();
 
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)3);
 

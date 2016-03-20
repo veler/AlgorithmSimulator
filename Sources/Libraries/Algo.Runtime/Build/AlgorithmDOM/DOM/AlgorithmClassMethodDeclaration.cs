@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents a method declaration in a class in an algorithm
@@ -15,16 +17,19 @@
         /// <summary>
         /// Gets of sets the statements in the method's body
         /// </summary>
+        [JsonProperty]
         public AlgorithmStatementCollection Statements { get { return _statements; } set { _statements = value; } }
 
         /// <summary>
         /// Gets or sets a collection of arguments declaration
         /// </summary>
+        [JsonProperty]
         public AlgorithmParameterDeclarationCollection Arguments { get { return _arguments; } set { _arguments = value; } }
 
         /// <summary>
         /// Gets or sets whether the method can be call asynchronously
         /// </summary>
+        [JsonProperty]
         public bool IsAsync { get { return _isAsync; } set { _isAsync = value; } }
 
         #endregion

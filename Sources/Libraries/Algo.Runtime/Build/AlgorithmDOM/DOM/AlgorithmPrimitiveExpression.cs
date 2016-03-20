@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents a primitive value (like True, 10, 3.14) in an algorithm
@@ -15,6 +17,7 @@
         /// <summary>
         /// Gets or sets the primitive value
         /// </summary>
+        [JsonProperty]
         public object Value { get { return _value; } set { _value = value; } }
 
         #endregion

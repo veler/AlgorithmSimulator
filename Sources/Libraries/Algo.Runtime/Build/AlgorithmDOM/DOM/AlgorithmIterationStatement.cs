@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents an interation in an algorithm, typically represented by a for/while keyword.
@@ -15,26 +17,31 @@
         /// <summary>
         /// Gets or sets the statements in the iteration's body
         /// </summary>
+        [JsonProperty]
         public AlgorithmStatementCollection Statements { get { return _statements; } set { _statements = value; } }
 
         /// <summary>
         /// Gets or sets the statement that initialize the iteration
         /// </summary>
+        [JsonProperty]
         public AlgorithmStatement InitializationStatement { get { return _initializationStatement; } set { _initializationStatement = value; } }
 
         /// <summary>
         /// Gets or sets the statement that define the incrementation
         /// </summary>
+        [JsonProperty]
         public AlgorithmStatement IncrementStatement { get { return _incrementStatement; } set { _incrementStatement = value; } }
 
         /// <summary>
         /// Gets or sets the test expression of the iteration
         /// </summary>
+        [JsonProperty]
         public AlgorithmExpression Condition { get { return _condition; } set { _condition = value; } }
 
         /// <summary>
         /// Gets or sets a value that define whether the test expression will be run before of after the execution of the iteration's body
         /// </summary>
+        [JsonProperty]
         public bool ConditionAfterBody { get { return _conditionAfterBody; } set { _conditionAfterBody = value; } }
 
         #endregion

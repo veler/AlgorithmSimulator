@@ -81,7 +81,7 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
 
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].State, AlgorithmInterpreterState.StoppedWithError);
             Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.StoppedWithError);
-            Assert.AreEqual(algorithmInterpreter.Error.Exception.Message, "Attempted to divide by zero.");
+            Assert.AreEqual(algorithmInterpreter.Error.Exception.InnerException.Message, "Attempted to divide by zero.");
 
             AlgorithmInterpreter_Test.RunProgramWithoutDebug(program, true);
         }

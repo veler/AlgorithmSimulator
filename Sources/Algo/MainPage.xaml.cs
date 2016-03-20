@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -15,12 +14,16 @@ namespace Algo
     /// </summary>
     internal sealed partial class MainPage : Page
     {
+        private AlgorithmInterpreter _algorithmInterpreter;
+
         internal MainPage()
         {
             InitializeComponent();
+
+            Initialize();
         }
 
-        private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void Initialize()
         {
             var program = new AlgorithmProgram("MyApp");
             var firstClass = new AlgorithmClassDeclaration("FirstClass");
@@ -28,23 +31,23 @@ namespace Algo
             // The following code is simulated
 
             /* 
-               FirstMethod(num)
-               {
-                    if (num > 1)
-                        return FirstMethod(num - 1)
-                    return num;
-               }
+               FUNCTION FirstMethod(num)
+                    IF (num > 1)
+                        RETURN FirstMethod(num - 1)
+                    END IF
+                    RETURN num
+               END FUNCTION
                
-               var stopWatch = new StopWatch();
-               stopWatch.Start();
+               VARIABLE stopWatch = new StopWatch()
+               stopWatch.Start()
                
-               FirstMethod(100);
+               FirstMethod(100)
                
-               stopWatch.Stop();
-               var messageDialog = new MessageDialog();
-               messageDialog.ShowAsync(stopWatch.Elapsed.TotalMilliseconds.ToString());
+               stopWatch.Stop()
+               VARIABLE messageDialog = new MessageDialog()
+               messageDialog.ShowAsync(stopWatch.Elapsed.TotalMilliseconds.ToString())
              */
-             
+
             var firstMethod = new AlgorithmClassMethodDeclaration("FirstMethod", false);
             firstMethod.Arguments.Add(new AlgorithmParameterDeclaration("num"));
 
@@ -52,7 +55,7 @@ namespace Algo
             firstMethod.Statements.Add(new AlgorithmReturnStatement(new AlgorithmVariableReferenceExpression("num")));
 
             firstClass.Members.Add(firstMethod);
-            
+
             var entryPoint = new AlgorithmEntryPointMethod();
 
             entryPoint.Statements.Add(new AlgorithmVariableDeclaration("stopWatch"));
@@ -66,15 +69,18 @@ namespace Algo
             entryPoint.Statements.Add(new AlgorithmVariableDeclaration("messageDialog"));
             entryPoint.Statements.Add(new AlgorithmAssignStatement(new AlgorithmVariableReferenceExpression("messageDialog"), new AlgorithmInstanciateExpression(new AlgorithmClassReferenceExpression(typeof(MessageDialog)), new AlgorithmInvokeCoreMethodExpression(new AlgorithmPropertyReferenceExpression(new AlgorithmPropertyReferenceExpression(new AlgorithmVariableReferenceExpression("stopWatch"), "Elapsed"), "TotalMilliseconds"), "ToString", null))));
             entryPoint.Statements.Add(new AlgorithmExpressionStatement(new AlgorithmInvokeCoreMethodExpression(new AlgorithmVariableReferenceExpression("messageDialog"), "ShowAsync", null)));
-            
+
             firstClass.Members.Add(entryPoint);
 
             program.Classes.Add(firstClass);
             program.UpdateEntryPointPath();
-            
-            var algorithmInterpreter = new AlgorithmInterpreter(program);
-            
-            await algorithmInterpreter.StartAsync(debugMode: false);
+
+            _algorithmInterpreter = new AlgorithmInterpreter(program);
+        }
+
+        private async void Button1_OnClick(object sender, RoutedEventArgs e)
+        {
+            await _algorithmInterpreter.StartAsync(debugMode: false);
 
             //task.Wait();
             //task.RunSynchronously();

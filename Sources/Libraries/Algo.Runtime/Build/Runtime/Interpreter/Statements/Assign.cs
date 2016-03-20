@@ -49,12 +49,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             if (DebugMode)
             {
                 ParentInterpreter.Log(this, $"Assign '{leftExpression}' to '{rightExpression}'");
-            }
 
-            if (!(leftExpression is IAlgorithmAssignable))
-            {
-                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression is not assignable."), Statement), ParentInterpreter.GetDebugInfo()));
-                return;
+                if (!(leftExpression is IAlgorithmAssignable))
+                {
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression is not assignable."), Statement), ParentInterpreter.GetDebugInfo()));
+                    return;
+                }
             }
 
             switch (leftExpression.DomType)
@@ -100,15 +100,18 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             propertyVariable = leftValue as Variable;
             if (propertyVariable != null)
             {
-                if (propertyVariable.IsArray && !(rightValue is Array || rightValue is IEnumerable))
+                if (DebugMode)
                 {
-                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression wait for an array, but the right value is not an array."), Statement), ParentInterpreter.GetDebugInfo()));
-                    return;
-                }
-                if (!propertyVariable.IsArray && (rightValue is Array || rightValue is IEnumerable))
-                {
-                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression does not support array value, but the right value is  an array."), Statement), ParentInterpreter.GetDebugInfo()));
-                    return;
+                    if (propertyVariable.IsArray && !(rightValue is Array || rightValue is IEnumerable))
+                    {
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression wait for an array, but the right value is not an array."), Statement), ParentInterpreter.GetDebugInfo()));
+                        return;
+                    }
+                    if (!propertyVariable.IsArray && (rightValue is Array || rightValue is IEnumerable))
+                    {
+                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression does not support array value, but the right value is  an array."), Statement), ParentInterpreter.GetDebugInfo()));
+                        return;
+                    }
                 }
                 propertyVariable.Value = rightValue;
             }

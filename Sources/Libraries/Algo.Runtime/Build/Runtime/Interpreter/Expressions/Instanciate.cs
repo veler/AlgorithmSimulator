@@ -55,7 +55,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             if (classInterpreter != null)
             {
                 var program = ParentInterpreter.ParentProgramInterpreter;
-                var classInstance = (classInterpreter).CreateNewInstance();
+                var classInstance = classInterpreter.CreateNewInstance();
 
                 classInstance.StateChanged += ParentInterpreter.ChangeState;
                 classInstance.OnGetParentInterpreter += new Func<ProgramInterpreter>(() => program);

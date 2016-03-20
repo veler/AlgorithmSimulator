@@ -8,6 +8,6 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button Content="Test algorithm interpreter" Margin="10,10,0,0" VerticalAlignment="Top" Click="ButtonBase_OnClick"/>
+        <Button x:Name="Button1" Content="Test algorithm interpreter" Margin="10,10,0,0" VerticalAlignment="Top" Click="Button1_OnClick"/>
     </Grid>
 </Page>

@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -17,6 +18,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets the class reference that contains the method
         /// </summary>
+        [JsonProperty]
         public sealed override AlgorithmReferenceExpression TargetObject
         {
             get
@@ -37,6 +39,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets an array that defines the type of each arguments of the method
         /// </summary>
+        [JsonProperty]
         public Type[] ArgumentsTypes { get { return _argumentsTypes; } set { _argumentsTypes = value; } }
 
         #endregion

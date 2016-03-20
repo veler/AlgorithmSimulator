@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents an object creation, typically represtented as a new expression. If the goal is to create an object from the CLR, please use <see cref="AlgorithmInstanciateCoreExpression"/>
@@ -15,11 +17,13 @@
         /// <summary>
         /// Gets or sets a reference to the class to instanciate
         /// </summary>
+        [JsonProperty]
         public AlgorithmClassReferenceExpression CreateType { get { return _createType; } set { _createType = value; } }
 
         /// <summary>
         /// Gets or sets the arguments to pass in the class's constructor
         /// </summary>
+        [JsonProperty]
         public AlgorithmExpressionCollection Arguments { get { return _argumentsExpression; } set { _argumentsExpression = value; } }
 
         #endregion

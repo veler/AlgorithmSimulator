@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -17,12 +18,14 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 
         /// <summary>
         /// Gets or sets the name of the argument 
-        /// </summary>         
+        /// </summary>      
+        [JsonProperty]
         public AlgorithmIdentifier Name { get { return _name; } set { _name = value; } }
 
         /// <summary>
         /// Gets or sets whether the argument is of type <see cref="object"/> or <see cref="Collection{T}"/> of <see cref="object"/>
         /// </summary>
+        [JsonProperty]
         public bool IsArray { get { return _isArray; } set { _isArray = value; } }
 
         /// <summary>

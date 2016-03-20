@@ -163,6 +163,19 @@
     <Compile Include="Build\AlgorithmDOM\IAlgorithmAssignable.cs" />
     <Compile Include="Build\AlgorithmDOM\IAlgorithmVariable.cs" />
     <Compile Include="Build\AlgorithmDOM\Utils.cs" />
+    <Compile Include="Build\Parser\CodeDocument.cs" />
+    <Compile Include="Build\Parser\Exceptions\SyntaxErrorException.cs" />
+    <Compile Include="Build\Parser\LanguageParser.cs" />
+    <Compile Include="Build\Parser\LanguageParserService.cs" />
+    <Compile Include="Build\Parser\Lexer\Lexer.cs" />
+    <Compile Include="Build\Parser\Lexer\TokenEvaluatorResult.cs" />
+    <Compile Include="Build\Parser\Parser.cs" />
+    <Compile Include="Build\Parser\Lexer\TokenDefinition.cs" />
+    <Compile Include="Build\Parser\Lexer\TokenEvaluator.cs" />
+    <Compile Include="Build\Parser\Lexer\TokenType.cs" />
+    <Compile Include="Build\Parser\SyntaxTree\SyntaxTreeBuilder.cs" />
+    <Compile Include="Build\Parser\SyntaxTree\SyntaxTreeBuilderArgument.cs" />
+    <Compile Include="Build\Parser\SyntaxTree\SyntaxTreeTokenType.cs" />
     <Compile Include="Build\Runtime\Debugger\CallStack\Call.cs" />
     <Compile Include="Build\Runtime\Debugger\CallStack\CallStackService.cs" />
     <Compile Include="Build\Runtime\Debugger\DebugInfo.cs" />
@@ -222,6 +235,8 @@
       <DependentUpon>OperatorHelper.tt</DependentUpon>
     </Compile>
     <Compile Include="ComponentModel\OperatorHelper\OperatorHelperCache.cs" />
+    <Compile Include="Languages\CSharp.cs" />
+    <Compile Include="Languages\AlgoBASIC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="ComponentModel\OperatorHelper\OperatorHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -230,9 +245,6 @@
     <Content Include="Properties\Algo.Runtime.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="BareMetal">
-      <HintPath>..\..\ExternalLibraries\BareMetal.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.Configuration.dll</HintPath>
