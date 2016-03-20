@@ -45,15 +45,19 @@ It means several things :
 | try catch                                                                              | **no**    |
 | interaction with the UI                                                                | **no**    |
 | inheritance with classes                                                               | **no**    |
+| idle the program                                                                       | **no**    |
+| programming language parser                                                            | **no**    |
 
 # Performances
 
 Performances are not comparable with a JavaScript runtime or a compiled language like C++. The reason is that this interpreter is made in C# and it's designed to be maintenable, more than fast.
 It also use a lot of RAM.
 
-| Scenarios                  | Execution time (in millisec)      |
-| -------------------------- |:---------------------------------:|
-| a loop with 100 iterations | 22 at first run | 7 at second run |
+| Scenarios                  | Execution time (in millisec)          |
+| -------------------------- |:-------------------------------------:|
+| a loop with 100 iterations | 17.5 at first run, 6.6 at second run  |
+
+**The first time you run the interpreter, in particular when you start to run it, performances can be much slower than the second time you run the same program. The reason is that the interpreter put in cache some data used to optimize the execution speed of the binary operator.**
 
 # How Does It Work
 
