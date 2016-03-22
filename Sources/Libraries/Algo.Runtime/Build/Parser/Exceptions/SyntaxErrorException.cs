@@ -1,4 +1,5 @@
 ﻿using System;
+using Algo.Runtime.Build.Parser.Lexer;
 using Algo.Runtime.Build.Parser.SyntaxTree;
 
 namespace Algo.Runtime.Build.Parser.Exceptions
@@ -17,8 +18,8 @@ namespace Algo.Runtime.Build.Parser.Exceptions
 
         #region Constructors
 
-        internal SyntaxErrorException(SyntaxTreeBuilderArgument syntaxTreeBuilderArgument, string message)
-            : this(syntaxTreeBuilderArgument.DocumentName, syntaxTreeBuilderArgument.LineNumber, syntaxTreeBuilderArgument.LinePosition, message)
+        internal SyntaxErrorException(EvaluatorArgument evaluatorArgument, string message)
+            : this(evaluatorArgument.DocumentName, evaluatorArgument.LineNumber, evaluatorArgument.LinePosition, message)
         {
         }
 

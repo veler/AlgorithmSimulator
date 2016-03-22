@@ -106,8 +106,12 @@
         /// </summary>
         VariableReferenceExpression = 24,
         /// <summary>
+        /// <see cref="AlgorithmArrayIndexerExpression"/>
+        /// </summary>
+        ArrayIndexerExpression = 25,
+        /// <summary>
         /// <see cref="AlgorithmBreakpointStatement"/>
         /// </summary>
-        BreakpointStatement = 25
+        BreakpointStatement = 26
     }
 }

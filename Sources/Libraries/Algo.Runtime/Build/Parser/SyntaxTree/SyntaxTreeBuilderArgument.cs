@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Algo.Runtime.Build.Parser.Lexer;
+﻿using Algo.Runtime.Build.Parser.Lexer;
 
 namespace Algo.Runtime.Build.Parser.SyntaxTree
 {
-    internal class SyntaxTreeBuilderArgument
+    internal class SyntaxTreeBuilderArgument : EvaluatorArgument
     {
         #region Properties
-
-        internal string DocumentName { get; private set; }
-
-        internal int LinePosition { get; private set; }
-
-        internal int LineNumber { get; private set; }
 
         internal TokenEvaluatorResult EvaluatorResult { get; private set; }
 
@@ -24,10 +13,8 @@ namespace Algo.Runtime.Build.Parser.SyntaxTree
         #region Constructors
 
         public SyntaxTreeBuilderArgument(string documentName, int lineNumber, int linePosition, TokenEvaluatorResult evaluatorResult)
+            : base(documentName, lineNumber, linePosition)
         {
-            DocumentName = documentName;
-            LineNumber = lineNumber;
-            LinePosition = linePosition;
             EvaluatorResult = evaluatorResult;
         }
 

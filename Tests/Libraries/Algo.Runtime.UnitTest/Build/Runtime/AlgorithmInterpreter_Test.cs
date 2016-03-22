@@ -382,11 +382,33 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
 
             Task.Delay(TimeSpan.FromSeconds(2)).Wait();
 
+            
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[80].LogMessage, "Value of the variable 'num' is '5' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[81].LogMessage, "Primitive value : '1' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[82].LogMessage, "Doing an operation 'GreaterThan'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[83].LogMessage, "Assign 'num' to 'This.FirstMethod()'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[84].LogMessage, "Value of the variable 'num' is '5' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[85].LogMessage, "Calling method 'This.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[86].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[87].LogMessage, "Value of the variable 'num' is '5' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[88].LogMessage, "Primitive value : '1' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[89].LogMessage, "Doing an operation 'Subtraction'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[90].LogMessage, "Variable 'num' declared in the method's argument => IsArray:False, DefaultValue:4");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[91].LogMessage, "Value of the variable 'num' is '4' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[92].LogMessage, "Primitive value : '4' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[93].LogMessage, "Doing an operation 'Equality'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[94].LogMessage, "Breakpoint intercepted");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[95].State, AlgorithmInterpreterState.PauseBreakpoint);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[96].State, AlgorithmInterpreterState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[97].LogMessage, "Value of the variable 'num' is '4' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[98].LogMessage, "Primitive value : '1' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[99].LogMessage, "Doing an operation 'GreaterThan'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[100].State, AlgorithmInterpreterState.PauseBreakpoint);
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)4);
 
             algorithmInterpreter.StepInto();
 
-            Task.Delay(TimeSpan.FromSeconds(3)).Wait();
+            Task.Delay(TimeSpan.FromSeconds(2)).Wait();
 
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)3);
 
@@ -414,13 +436,33 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
 
             Task.Delay(TimeSpan.FromSeconds(2)).Wait();
 
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].State, AlgorithmInterpreterState.Log);
+
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[4].State, AlgorithmInterpreterState.PauseBreakpoint);
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables.Count, 0);
 
             algorithmInterpreter.Resume();
 
             Task.Delay(TimeSpan.FromSeconds(2)).Wait();
-
+            
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[5].State, AlgorithmInterpreterState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[6].LogMessage, "Variable 'result' declared in the method => IsArray:False, DefaultValue:{null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[7].LogMessage, "Assign 'result' to 'This.FirstMethod()'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[8].LogMessage, "Value of the variable 'result' is {null}");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[9].LogMessage, "Calling method 'This.FirstMethod'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[10].LogMessage, "Reference to the current instance : FirstClass");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[11].LogMessage, "Primitive value : '10' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[12].LogMessage, "Variable 'num' declared in the method's argument => IsArray:False, DefaultValue:10");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[13].LogMessage, "Assign 'num' to 'num + '10' (type:System.Int32)'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[14].LogMessage, "Value of the variable 'num' is '10' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[15].LogMessage, "Value of the variable 'num' is '10' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[16].LogMessage, "Primitive value : '10' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[17].LogMessage, "Doing an operation 'Addition'");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[18].LogMessage, "'num' is now equal to '20' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[19].LogMessage, "Breakpoint intercepted");
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[20].State, AlgorithmInterpreterState.PauseBreakpoint);
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "num");
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)20);
@@ -429,6 +471,10 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
 
             Task.Delay(TimeSpan.FromSeconds(2)).Wait();
 
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[21].State, AlgorithmInterpreterState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[22].LogMessage, "Value of the variable 'num' is '20' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[23].LogMessage, "(FirstMethod) Return : '20' (type:System.Int32)");
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[24].LogMessage, "'result' is now equal to '20' (type:System.Int32)");
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[25].State, AlgorithmInterpreterState.PauseBreakpoint);
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Name, "result");
             Assert.AreEqual(algorithmInterpreter.DebugInfo.CallStackService.CallStacks.First().Stack.First().Variables[0].Value, (long)20);
@@ -437,10 +483,8 @@ namespace Algo.Runtime.UnitTest.Build.Runtime
 
             Task.Delay(TimeSpan.FromSeconds(2)).Wait();
 
-            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
-            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);
-            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[2].State, AlgorithmInterpreterState.Running);
-            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[3].State, AlgorithmInterpreterState.Log);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[26].State, AlgorithmInterpreterState.Running);
+            Assert.AreEqual(algorithmInterpreter.StateChangeHistory[27].LogMessage, "Value of the variable 'result' is '20' (type:System.Int32)");
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[28].LogMessage, "(Main) Return : '20' (type:System.Int32)");
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[29].State, AlgorithmInterpreterState.Stopped);
             Assert.AreEqual(algorithmInterpreter.State, AlgorithmInterpreterState.Stopped);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Algo.Runtime.Build.Parser.Exceptions;
 
@@ -97,7 +96,7 @@ namespace Algo.Runtime.Build.Parser.Lexer
 
             if (syntaxErrorDetected)
             {
-                throw new SyntaxErrorException(_documentName, CurrentLineNumber, CurrentLinePosition);
+                throw new SyntaxErrorException(_documentName, CurrentLineNumber, CurrentLinePosition, "Cannot resolve this symbol.");
             }
             
             CurrentTokenDefinition = resultToken;

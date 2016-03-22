@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{422E363C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69F92E34-44F6-4D0A-845E-89AE7C7942D6}"
 	ProjectSection(SolutionItems) = preProject
+		AlgoBASIC syntax example.docx = AlgoBASIC syntax example.docx
 		CHANGELOG.md = CHANGELOG.md
 		README.md = README.md
 	EndProjectSection

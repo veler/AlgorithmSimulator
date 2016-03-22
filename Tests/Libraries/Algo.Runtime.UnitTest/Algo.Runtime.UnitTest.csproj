@@ -105,6 +105,7 @@
   <ItemGroup>
     <Compile Include="Build\AlgorithmDOM\AlgorithmDOM_Test.cs" />
     <Compile Include="Build\Parser\Parser_Test.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\ArrayIndexer_Test.cs" />
     <Compile Include="Build\Runtime\Interpreter\Expressions\InstanciateCore_Test.cs" />
     <Compile Include="Build\Runtime\Interpreter\Expressions\BinaryOperator_Test.cs" />
     <Compile Include="Build\Runtime\Interpreter\Expressions\PropertyReference_Test.cs" />

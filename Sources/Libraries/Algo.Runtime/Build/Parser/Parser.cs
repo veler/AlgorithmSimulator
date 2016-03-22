@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Parser.Exceptions;
@@ -17,6 +16,7 @@ namespace Algo.Runtime.Build.Parser
 
         private readonly Lexer.Lexer _lexer;
         private SyntaxTreeBuilder _syntaxTreeBuilder;
+        private T _languageParser;
 
         #endregion
 
@@ -36,11 +36,11 @@ namespace Algo.Runtime.Build.Parser
 
         #region Constructors
 
-        public Parser()
+        public Parser(params object[] languageParserArguments)
         {
-            var languageParser = LanguageParserService.GetService().GetLanguageParser<T>();
-            languageParser.FixPatterns();
-            _lexer = new Lexer.Lexer(languageParser.TokenDefinitions.Values.ToList());
+            _languageParser = LanguageParserService.GetService().GetLanguageParser<T>(languageParserArguments);
+            _languageParser.FixPatterns();
+            _lexer = new Lexer.Lexer(_languageParser.TokenDefinitions.Values.ToList());
         }
 
         #endregion
@@ -63,12 +63,14 @@ namespace Algo.Runtime.Build.Parser
             {
                 AlgorithmProgram = null;
                 Error = null;
-                _syntaxTreeBuilder = new SyntaxTreeBuilder();
 
+                _syntaxTreeBuilder = new SyntaxTreeBuilder();
                 try
                 {
                     foreach (var code in codes)
                     {
+                        _languageParser.Reset();
+                        _syntaxTreeBuilder.Reset();
                         _lexer.Initialize(code.DocumentName, code.Code);
 
                         var nextExpectedToken = TokenType.Unknow;
@@ -85,7 +87,7 @@ namespace Algo.Runtime.Build.Parser
                             nextExpectedToken = TokenType.Unknow;
                             if (_lexer.CurrentTokenDefinition.Evaluator != null)
                             {
-                                var evaluatorResult = _lexer.CurrentTokenDefinition.Evaluator(_lexer.CurrentTokenContents, _lexer.CurrentSplittedTokenContents);
+                                var evaluatorResult = _lexer.CurrentTokenDefinition.Evaluator(_lexer.CurrentTokenContents, _lexer.CurrentSplittedTokenContents, new EvaluatorArgument(code.DocumentName, previousLineNumber, previousLinePosition));
                                 if (evaluatorResult != null)
                                 {
                                     nextExpectedToken = evaluatorResult.NextExpectedToken;

@@ -18,7 +18,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// Gets or sets the class reference or variable that contains the property
         /// </summary>
         [JsonProperty]
-        public AlgorithmReferenceExpression TargetObect { get { return _targetObject; } set { _targetObject = value; } }
+        public AlgorithmReferenceExpression TargetObject { get { return _targetObject; } set { _targetObject = value; } }
 
         /// <summary>
         /// Gets or sets the name of the variable
@@ -44,7 +44,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <param name="name">The name of the variable we make reference</param>
         public AlgorithmPropertyReferenceExpression(AlgorithmReferenceExpression targetObject, string name)
         {
-            TargetObect = targetObject;
+            TargetObject = targetObject;
             PropertyName = new AlgorithmIdentifier(name);
         }
 
@@ -58,7 +58,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <returns>String that reprensents the reference</returns>
         public override string ToString()
         {
-            return $"{TargetObect}.{PropertyName.Identifier}";
+            return $"{TargetObject}.{PropertyName.Identifier}";
         }
 
         #endregion

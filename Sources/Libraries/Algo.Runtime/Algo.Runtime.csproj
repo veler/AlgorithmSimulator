@@ -159,6 +159,7 @@
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmStatementCollection.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmVariableDeclaration.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmPropertyReferenceExpression.cs" />
+    <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmArrayIndexerExpression.cs" />
     <Compile Include="Build\AlgorithmDOM\DOM\AlgorithmVariableReferenceExpression.cs" />
     <Compile Include="Build\AlgorithmDOM\IAlgorithmAssignable.cs" />
     <Compile Include="Build\AlgorithmDOM\IAlgorithmVariable.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="Build\Parser\Exceptions\SyntaxErrorException.cs" />
     <Compile Include="Build\Parser\LanguageParser.cs" />
     <Compile Include="Build\Parser\LanguageParserService.cs" />
+    <Compile Include="Build\Parser\Lexer\EvaluatorArgument.cs" />
     <Compile Include="Build\Parser\Lexer\Lexer.cs" />
     <Compile Include="Build\Parser\Lexer\TokenEvaluatorResult.cs" />
     <Compile Include="Build\Parser\Parser.cs" />
@@ -180,6 +182,7 @@
     <Compile Include="Build\Runtime\Debugger\CallStack\CallStackService.cs" />
     <Compile Include="Build\Runtime\Debugger\DebugInfo.cs" />
     <Compile Include="Build\Runtime\Debugger\Error.cs" />
+    <Compile Include="Build\Runtime\Debugger\Exceptions\IndexerException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\StackOverflowException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\BadArgumentException.cs" />
     <Compile Include="Build\Runtime\Debugger\Exceptions\IdenticalConstructorsException.cs" />
@@ -203,6 +206,7 @@
     <Compile Include="Build\Runtime\Interpreter\Expressions\PrimitiveValue.cs" />
     <Compile Include="Build\Runtime\Interpreter\Expressions\ClassReference.cs" />
     <Compile Include="Build\Runtime\Interpreter\Expressions\PropertyReference.cs" />
+    <Compile Include="Build\Runtime\Interpreter\Expressions\ArrayIndexerExpression.cs" />
     <Compile Include="Build\Runtime\Interpreter\Expressions\VariableReference.cs" />
     <Compile Include="Build\Runtime\Interpreter\IAssignable.cs" />
     <Compile Include="Build\Runtime\Interpreter\InterpreterType.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Runtime.Debugger;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
@@ -77,6 +78,18 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), $"Operator '{Expression._operator}' cannot be applied to operands of type '{left.GetType().FullName}' and '{right.GetType().FullName}'"), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
+
+            if (Expression._operator == AlgorithmBinaryOperatorType.Division)
+            {
+                long num;
+                var convertedToLong = long.TryParse(right.ToString(), out num);
+                if (convertedToLong && num == 0)
+                {
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new DivideByZeroException("Attempted to divide by zero."), Expression), ParentInterpreter.GetDebugInfo()));
+                    return null;
+                }
+            }
+
             return operatorMethod.Invoke(null, new[] { left, right });
         }
 

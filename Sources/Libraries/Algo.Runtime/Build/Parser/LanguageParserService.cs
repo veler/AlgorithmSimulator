@@ -9,7 +9,7 @@ namespace Algo.Runtime.Build.Parser
 
         private static LanguageParserService _languageParserService;
 
-        private readonly Dictionary<Type, LanguageParser> _languageParsers = new Dictionary<Type, LanguageParser>();
+        private readonly Dictionary<string, LanguageParser> _languageParsers = new Dictionary<string, LanguageParser>();
 
         #endregion
 
@@ -28,13 +28,22 @@ namespace Algo.Runtime.Build.Parser
             }
         }
 
-        internal T GetLanguageParser<T>() where T : LanguageParser
+        internal T GetLanguageParser<T>(object[] languageParserArguments) where T : LanguageParser
         {
-            if (!_languageParsers.ContainsKey(typeof(T)))
+            var key = typeof(T).FullName;
+            if (languageParserArguments != null && languageParserArguments.Length > 0)
             {
-                _languageParsers.Add(typeof(T), (LanguageParser)Activator.CreateInstance(typeof(T)));
+                foreach (var languageParserArgument in languageParserArguments)
+                {
+                    key += languageParserArgument.ToString();
+                }
             }
-            return (T)_languageParsers[typeof(T)];
+
+            if (!_languageParsers.ContainsKey(key))
+            {
+                _languageParsers.Add(key, (LanguageParser)Activator.CreateInstance(typeof(T), languageParserArguments));
+            }
+            return (T)_languageParsers[key];
         }
 
         #endregion

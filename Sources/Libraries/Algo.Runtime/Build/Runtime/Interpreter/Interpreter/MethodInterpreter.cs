@@ -177,7 +177,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new StackOverflowException($"You called too many (more than {Consts.CallStackSize}) methods in the same thread.")), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
-                _callStackService.StackTraceCallCount[stackTraceId] = (short)(_callStackService.StackTraceCallCount[stackTraceId] + 1);
+                ++_callStackService.StackTraceCallCount[stackTraceId];
             }
             else
             {
@@ -212,18 +212,15 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 var argDecl = MethodDeclaration._arguments[i];
                 var argValue = argumentValues[i];
 
-                if (DebugMode)
+                if (!(argValue is string) && argValue is IList && !argDecl.IsArray)
                 {
-                    if (!(argValue is string) && argValue is IEnumerable && !argDecl.IsArray)
-                    {
-                        ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must not be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
-                        return;
-                    }
-                    if ((!(argValue is IEnumerable) || argValue is string) && argDecl.IsArray)
-                    {
-                        ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
-                        return;
-                    }
+                    ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must not be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
+                    return;
+                }
+                if ((!(argValue is IList) || argValue is string) && argDecl.IsArray)
+                {
+                    ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
+                    return;
                 }
 
                 block.AddVariable(argDecl, argValue, true);
@@ -234,20 +231,20 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 return;
             }
 
-            try
-            {
+           // try
+           // {
                 block.Run();
-            }
-            catch (Exception ex)
-            {
-                ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(ex, MethodDeclaration), GetDebugInfo()));
-                return;
-            }
-            finally
-            {
+          // }
+          // catch (Exception ex)
+          // {
+          //     ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(ex, MethodDeclaration), GetDebugInfo()));
+          //     return;
+          // }
+          // finally
+          // {
                 block.StateChanged -= ChangeState;
                 block.Dispose();
-            }
+          //  }
 
 
             if (mustClearStackAtTheEnd)

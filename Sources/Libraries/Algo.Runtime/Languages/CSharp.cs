@@ -1,6 +1,4 @@
-﻿using System;
-using Algo.Runtime.Build.AlgorithmDOM.DOM;
-using Algo.Runtime.Build.Parser;
+﻿using Algo.Runtime.Build.Parser;
 using Algo.Runtime.Build.Parser.Lexer;
 
 namespace Algo.Runtime.Languages
@@ -18,7 +16,8 @@ namespace Algo.Runtime.Languages
         public CSharp()
         {
             var anySpacePattern = @"(\s?\n?\r?)+";
-            AddTerm("<identifier>", @"[*<>\?\-+/A-Za-z->!]+", 0, EvaluateAdditionOperator);
+
+            AddTerm("<identifier>", @"[_a-zA-Z][_a-zA-Z0-9]+", 0, EvaluateAdditionOperator);
             AddTerm("<string>", @"""([^""\\]|\\['""\\0abfnrtv]|\\x[a-fA-F0-9][a-fA-F0-9]{0,3})*""", 20, EvaluateAdditionOperator);
             AddTerm("<character>", @"'([^'\\]|\\['""\\0abfnrtv]|\\x[a-fA-F0-9][a-fA-F0-9]{0,3})'", 20, EvaluateAdditionOperator);
 
@@ -47,17 +46,21 @@ namespace Algo.Runtime.Languages
 
         #region Methods
 
-        private TokenEvaluatorResult EvaluateStartBlock(string text, string[] splittedText)
+        public override void Reset()
+        {
+        }
+
+        private TokenEvaluatorResult EvaluateStartBlock(string text, string[] splittedText, EvaluatorArgument evaluatorArgument)
         {
             return null;
         }
 
-        private TokenEvaluatorResult EvaluateEndBlock(string text, string[] splittedText)
+        private TokenEvaluatorResult EvaluateEndBlock(string text, string[] splittedText, EvaluatorArgument evaluatorArgument)
         {
             return null;
         }
 
-        private TokenEvaluatorResult EvaluateAdditionOperator(string text, string[] splittedText)
+        private TokenEvaluatorResult EvaluateAdditionOperator(string text, string[] splittedText, EvaluatorArgument evaluatorArgument)
         {
             return null;
         }

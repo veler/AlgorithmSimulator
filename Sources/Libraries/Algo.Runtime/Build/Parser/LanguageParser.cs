@@ -32,6 +32,8 @@ namespace Algo.Runtime.Build.Parser
 
         #region Methods
 
+        public abstract void Reset();
+
         internal void FixPatterns()
         {
             if (_patternFixed)

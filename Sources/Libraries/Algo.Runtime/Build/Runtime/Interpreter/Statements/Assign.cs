@@ -8,6 +8,8 @@ using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 using Algo.Runtime.Build.Runtime.Interpreter.Expressions;
 using Algo.Runtime.Build.Runtime.Interpreter.Interpreter;
 using Algo.Runtime.Build.Runtime.Memory;
+// ReSharper disable UseIsOperator.1
+// ReSharper disable UseMethodIsInstanceOfType
 
 namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
 {
@@ -38,11 +40,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
         /// </summary>
         internal override void Execute()
         {
+            int indexValue = -1;
             object targetObject = null;
             object leftValue = null;
             object rightValue;
             PropertyInfo propertyInfo;
             Variable propertyVariable;
+            IList propertyVariableList;
             var leftExpression = Statement._leftExpression;
             var rightExpression = Statement._rightExpression;
 
@@ -50,7 +54,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             {
                 ParentInterpreter.Log(this, $"Assign '{leftExpression}' to '{rightExpression}'");
 
-                if (!(leftExpression is IAlgorithmAssignable))
+                if (!typeof(IAlgorithmAssignable).IsAssignableFrom(leftExpression.GetType()))
                 {
                     ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression is not assignable."), Statement), ParentInterpreter.GetDebugInfo()));
                     return;
@@ -60,13 +64,19 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             switch (leftExpression.DomType)
             {
                 case AlgorithmDomType.PropertyReferenceExpression:
-                    var interpreter = new PropertyReference(DebugMode, ParentInterpreter, leftExpression);
-                    leftValue = interpreter.GetAssignableObject();
-                    targetObject = interpreter.TargetObject;
+                    var propertyReferenceInterpreter = new PropertyReference(DebugMode, ParentInterpreter, leftExpression);
+                    leftValue = propertyReferenceInterpreter.GetAssignableObject();
+                    targetObject = propertyReferenceInterpreter.TargetObject;
                     break;
 
                 case AlgorithmDomType.VariableReferenceExpression:
                     leftValue = new VariableReference(DebugMode, ParentInterpreter, leftExpression).GetAssignableObject();
+                    break;
+
+                case AlgorithmDomType.ArrayIndexerExpression:
+                    var arrayIndexerInterpreter = new ArrayIndexerExpression(DebugMode, ParentInterpreter, leftExpression);
+                    leftValue = arrayIndexerInterpreter.GetAssignableObject();
+                    indexValue = arrayIndexerInterpreter.IndexValue;
                     break;
 
                 default:
@@ -100,20 +110,28 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Statements
             propertyVariable = leftValue as Variable;
             if (propertyVariable != null)
             {
-                if (DebugMode)
+                if (propertyVariable.IsArray && !(typeof(Array).IsAssignableFrom(rightValue.GetType()) || typeof(IList).IsAssignableFrom(rightValue.GetType())))
                 {
-                    if (propertyVariable.IsArray && !(rightValue is Array || rightValue is IEnumerable))
-                    {
-                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression wait for an array, but the right value is not an array."), Statement), ParentInterpreter.GetDebugInfo()));
-                        return;
-                    }
-                    if (!propertyVariable.IsArray && (rightValue is Array || rightValue is IEnumerable))
-                    {
-                        ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression does not support array value, but the right value is  an array."), Statement), ParentInterpreter.GetDebugInfo()));
-                        return;
-                    }
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression wait for an array, but the right value is not an array."), Statement), ParentInterpreter.GetDebugInfo()));
+                    return;
+                }
+                if (!propertyVariable.IsArray && (typeof(Array).IsAssignableFrom(rightValue.GetType()) || typeof(IList).IsAssignableFrom(rightValue.GetType())))
+                {
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new NotAssignableException($"The left expression does not support array value, but the right value is  an array."), Statement), ParentInterpreter.GetDebugInfo()));
+                    return;
                 }
                 propertyVariable.Value = rightValue;
+            }
+
+            propertyVariableList = leftValue as IList;
+            if (propertyVariableList != null)
+            {
+                if (indexValue < 0 || indexValue >= propertyVariableList.Count)
+                {
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new IndexOutOfRangeException($"Unable to get the item number '{indexValue}' because the limit of the array is '{propertyVariableList.Count - 1}'."), Statement), ParentInterpreter.GetDebugInfo()));
+                    return;
+                }
+                propertyVariableList[indexValue] = rightValue;
             }
 
             if (DebugMode)

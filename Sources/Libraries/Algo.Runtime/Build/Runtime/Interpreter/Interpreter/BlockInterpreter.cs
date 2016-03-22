@@ -81,6 +81,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     if (ParentProgramInterpreter.StepIntoOverOutWaiter != null && !ParentProgramInterpreter.StepOutSignal)
                     {
                         ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.PauseBreakpoint, GetDebugInfo(false)));
+                        Task.Delay(TimeSpan.FromMilliseconds(500)).Wait();
                         ParentProgramInterpreter.StepIntoOverOutWaiter.WaitOne();
                     }
                     else if (ParentProgramInterpreter.Waiter != null)
@@ -221,6 +222,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
 
                 case AlgorithmDomType.BinaryOperatorExpression:
                     result = new BinaryOperator(DebugMode, this, expression).Execute();
+                    break;
+
+                case AlgorithmDomType.ArrayIndexerExpression:
+                    result = new ArrayIndexerExpression(DebugMode, this, expression).Execute();
                     break;
 
                 default:

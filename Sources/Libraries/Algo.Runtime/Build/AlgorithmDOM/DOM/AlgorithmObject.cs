@@ -40,6 +40,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         protected internal object _value;
         protected internal AlgorithmIdentifier _propertyName;
         protected internal string _code;
+        protected internal AlgorithmExpression _indice;
 
         #endregion
 

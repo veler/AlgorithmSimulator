@@ -384,7 +384,7 @@ namespace Algo.Runtime.Build.Runtime
                     case AlgorithmInterpreterState.Log:
                         if (InDebugMode)
                         {
-                            Debug.WriteLine(e.LogMessage);
+                            //Debug.WriteLine(e.LogMessage);
                         }
                         break;
                     default:
