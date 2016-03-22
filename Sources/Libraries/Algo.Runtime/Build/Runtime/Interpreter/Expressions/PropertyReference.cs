@@ -83,7 +83,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
             }
 
             object property;
-            object value;
+            object value = null;
             PropertyInfo propertyInfo;
             ClassInterpreter classTargetObject;
             Variable propertyVariable;
@@ -118,7 +118,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 }
 
                 property = propertyVariable;
-                value = propertyVariable.Value;
+                if (DebugMode)
+                {
+                    value = propertyVariable.Value;
+                }
             }
             else
             {
@@ -131,7 +134,10 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 }
 
                 property = propertyInfo;
-                value = propertyInfo.GetValue(TargetObject);
+                if (DebugMode)
+                {
+                    value = propertyInfo.GetValue(TargetObject);
+                }
             }
 
             if (DebugMode)

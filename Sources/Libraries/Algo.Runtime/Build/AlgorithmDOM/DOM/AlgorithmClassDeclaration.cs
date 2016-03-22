@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents a class declaration in an algorithm
@@ -15,6 +17,7 @@
         /// <summary>
         /// Gets or sets a collection of members (fields, methods...) for the class
         /// </summary>
+        [JsonProperty]
         public AlgorithmClassMemberCollection Members { get { return _members; } set { _members = value; } }
 
         #endregion

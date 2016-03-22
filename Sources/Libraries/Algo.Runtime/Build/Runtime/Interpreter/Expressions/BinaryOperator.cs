@@ -79,15 +79,18 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
                 return null;
             }
 
-            try
+            if (Expression._operator == AlgorithmBinaryOperatorType.Division)
             {
-                return operatorMethod.Invoke(null, new[] { left, right });
+                long num;
+                var convertedToLong = long.TryParse(right.ToString(), out num);
+                if (convertedToLong && num == 0)
+                {
+                    ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new DivideByZeroException("Attempted to divide by zero."), Expression), ParentInterpreter.GetDebugInfo()));
+                    return null;
+                }
             }
-            catch (Exception ex)
-            {
-                ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new OperatorNotFoundException(Expression._operator.ToString(), ex.InnerException?.Message), Expression), ParentInterpreter.GetDebugInfo()));
-                return null;
-            }
+
+            return operatorMethod.Invoke(null, new[] { left, right });
         }
 
         #endregion

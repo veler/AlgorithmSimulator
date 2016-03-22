@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
@@ -526,11 +527,10 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.UpdateEntryPointPath();
 
             var algorithmInterpreter = new AlgorithmInterpreter(program);
-
+            
             var task = algorithmInterpreter.StartAsync(debugMode: true);
-
             task.Wait();
-
+            
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 90016);
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);

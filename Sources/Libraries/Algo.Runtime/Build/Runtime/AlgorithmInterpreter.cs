@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Runtime;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Algo.Runtime.Build.Runtime.Debugger.Exceptions;
 
@@ -284,6 +286,9 @@ namespace Algo.Runtime.Build.Runtime
             InDebugMode = debugMode;
             return Task.Run(() =>
             {
+                RuntimeHelpers.EnsureSufficientExecutionStack();
+                GCSettings.LatencyMode = GCLatencyMode.LowLatency;
+
                 ProgramInterpreter = new ProgramInterpreter(Program, debugMode);
 
                 ProgramInterpreter.StateChanged += ChangeState;
@@ -293,6 +298,10 @@ namespace Algo.Runtime.Build.Runtime
 
                 ProgramInterpreter.StateChanged -= ChangeState;
                 ProgramInterpreter.Dispose();
+
+                GCSettings.LatencyMode = GCLatencyMode.Interactive;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             });
         }
 
@@ -339,55 +348,55 @@ namespace Algo.Runtime.Build.Runtime
             Task.Run(() =>
             {
 #endif
-            if (PreviewStateChanged != null)
-            {
-                PreviewStateChanged(source, e);
-            }
+                if (PreviewStateChanged != null)
+                {
+                    PreviewStateChanged(source, e);
+                }
 
-            switch (e.State)
-            {
-                case AlgorithmInterpreterState.StoppedWithError:
-                case AlgorithmInterpreterState.PauseWithError:
-                case AlgorithmInterpreterState.PauseBreakpoint:
-                    Break(true, e);
-                    break;
+                switch (e.State)
+                {
+                    case AlgorithmInterpreterState.StoppedWithError:
+                    case AlgorithmInterpreterState.PauseWithError:
+                    case AlgorithmInterpreterState.PauseBreakpoint:
+                        Break(true, e);
+                        break;
 
-                case AlgorithmInterpreterState.Stopped:
-                    Stop(true);
-                    break;
+                    case AlgorithmInterpreterState.Stopped:
+                        Stop(true);
+                        break;
 
-                case AlgorithmInterpreterState.Pause:
-                    Pause(true);
-                    break;
+                    case AlgorithmInterpreterState.Pause:
+                        Pause(true);
+                        break;
 
-                case AlgorithmInterpreterState.Preparing:
-                    State = AlgorithmInterpreterState.Preparing;
-                    break;
+                    case AlgorithmInterpreterState.Preparing:
+                        State = AlgorithmInterpreterState.Preparing;
+                        break;
 
-                case AlgorithmInterpreterState.Ready:
-                    State = AlgorithmInterpreterState.Ready;
-                    break;
+                    case AlgorithmInterpreterState.Ready:
+                        State = AlgorithmInterpreterState.Ready;
+                        break;
 
-                case AlgorithmInterpreterState.Running:
-                    State = AlgorithmInterpreterState.Running;
-                    break;
+                    case AlgorithmInterpreterState.Running:
+                        State = AlgorithmInterpreterState.Running;
+                        break;
 
-                case AlgorithmInterpreterState.Log:
-                    if (InDebugMode)
-                    {
-                        Debug.WriteLine(e.LogMessage);
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                    case AlgorithmInterpreterState.Log:
+                        if (InDebugMode)
+                        {
+                            //Debug.WriteLine(e.LogMessage);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
 
-            AddStateChangeHistory(e);
+                AddStateChangeHistory(e);
 
-            if (StateChanged != null)
-            {
-                StateChanged(source, e);
-            }
+                if (StateChanged != null)
+                {
+                    StateChanged(source, e);
+                }
 #if !DEBUG
             });
 #endif
@@ -399,7 +408,6 @@ namespace Algo.Runtime.Build.Runtime
         /// <param name="algorithmInterpreterStateEventArgs">the new interpreter state</param>
         private void AddStateChangeHistory(AlgorithmInterpreterStateEventArgs algorithmInterpreterStateEventArgs)
         {
-#if DEBUG
             if (_stateChangedHistory.Count > 0)
             {
                 var lastAlgorithmInterpreterStateEventArgs = _stateChangedHistory[_stateChangedHistory.Count - 1];
@@ -410,7 +418,6 @@ namespace Algo.Runtime.Build.Runtime
             }
 
             _stateChangedHistory.Add(algorithmInterpreterStateEventArgs);
-#endif
         }
 
         #endregion

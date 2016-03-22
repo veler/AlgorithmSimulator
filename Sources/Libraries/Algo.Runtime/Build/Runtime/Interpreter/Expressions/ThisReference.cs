@@ -33,15 +33,13 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Expressions
         /// <returns>Returns the result of the interpretation</returns>
         internal override object Execute()
         {
-            var parent = ParentInterpreter.ParentClassInterpreter;
+            var parentClass = ParentInterpreter.ParentClassInterpreter;
 
-            if (parent == null)
+            if (parentClass == null)
             {
                 ParentInterpreter.ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new ClassNotFoundException("{Unknow}", "It looks like the parent class does not exists."), Expression), ParentInterpreter.GetDebugInfo()));
                 return null;
             }
-
-            var parentClass = (ClassInterpreter)parent;
 
             if (!parentClass.IsInstance)
             {

@@ -76,7 +76,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         #endregion
 
         #region Handlers
-        
+
         /// <summary>
         /// Raised when a method or a block is done
         /// </summary>
@@ -177,7 +177,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                     ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new StackOverflowException($"You called too many (more than {Consts.CallStackSize}) methods in the same thread.")), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
-                _callStackService.StackTraceCallCount[stackTraceId] = (short)(_callStackService.StackTraceCallCount[stackTraceId] + 1);
+                ++_callStackService.StackTraceCallCount[stackTraceId];
             }
             else
             {
@@ -201,7 +201,7 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 var call = new Call(classReference, new AlgorithmInvokeMethodExpression(classReference, MethodDeclaration._name.ToString(), arguments.ToArray()));
                 callStack.Stack.Push(call);
             }
-            
+
             var block = new BlockInterpreter(MethodDeclaration._statements, DebugMode, ParentProgramInterpreter, this, null, ParentClassInterpreter);
             block.OnGetParentInterpreter += new Func<MethodInterpreter>(() => this);
             block.StateChanged += ChangeState;
@@ -212,12 +212,12 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 var argDecl = MethodDeclaration._arguments[i];
                 var argValue = argumentValues[i];
 
-                if (!(argValue is string) && argValue is IEnumerable && !argDecl.IsArray)
+                if (!(argValue is string) && argValue is IList && !argDecl.IsArray)
                 {
                     ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must not be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
                     return;
                 }
-                if ((!(argValue is IEnumerable) || argValue is string) && argDecl.IsArray)
+                if ((!(argValue is IList) || argValue is string) && argDecl.IsArray)
                 {
                     ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(new BadArgumentException(argDecl.Name.ToString(), $"The argument's value '{argDecl.Name}' must be an array of values."), MethodDeclaration), GetParentInterpreter().GetDebugInfo()));
                     return;
@@ -231,23 +231,40 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
                 return;
             }
 
-            block.Run();
-            block.StateChanged -= ChangeState;
-            block.Dispose();
+           // try
+           // {
+                block.Run();
+          // }
+          // catch (Exception ex)
+          // {
+          //     ChangeState(this, new AlgorithmInterpreterStateEventArgs(new Error(ex, MethodDeclaration), GetDebugInfo()));
+          //     return;
+          // }
+          // finally
+          // {
+                block.StateChanged -= ChangeState;
+                block.Dispose();
+          //  }
+
 
             if (mustClearStackAtTheEnd)
             {
                 _callStackService.StackTraceCallCount.Remove(stackTraceId);
-                if (DebugMode && !Failed)
+            }
+
+            if (DebugMode && !Failed)
+            {
+                if (mustClearStackAtTheEnd)
                 {
                     _callStackService.CallStacks.Remove(_callStackService.CallStacks.Single(callStack => callStack.TaceId == stackTraceId));
                 }
+                else
+                {
+                    _callStackService.CallStacks.Single(callStack => callStack.TaceId == stackTraceId).Stack.Pop();
+                }
             }
 
-            if (DebugMode && !Failed && !mustClearStackAtTheEnd)
-            {
-                _callStackService.CallStacks.Single(callStack => callStack.TaceId == stackTraceId).Stack.Pop();
-            }
+
 
             Done = true;
             OnDone(this);

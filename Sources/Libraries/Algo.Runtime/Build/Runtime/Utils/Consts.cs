@@ -15,6 +15,6 @@ namespace Algo.Runtime.Build.Runtime.Utils
         /// <summary>
         /// The maximum number of call to <see cref="InvokeMethod"/> before creating a new thread to avoid stack overflow exception
         /// </summary>
-        internal const int InvokeMethodCountBeforeNewThread = 300; // 300
+        internal const int InvokeMethodCountBeforeNewThread = 275; // 275
     }
 }

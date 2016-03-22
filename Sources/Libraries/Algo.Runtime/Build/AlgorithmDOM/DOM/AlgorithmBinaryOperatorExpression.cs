@@ -1,4 +1,5 @@
 ﻿using Algo.Runtime.ComponentModel;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -17,16 +18,19 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets the left expression
         /// </summary>
+        [JsonProperty]
         public AlgorithmExpression LeftExpression { get { return _leftExpression; } set { _leftExpression = value; } }
 
         /// <summary>
         /// Gets or sets the binary operator
         /// </summary>
+        [JsonProperty]
         public AlgorithmBinaryOperatorType Operator { get { return _operator; } set { _operator = value; } }
 
         /// <summary>
         /// Gets or sets the right expression
         /// </summary>
+        [JsonProperty]
         public AlgorithmExpression RightExpression { get { return _rightExpression; } set { _rightExpression = value; } }
 
         #endregion

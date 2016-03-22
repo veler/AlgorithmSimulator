@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -16,7 +17,8 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 
         /// <summary>
         /// Gets or sets the identifier
-        /// </summary>         
+        /// </summary>    
+        [JsonProperty]
         public string Identifier
         {
             get { return _identifier; }

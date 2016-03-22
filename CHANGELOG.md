@@ -1,3 +1,24 @@
+# DATE
+
+## Interpreter
+
+0. Support of indexers.
+0. Bug fixed with the step into.
+0. Refactoring.
+0. Optimization.
+
+## Parser
+
+0. Support of program declaration.
+0. Support of class declaration.
+0. Support of method declaration.
+0. Support of variable declaration (but not with default value).
+
+### Know issues
+
+0. As the parser is not complete, it does not works correctly.
+0. The interpreter is still not able to access the UI.
+
 # March 20th, 2016 (branch dev)
 
 0. Beginning of a programming language parser. The goal is to be able to type a code, generate an AlgorithmProgram and interpret it.

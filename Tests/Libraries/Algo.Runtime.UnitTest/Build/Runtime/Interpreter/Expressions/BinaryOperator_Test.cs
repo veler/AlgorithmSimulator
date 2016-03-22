@@ -164,10 +164,6 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
         [TestMethod]
         public void BinaryOperator()
         {
-            var time = new Stopwatch();
-            time.Start();
-
-
             var program = new AlgorithmProgram("MyApp");
             var firstClass = new AlgorithmClassDeclaration("FirstClass");
 
@@ -198,19 +194,13 @@ namespace Algo.Runtime.UnitTest.Build.Runtime.Interpreter.Expressions
             program.Classes.Add(firstClass);
 
             program.UpdateEntryPointPath();
-
-            time.Stop();
-            time.Reset();
-            time.Start();
-
+            
             var algorithmInterpreter = new AlgorithmInterpreter(program);
 
             var task = algorithmInterpreter.StartAsync(debugMode: true);
 
             task.Wait();
-
-            time.Stop();
-
+            
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory.Count, 87);
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[0].State, AlgorithmInterpreterState.Ready);
             Assert.AreEqual(algorithmInterpreter.StateChangeHistory[1].State, AlgorithmInterpreterState.Preparing);

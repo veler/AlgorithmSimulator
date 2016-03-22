@@ -32,6 +32,7 @@ It means several things :
 | [debug mode] step out                                                                  | yes       |
 | [debug mode] breakpoint                                                                | yes       |
 | variable                                                                               | yes       |
+| array                                                                                  | yes       |
 | class                                                                                  | yes       |
 | class properties                                                                       | yes       |
 | method                                                                                 | yes       |

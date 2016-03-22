@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents a member in a class
@@ -10,6 +12,7 @@
         /// <summary>
         /// Gets or sets the name of the member.
         /// </summary>
+        [JsonProperty]
         public AlgorithmIdentifier Name { get { return _name; } set { _name = value; } }
 
         #endregion

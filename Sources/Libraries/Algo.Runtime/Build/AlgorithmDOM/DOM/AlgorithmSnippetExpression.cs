@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Basic class that represents a snippet expression in an algorithm
@@ -15,6 +17,7 @@
         /// <summary>
         /// Gets or sets the snippet code
         /// </summary>
+        [JsonProperty]
         public string Code { get { return _code; } set { _code = value; } }
 
         #endregion

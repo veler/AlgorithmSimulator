@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -17,6 +18,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets the full namespace path that contains the class
         /// </summary>
+        [JsonProperty]
         public string Namespace
         {
             get { return _namespace; }
@@ -33,11 +35,13 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets the name of the class
         /// </summary>
+        [JsonProperty]
         public AlgorithmIdentifier ClassName { get { return _className; } set { _className = value; } }
 
         /// <summary>
         /// Gets or sets the type that correspond to the class
         /// </summary>
+        [JsonProperty]
         public Type Type { get { return _type; } set { _type = value; } }
 
         #endregion

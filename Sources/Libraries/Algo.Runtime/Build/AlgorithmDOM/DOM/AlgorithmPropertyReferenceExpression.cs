@@ -1,4 +1,6 @@
-﻿namespace Algo.Runtime.Build.AlgorithmDOM.DOM
+﻿using Newtonsoft.Json;
+
+namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
     /// <summary>
     /// Represents a reference to a variable in an algorithm
@@ -15,11 +17,13 @@
         /// <summary>
         /// Gets or sets the class reference or variable that contains the property
         /// </summary>
-        public AlgorithmReferenceExpression TargetObect { get { return _targetObject; } set { _targetObject = value; } }
+        [JsonProperty]
+        public AlgorithmReferenceExpression TargetObject { get { return _targetObject; } set { _targetObject = value; } }
 
         /// <summary>
         /// Gets or sets the name of the variable
         /// </summary>
+        [JsonProperty]
         public AlgorithmIdentifier PropertyName { get { return _propertyName; } set { _propertyName = value; } }
 
         #endregion
@@ -40,7 +44,7 @@
         /// <param name="name">The name of the variable we make reference</param>
         public AlgorithmPropertyReferenceExpression(AlgorithmReferenceExpression targetObject, string name)
         {
-            TargetObect = targetObject;
+            TargetObject = targetObject;
             PropertyName = new AlgorithmIdentifier(name);
         }
 
@@ -54,7 +58,7 @@
         /// <returns>String that reprensents the reference</returns>
         public override string ToString()
         {
-            return $"{TargetObect}.{PropertyName.Identifier}";
+            return $"{TargetObject}.{PropertyName.Identifier}";
         }
 
         #endregion

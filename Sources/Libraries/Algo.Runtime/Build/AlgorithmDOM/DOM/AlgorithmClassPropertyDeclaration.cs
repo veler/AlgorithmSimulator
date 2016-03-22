@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -17,11 +18,13 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets whether the property is of type <see cref="object"/> or <see cref="Collection{T}"/> of <see cref="object"/>
         /// </summary>
+        [JsonProperty]
         public bool IsArray { get { return _isArray; } set { _isArray = value; } }
 
         /// <summary>
         /// Gets of sets the default value of the property
         /// </summary>
+        [JsonProperty]
         public AlgorithmPrimitiveExpression DefaultValue { get { return _defaultValue; } set { _defaultValue = value; } }
 
         #endregion

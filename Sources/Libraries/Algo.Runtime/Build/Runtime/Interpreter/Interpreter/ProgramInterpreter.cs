@@ -236,7 +236,6 @@ namespace Algo.Runtime.Build.Runtime.Interpreter.Interpreter
         {
             CancelStepOverSignal = true;
             ChangeState(this, new AlgorithmInterpreterStateEventArgs(AlgorithmInterpreterState.Running));
-            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
             FreeWaiter();
             FreeStepIntoOverOutWaiter();
         }

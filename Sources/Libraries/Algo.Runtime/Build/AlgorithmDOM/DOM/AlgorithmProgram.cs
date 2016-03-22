@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -23,16 +24,19 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         /// <summary>
         /// Gets or sets global variables accessibles anywhere in the program's classes and methods
         /// </summary>
+        [JsonProperty]
         public AlgorithmVariableDeclarationCollection Variables { get; set; }
 
         /// <summary>
         /// Gets or sets the classes of the program
         /// </summary>
+        [JsonProperty]
         public AlgorithmClassDeclarationCollection Classes { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the program
         /// </summary>
+        [JsonProperty]
         public string Name
         {
             get { return _name; }
@@ -103,13 +107,13 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
                 return null;
             }
 
-            var path = EntryPointPath.ToLower().Trim();
+            var path = EntryPointPath.Trim();
             var i = 0;
             AlgorithmEntryPointMethod result = null;
 
             while (i < Classes.Count && result == null)
             {
-                if (Classes[i].Name.ToString().ToLower().Trim() == path)
+                if (string.Compare(Classes[i].Name.ToString().Trim(), path, StringComparison.CurrentCultureIgnoreCase) == 0)
                 {
                     var j = 0;
                     while (j < Classes[i].Members.Count && result == null)
