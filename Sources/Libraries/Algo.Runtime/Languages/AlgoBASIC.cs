@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Algo.Runtime.Build.AlgorithmDOM.DOM;
 using Algo.Runtime.Build.Parser;
@@ -20,12 +21,6 @@ namespace Algo.Runtime.Languages
             English,
             French
         }
-
-        #endregion
-
-        #region Consts
-
-        private const string IdentifierArrayPattern = @"([_a-zA-Z][_a-zA-Z0-9]*(\[\])?)";
 
         #endregion
 
@@ -57,22 +52,25 @@ namespace Algo.Runtime.Languages
         public AlgoBASIC(Culture culture)
         {
             AddTerm("<identifier>", @"([_a-zA-Z][_a-zA-Z0-9]+)", 3, null);
-            AddTerm("<identifierArray>", IdentifierArrayPattern, 3, null);
+            AddTerm("<identifierArray>", @"([_a-zA-Z][_a-zA-Z0-9]*(\[\])?)", 3, null);
             AddTerm("<string>", @"""([^""\\]|\\['""\\0abfnrtv]|\\x[a-fA-F0-9][a-fA-F0-9]{0,3})*""", 3, null);
             AddTerm("<character>", @"'([^'\\]|\\['""\\0abfnrtv]|\\x[a-fA-F0-9][a-fA-F0-9]{0,3})'", 3, null);
+            AddTerm("<decimal>", @"-?[0-9\.]+", 3, null);
+
+            AddTerm("<primitiveValue>", @"(<string>|<character>|<decimal>|\[(.*)?\])", 3, EvaluatePrimitiveValue);
 
             AddLeftParen("<leftParen>", @"\(", 1);
             AddRightParen("<rightParen>", @"\)", 1);
             AddLeftParen("<leftBracket>", @"\[", 1);
             AddRightParen("<rightBracket>", @"\]", 1);
-            AddArgumentSeparator("<comma>", @",", 1);
+            AddArgumentSeparator("<comma>", @"\s*,\s*", 1);
 
             AddStatementSeparator("<newLine>", @"\s*\n\s*", 0);
             AddStatementSeparator("<comment>", @"\s*#.*", 0);
 
-            AddOperator("<+>", @"\+", 2, EvaluateAdditionOperator);
+            AddOperator("<+>", @"\+", 2, null);
 
-            AddTerm("<variableDeclaration>", @"VARIABLE\s+<identifierArray>", 4, EvaluateVariableDeclaration); // TODO : variable initialization => VARIABLE myVar[] = ["item1", "item2"]
+            AddTerm("<variableDeclaration>", @"VARIABLE\s+<identifierArray>(\s+(=)\s*<primitiveValue>)?", 4, EvaluateVariableDeclaration); // TODO : variable initialization => VARIABLE myVar[] = ["item1", "item2"]
 
             if (culture == Culture.English)
             {
@@ -170,35 +168,59 @@ namespace Algo.Runtime.Languages
             return new TokenEvaluatorResult(currentToken, TokenType.StatementSeparator);
         }
 
-        private TokenEvaluatorResult EvaluateAdditionOperator(string text, string[] splittedText, EvaluatorArgument evaluatorArgument)
-        {
-            return null;
-        }
-
         private TokenEvaluatorResult EvaluateVariableDeclaration(string text, string[] splittedText, EvaluatorArgument evaluatorArgument)
         {
+            AlgorithmPrimitiveExpression defaultValue = null;
             var variableName = splittedText[2];
             var isArray = variableName.EndsWith("[]");
 
             variableName = variableName.Replace("[]", string.Empty);
 
+            if (splittedText.Length > 4)
+            {
+                var defaultValueStringIndex = -1;
+                if (!isArray && splittedText[4] == "=")
+                {
+                    defaultValueStringIndex = 5;
+                }
+                else if (isArray && splittedText.Length > 5 && splittedText[5] == "=")
+                {
+                    defaultValueStringIndex = 6;
+                }
+
+                if (defaultValueStringIndex > -1)
+                {
+                    var primitiveValueRegex = GetRegexFromName("<primitiveValue>");
+                    var defaultValueString = splittedText[defaultValueStringIndex];
+                    defaultValue = (AlgorithmPrimitiveExpression)EvaluatePrimitiveValue(defaultValueString, primitiveValueRegex.Split(defaultValueString), evaluatorArgument).AlgorithmObject;
+
+                    // ReSharper disable UseMethodIsInstanceOfType
+                    // ReSharper disable UseIsOperator.1
+                    if (isArray && defaultValue != null && !typeof(List<object>).IsAssignableFrom(defaultValue.Value.GetType()))
+                    // ReSharper restore UseIsOperator.1
+                    // ReSharper restore UseMethodIsInstanceOfType
+                    {
+                        throw new SyntaxErrorException(evaluatorArgument, $"An array value is expected for '{variableName}'");
+                    }
+                }
+            }
+
+            if (defaultValue == null && isArray)
+            {
+                defaultValue = new AlgorithmPrimitiveExpression(new List<object>());
+            }
+
             // TODO : block
             if (!_inMethod && _inClass)
             {
                 var propertyDeclaration = new AlgorithmClassPropertyDeclaration(variableName, isArray);
-                if (isArray)
-                {
-                    propertyDeclaration.DefaultValue = new AlgorithmPrimitiveExpression(new List<object>());
-                }
+                propertyDeclaration.DefaultValue = defaultValue;
                 return new TokenEvaluatorResult(SyntaxTreeTokenType.PropertyDeclaration, TokenType.StatementSeparator, propertyDeclaration);
             }
             if (_inMethod || _inProgram)
             {
                 var variableDeclaration = new AlgorithmVariableDeclaration(variableName, isArray);
-                if (isArray)
-                {
-                    variableDeclaration.DefaultValue = new AlgorithmPrimitiveExpression(new List<object>());
-                }
+                variableDeclaration.DefaultValue = defaultValue;
                 return new TokenEvaluatorResult(SyntaxTreeTokenType.VariableDeclaration, TokenType.StatementSeparator, variableDeclaration);
             }
             throw new ValidationException();
@@ -206,7 +228,7 @@ namespace Algo.Runtime.Languages
 
         private TokenEvaluatorResult EvaluateFunctionDeclaration(string text, string[] splittedText, EvaluatorArgument evaluatorArgument)
         {
-            var identifierArrayPattern = string.Format("^{0}$", IdentifierArrayPattern);
+            var identifierArrayPattern = string.Format("^{0}$", GetRegexFromName("<identifierArray>"));
             var isAsync = false;
             var identifier = splittedText[3];
             var arguments = splittedText[4].Split(',');
@@ -271,6 +293,96 @@ namespace Algo.Runtime.Languages
             }
 
             return new TokenEvaluatorResult(SyntaxTreeTokenType.BeginMethod, TokenType.StatementSeparator, new AlgorithmClassMethodDeclaration(identifier, isAsync, parameters));
+        }
+
+        private TokenEvaluatorResult EvaluatePrimitiveValue(string text, string[] splittedText, EvaluatorArgument evaluatorArgument)
+        {
+            return new TokenEvaluatorResult(SyntaxTreeTokenType.PrimitiveValue, TokenType.Unknow, new AlgorithmPrimitiveExpression(ParsePrimitiveValue(ref text, evaluatorArgument, false)));
+        }
+
+        private object ParsePrimitiveValue(ref string text, EvaluatorArgument evaluatorArgument, bool inArray)
+        {
+            int match;
+            var stringRegex = new Regex("^" + GetRegexFromName("<string>"));
+            var characterRegex = new Regex("^" + GetRegexFromName("<character>"));
+            var decimalRegex = new Regex("^" + GetRegexFromName("<decimal>"));
+
+            text = text.TrimStart();
+
+            match = Match(stringRegex, text);
+            if (match > 0)
+            {
+                var value = text.Substring(1, match - 2);
+                text = text.Substring(match);
+                return value;
+            }
+
+            match = Match(characterRegex, text);
+            if (match > 0)
+            {
+                var character = text.Substring(1, match - 2);
+                if (character.Length > 1)
+                {
+                    throw new SyntaxErrorException(evaluatorArgument, "Too may characters in character literal. Please use the \" instead of \' to define a string.");
+                }
+                text = text.Substring(match);
+                return character;
+            }
+
+            match = Match(decimalRegex, text);
+            if (match > 0)
+            {
+                var number = text.Substring(0, match);
+                text = text.Substring(match);
+                if (number.Contains("."))
+                {
+                    return decimal.Parse(number);
+                }
+                return long.Parse(number);
+            }
+
+            if (text.StartsWith("["))
+            {
+                object value;
+                var list = new List<object>();
+
+                text = text.Substring(1);
+
+                do
+                {
+                    value = ParsePrimitiveValue(ref text, evaluatorArgument, true);
+                    if (value != null)
+                    {
+                        list.Add(value);
+                    }
+                } while (value != null);
+
+                return list;
+            }
+
+            if (text.StartsWith("]"))
+            {
+                return null;
+            }
+
+            if (inArray)
+            {
+                var argumentSeparatorRegex = new Regex("^" + GetRegexFromName("<comma>"));
+                match = Match(argumentSeparatorRegex, text);
+                if (match > 0)
+                {
+                    text = text.Substring(match);
+                    return ParsePrimitiveValue(ref text, evaluatorArgument, true);
+                }
+            }
+
+            throw new SyntaxErrorException(evaluatorArgument, "String, charachter or number expected.");
+        }
+
+        private int Match(Regex regex, string text)
+        {
+            var m = regex.Match(text);
+            return m.Success ? m.Length : 0;
         }
 
         #endregion

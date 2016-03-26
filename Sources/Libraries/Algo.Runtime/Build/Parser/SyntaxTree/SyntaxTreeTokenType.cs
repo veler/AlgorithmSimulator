@@ -15,6 +15,8 @@
         EndProgram,
 
         VariableDeclaration,
-        PropertyDeclaration
+        PropertyDeclaration,
+
+        PrimitiveValue
     }
 }

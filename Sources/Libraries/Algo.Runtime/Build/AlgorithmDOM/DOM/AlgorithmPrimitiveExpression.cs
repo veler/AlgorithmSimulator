@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Algo.Runtime.Build.AlgorithmDOM.DOM
 {
@@ -52,7 +53,7 @@ namespace Algo.Runtime.Build.AlgorithmDOM.DOM
         {
             return Value == null ? "{null}" : $"'{Value}' (type:{Value.GetType().FullName})";
         }
-
+        
         #endregion
     }
 }

@@ -220,33 +220,7 @@ namespace Algo.Runtime.UnitTest.Build.Parser
 
             Assert.AreEqual(parser.Error.Message, "Syntax error in 'MyApp', line 3 : 4 - Class definition is missing.");
         }
-
-        [TestMethod]
-        public void ParserVariableDeclaration()
-        {
-            var code = "PROGRAM MyApp\n" +
-                       "\n" +
-                       "    VARIABLE NormalVariable\n" +
-                       "\n" +
-                       "    MODEL MyFirstClass\n" +
-                       "\n" +
-                       "        VARIABLE ArrayVariable[]\n" +
-                       "\n" +
-                       "    END MODEL\n" +
-                       "\n" +
-                       "END PROGRAM\n";
-
-            var codeDocument = new CodeDocument(code, "MyApp");
-            var parser = new Parser<AlgoBASIC>();
-
-            parser.ParseAsync(codeDocument).Wait();
-
-            Assert.AreEqual(parser.AlgorithmProgram.Variables.First().Name.ToString(), "NormalVariable");
-            Assert.AreEqual(parser.AlgorithmProgram.Variables.First().IsArray, false);
-            Assert.AreEqual(((AlgorithmClassPropertyDeclaration)parser.AlgorithmProgram.Classes.First().Members.First()).Name.ToString(), "ArrayVariable");
-            Assert.AreEqual(((AlgorithmClassPropertyDeclaration)parser.AlgorithmProgram.Classes.First().Members.First()).IsArray, true);
-        }
-
+        
         [TestMethod]
         public void ParserFunctionDeclaration()
         {

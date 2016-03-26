@@ -1,4 +1,10 @@
-# DATE
+# March 26th, 2016 (branch dev)
+
+## Parser
+
+0. Support of default value for variable declaration.
+
+# March 22th, 2016 (branch dev)
 
 ## Interpreter
 

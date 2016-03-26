@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Algo.Runtime.Build.Parser.Lexer;
 
 namespace Algo.Runtime.Build.Parser
@@ -56,6 +57,15 @@ namespace Algo.Runtime.Build.Parser
             }
 
             _patternFixed = true;
+        }
+
+        protected Regex GetRegexFromName(string name)
+        {
+            if (_tokenDefinitions.ContainsKey(name))
+            {
+                return _tokenDefinitions[name].Regex;
+            }
+            throw new KeyNotFoundException($"Regex '{name}' not found.");
         }
 
         protected void AddTerm(string name, string pattern, ushort priority, TokenEvaluator evaluator)
